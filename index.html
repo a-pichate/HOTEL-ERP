@@ -3023,80 +3023,95 @@
     </div>
   </div>
 </div><!-- ── Payout Request Modal — F03 / F07 / F08  (READ-ONLY net — no inline deduction editing) ── -->
-<div id="modal-payout-request" class="modal-overlay" style="display:none;" onclick="if(event.target===this)closeModal('modal-payout-request')">
-  <div class="modal" style="width:520px;">
-    <div class="modal-header"><div class="modal-title">💵 Request Payout</div><button class="modal-close" onclick="closeModal('modal-payout-request')">✕</button></div>
+<!-- ── Payout Request Modal ── -->
+<div id="modal-payout-request" class="modal-overlay" onclick="if(event.target===this)closeModal('modal-payout-request')">
+  <div class="modal" style="width:600px;" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <div class="modal-title">💵 Payout Detail</div>
+      <button class="modal-close" onclick="closeModal('modal-payout-request')">✕</button>
+    </div>
     <div class="modal-body">
+      
       <div class="form-group" style="margin-bottom:14px;">
         <label class="form-label">Officer</label>
-        <select class="form-control" id="payout-officer-sel" onchange="checkPayoutGuard()">
+        <select class="form-control" id="payout-officer-sel">
           <option value="">— Select officer —</option>
-          <option value="napa" data-busy="true">Napa Prachaya (⚠ Active session: SPA-0141)</option>
-          <option value="ploy" data-busy="false">Ploy Kaewrat</option>
-          <option value="mali" data-busy="false">Mali Suwat</option>
+          <option value="napa">Napa Prachaya</option>
+          <option value="ploy">Ploy Kaewrat</option>
+          <option value="mali">Mali Suwat</option>
+          <option value="dao">Dao Siriwan</option>
         </select>
       </div>
 
-      <!-- F08 Guard -->
-      <div id="payout-guard-msg" style="display:none;background:var(--danger-light);border-radius:var(--radius);padding:10px 14px;margin-bottom:12px;font-size:13px;color:var(--danger);">
-        <strong>⛔ F08 — Payout Blocked:</strong> This officer has an active spa session (SPA-0141). The session must be completed before requesting payout.
+      <!-- Read-only AP balance breakdown -->
+      <div style="border:1px solid var(--gray-200);border-radius:var(--radius);overflow:hidden;margin-bottom:14px;">
+        <div style="background:var(--gray-50);padding:8px 14px;font-size:11px;font-weight:700;color:var(--gray-600);text-transform:uppercase;letter-spacing:0.5px;border-bottom:1px solid var(--gray-200);">
+          AP Ledger Balance — Read-Only
+        </div>
+        <div style="padding:12px 14px;font-size:13px;display:flex;flex-direction:column;gap:8px;">
+          <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;">
+            <span style="color:var(--gray-600);">Service Earnings</span>
+            <strong id="po-earnings">฿0</strong>
+          </div>
+          <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;">
+            <span style="color:var(--gray-600);">Tips — F07</span>
+            <strong id="po-tips" style="color:var(--success);">+฿0</strong>
+          </div>
+          <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;padding-top:6px;border-top:1px dashed var(--gray-200);">
+            <span style="color:var(--gray-600);">Approved Deductions</span>
+            <strong id="po-deductions" style="color:var(--danger);">฿0</strong>
+          </div>
+        </div>
+        <div style="background:var(--primary-light);padding:10px 14px;border-top:2px solid #B2DFDB;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">
+          <div>
+            <div style="font-size:11px;font-weight:700;color:var(--gray-600);text-transform:uppercase;letter-spacing:0.5px;">Net Payable</div>
+          </div>
+          <div style="font-size:22px;font-weight:800;color:var(--primary);" id="po-net">฿0</div>
+        </div>
       </div>
 
-      <div id="payout-form-body" style="display:none;">
-        <!-- Read-only AP balance breakdown -->
-        <div style="border:1px solid var(--gray-200);border-radius:var(--radius);overflow:hidden;margin-bottom:14px;">
-          <div style="background:var(--gray-50);padding:8px 14px;font-size:11px;font-weight:700;color:var(--gray-600);text-transform:uppercase;letter-spacing:0.5px;border-bottom:1px solid var(--gray-200);">
-            AP Ledger Balance — Read-Only (sourced from account.move.line)
-          </div>
-          <div style="padding:12px 14px;font-size:13px;display:flex;flex-direction:column;gap:8px;">
-            <div style="display:flex;justify-content:space-between;">
-              <span style="color:var(--gray-600);">Service Earnings (vendor bill lines)</span>
-              <strong id="po-earnings">—</strong>
-            </div>
-            <div style="display:flex;justify-content:space-between;">
-              <span style="color:var(--gray-600);">Tips — F07 (SPA-TIP vendor bill lines, posted by E08 server action)</span>
-              <strong id="po-tips" style="color:var(--success);">—</strong>
-            </div>
-            <div style="display:flex;justify-content:space-between;padding-top:6px;border-top:1px dashed var(--gray-200);">
-              <span style="color:var(--gray-600);">Approved Deductions (credit notes — Section I)
-                <button onclick="showModal('modal-deduction-log')" style="margin-left:6px;background:none;border:none;color:var(--odoo-purple);font-size:11px;cursor:pointer;text-decoration:underline;">view detail →</button>
-              </span>
-              <strong id="po-deductions" style="color:var(--danger);">—</strong>
-            </div>
-          </div>
-          <div style="background:var(--primary-light);padding:10px 14px;border-top:2px solid #B2DFDB;display:flex;justify-content:space-between;align-items:center;">
-            <div>
-              <div style="font-size:11px;font-weight:700;color:var(--gray-600);text-transform:uppercase;letter-spacing:0.5px;">Net Payable (Cash Out)</div>
-              <div style="font-size:11px;color:var(--gray-500);margin-top:1px;">Computed from AP ledger · not editable here</div>
-            </div>
-            <div style="font-size:22px;font-weight:800;color:var(--primary);" id="po-net">—</div>
-          </div>
+      <!-- Sessions breakdown - responsive table wrapper -->
+      <div style="margin-bottom:16px;">
+        <div style="font-size:12px;font-weight:700;color:var(--gray-700);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;">Sessions Breakdown</div>
+        <div style="overflow-x:auto;border:1px solid var(--gray-200);border-radius:var(--radius);">
+          <table style="width:100%;border-collapse:collapse;min-width:400px;">
+            <thead>
+              <tr style="background:var(--gray-50);border-bottom:1px solid var(--gray-200);">
+                <th style="padding:8px 10px;font-size:11px;text-align:left;">Session</th>
+                <th style="padding:8px 10px;font-size:11px;text-align:left;">Service</th>
+                <th style="padding:8px 10px;font-size:11px;text-align:center;">Duration</th>
+                <th style="padding:8px 10px;font-size:11px;text-align:right;">Rate</th>
+                <th style="padding:8px 10px;font-size:11px;text-align:right;">Charge</th>
+              </tr>
+            </thead>
+            <tbody id="pd-sessions">
+              <!-- Populated by JS -->
+            </tbody>
+          </table>
         </div>
+      </div>
 
-        <!-- Info box about adding deductions -->
-        <div style="background:#FFF8E1;border:1px solid #FFE082;border-radius:var(--radius);padding:10px 14px;margin-bottom:14px;font-size:12px;color:#5D4037;display:flex;gap:10px;">
-          <span style="font-size:16px;">ℹ️</span>
-          <div>
-            <strong>Need to add a deduction?</strong> Go to <strong>Accounting → Internal Sales</strong>, raise the sale to this officer (vendor credit method), get manager approval, then return here — the net will recalculate automatically.
-          </div>
+      <!-- Deductions list - responsive -->
+      <div style="margin-bottom:16px;">
+        <div style="font-size:12px;font-weight:700;color:var(--gray-700);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;">Approved Deductions</div>
+        <div id="pd-deduction-list" style="border:1px solid var(--gray-200);border-radius:var(--radius);overflow:hidden;">
+          <!-- Populated by JS -->
         </div>
+      </div>
 
-        <div class="form-group" style="margin-bottom:12px;">
-          <label class="form-label">Payment Method (F05 — Cash Journal Only)</label>
-          <select class="form-control">
-            <option>Cash — Petty Cash Journal</option>
-          </select>
-        </div>
-        <div style="font-size:11px;color:var(--gray-500);line-height:1.7;">
-          F07 — Tips sourced from checkout invoices, not entered manually.<br>
-          F04 — Full audit trail recorded: officer, sessions, deductions, net, cashier, timestamp.<br>
-          F08 — On payout confirm, officer status set to <strong>Off Shift</strong>.
-        </div>
+      <div style="background:#FFF8E1;border:1px solid #FFE082;border-radius:var(--radius);padding:10px 14px;font-size:12px;color:#5D4037;display:flex;gap:10px;margin-bottom:12px;flex-wrap:wrap;">
+        <span style="font-size:15px;">ℹ️</span>
+        <div>To add a deduction: go to <strong>Accounting → Internal Sales</strong>, raise a sale to this officer with <em>Vendor Credit</em> payment method, then return after approval.</div>
+      </div>
+
+      <div style="font-size:12px;color:var(--gray-500);">
+        F05 — Cash payment via Petty Cash Journal only. Separate from payroll.<br>
+        F08 — Confirm sets officer status to Off Shift.
       </div>
     </div>
     <div class="modal-footer">
       <button class="btn btn-secondary" onclick="closeModal('modal-payout-request')">Cancel</button>
-      <button class="btn btn-primary" id="payout-confirm-btn" disabled onclick="confirmPayout()">💵 Confirm Payout</button>
+      <button class="btn btn-primary" id="payout-confirm-btn" onclick="confirmPayout()">💵 Confirm Payout</button>
     </div>
   </div>
 </div>
