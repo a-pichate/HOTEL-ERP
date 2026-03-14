@@ -4825,25 +4825,135 @@ function renderSpaSessions(){
   const sessions = api.getSessions();
   const tbody = document.getElementById('spa-sessions-tbody');
   if(!tbody) return;
+  
+  if(sessions.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="13" style="text-align:center;padding:20px;color:var(--gray-400);">No active spa sessions</td></tr>';
+    return;
+  }
+  
   tbody.innerHTML = sessions.map(s=>{
     const officer = api.find('res_partner', s.officer_id);
-    const stateBadge = {in_progress:'<span class="badge badge-warning">In Progress</span>',completed:'<span class="badge badge-confirmed">Completed</span>',draft:'<span class="badge">Draft</span>',cancelled:'<span class="badge badge-danger">Cancelled</span>'}[s.state]||'';
-    const ddStr = s.date_deadline ? s.date_deadline.slice(11,16) : '';
+    const folio   = s.folio_id ? api.find('folio', s.folio_id) : null;
+    const guest   = folio ? api.find('res_partner', folio.partner_id) : null;
+    
+    // Format timers based on session state
+    let timerHtml = '';
+    let timerColor = 'var(--gray-500)';
+    if (s.state === 'in_progress' && s.date_deadline) {
+      // Calculate time remaining (simplified for demo)
+      const deadline = new Date(s.date_deadline.replace(' ', 'T'));
+      const now = new Date();
+      const diffMs = deadline - now;
+      if (diffMs > 0) {
+        const diffHrs = Math.floor(diffMs / 3600000);
+        const diffMins = Math.floor((diffMs % 3600000) / 60000);
+        const diffSecs = Math.floor((diffMs % 60000) / 1000);
+        timerHtml = `${String(diffHrs).padStart(2,'0')}:${String(diffMins).padStart(2,'0')}:${String(diffSecs).padStart(2,'0')}`;
+        timerColor = diffMins < 5 ? 'var(--danger)' : 'var(--warning)';
+      } else {
+        timerHtml = '00:00:00';
+        timerColor = 'var(--danger)';
+      }
+    }
+    
+    const stateBadge = {
+      'in_progress': '<span class="badge badge-warning">In Progress</span>',
+      'completed': '<span class="badge badge-confirmed">Completed</span>',
+      'draft': '<span class="badge">Draft</span>',
+      'cancelled': '<span class="badge badge-danger">Cancelled</span>'
+    }[s.state] || s.state;
+    
+    // Calculate PO lines cost breakdown
+    const lines = db.spa_session_line.filter(l => l.session_id === s.id) || [];
+    const serviceLine = lines.find(l => l.line_type === 'service') || { price_subtotal: s.cost_total || 0 };
+    const tipLine = lines.find(l => l.line_type === 'tip') || { price_subtotal: 0 };
+    
+    const costBreakdown = `
+      <div>Line 1: Service = <strong>฿${(serviceLine.price_subtotal || 0).toLocaleString()}</strong></div>
+      <div style="color:var(--gray-400);font-style:italic;">Line 2: SPA-TIP = <strong>฿${(tipLine.price_subtotal || 0).toLocaleString()}</strong> (pending checkout)</div>
+    `;
+    
+    // Notification button (pulse if nearing end)
+    const notifyBtnClass = (s.state === 'in_progress' && timerColor === 'var(--danger)') 
+      ? 'style="animation:pulsebell 1s ease-in-out infinite;"' 
+      : '';
+    
+    // Action buttons based on state
+    let actionButtons = '';
+    if (s.state === 'in_progress') {
+      actionButtons = `
+        <div style="display:flex;gap:4px;flex-wrap:wrap;">
+          <button class="btn btn-sm btn-outline" onclick="showModal('modal-extend-${s.id}')" title="C07 — Time Extension">+Extend</button>
+          <button class="btn btn-sm btn-success" onclick="showModal('modal-complete-${s.id}')" title="C10 — Post to Folio">Complete</button>
+        </div>
+      `;
+    } else if (s.state === 'completed') {
+      actionButtons = `<span class="chip chip-green" style="font-size:10px;">Done</span>`;
+    }
+    
     return `<tr>
-      <td><strong>${s.name}</strong></td>
-      <td>${s.officer_name}</td>
-      <td>${officer?.x_grade||''}</td>
-      <td>${s.guest_display}</td>
-      <td>${s.spa_room||'—'}</td>
+      <td><strong>PO-SPA-${String(s.id).padStart(4,'0')}</strong></td>
+      <td>${s.guest_display || guest?.name || s.guest_name || '—'}<br><small style="color:var(--gray-500);">${folio?.name || s.folio_name || 'Walk-in'}</small></td>
+      <td><span class="chip chip-info">${s.spa_room || '—'}</span></td>
+      <td>${officer?.name || '—'}<br><small style="color:${officer?.is_available ? 'var(--success)' : 'var(--warning)'};">${officer?.is_available ? '● Available' : '● Busy'}</small></td>
+      <td>${api.find('product', officer?.x_service_product_id)?.name || 'Service'}</td>
+      <td>${s.date_start ? s.date_start.slice(11,16) : '—'}</td>
+      <td style="font-weight:600;color:${timerColor === 'var(--danger)' ? 'var(--danger)' : 'var(--warning)'};">${s.date_deadline ? s.date_deadline.slice(11,16) : '—'}</td>
+      <td><span class="session-timer" style="font-family:monospace;font-size:13px;font-weight:700;color:${timerColor};">${timerHtml || '—'}</span></td>
       <td>${s.duration} hrs</td>
-      <td>${ddStr}</td>
-      <td>${stateBadge}</td>
-      <td>฿${s.sell_total.toLocaleString()}</td>
-      <td>
-        ${s.state==='in_progress'?`<button class="btn btn-sm btn-success" onclick="dbCompleteSession(${s.id})">✓ Complete</button>`:''}
-        ${s.state==='in_progress'?`<button class="btn btn-sm btn-secondary" style="margin-left:4px;" onclick="showModal('modal-notify-log')">📋 Log</button>`:''}
-      </td></tr>`;
-  }).join('') || '<tr><td colspan="10" style="text-align:center;color:var(--gray-400);padding:20px;">No sessions yet</td></tr>';
+      <td style="font-size:11px;line-height:1.7;">${costBreakdown}</td>
+      <td style="font-weight:600;color:var(--odoo-purple);">฿${(s.sell_total || 0).toLocaleString()}</td>
+      <td style="text-align:center;">
+        <button onclick="openNotifyLog('${s.id}','${s.guest_display || guest?.name || s.guest_name || 'Guest'}')" 
+          title="Log guest notification" 
+          style="background:none;border:1px solid var(--gray-300);border-radius:6px;padding:3px 7px;cursor:pointer;font-size:14px;" 
+          id="notify-btn-${s.id}" ${notifyBtnClass}>🔔</button>
+      </td>
+      <td>${actionButtons}</td>
+    </tr>`;
+  }).join('');
+}
+
+function openNotifyLog(sessionId, guestName) {
+  window._currentNotifySession = sessionId;
+  document.getElementById('notify-session-label').textContent = `Session SPA-${String(sessionId).padStart(4,'0')} · ${guestName}`;
+  document.getElementById('notify-log-text').value = '';
+  
+  // Load existing logs if any
+  const logs = window._notifyLogs?.[sessionId] || [];
+  const historyEl = document.getElementById('notify-history-list');
+  const historyWrap = document.getElementById('notify-history-wrap');
+  
+  if (logs.length > 0) {
+    historyEl.innerHTML = logs.map(log => `<div>${log}</div>`).join('');
+    historyWrap.style.display = 'block';
+  } else {
+    historyWrap.style.display = 'none';
+  }
+  
+  showModal('modal-notify-log');
+}
+
+function stampNotify(text) {
+  document.getElementById('notify-log-text').value = text;
+}
+
+function saveNotifyLog() {
+  const text = document.getElementById('notify-log-text').value.trim();
+  if (!text) { showToast('Please enter a log note', 'error'); return; }
+  
+  const sessionId = window._currentNotifySession;
+  if (!sessionId) return;
+  
+  // Initialize logs storage
+  if (!window._notifyLogs) window._notifyLogs = {};
+  if (!window._notifyLogs[sessionId]) window._notifyLogs[sessionId] = [];
+  
+  const timestamp = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+  window._notifyLogs[sessionId].push(`${timestamp} — ${text}`);
+  
+  closeModal('modal-notify-log');
+  showToast('Notification logged', 'success');
 }
 
 function dbCompleteSession(sessionId){
