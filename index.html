@@ -5700,6 +5700,279 @@ function confirmPayout() {
       
       // Update counts
       const paidCount = document.getElementById('paid-today-count');
+/* ── Vendor Payments Functions ──────────────────────────────────────────── */
+function renderPayoutPage() {
+  // Outstanding bills data
+  const outstandingBills = [
+    { id: 1, billNo: 'VB-2026-0312', officer: 'Napa Prachaya', grade: 'Grade 2', date: '08 Mar', 
+      sessions: 'SPA-0131, SPA-0132', service: 1050, tip: 0, deductions: 0, net: 1050, status: 'posted' },
+    { id: 2, billNo: 'VB-2026-0315', officer: 'Mali Suwat', grade: 'Grade 2', date: '08 Mar', 
+      sessions: 'SPA-0133', service: 700, tip: 150, deductions: 0, net: 850, status: 'posted' },
+  ];
+  
+  // Today's sessions data
+  const todaySessions = [
+    { officer: 'Napa Prachaya', grade: 'Grade 2', sessions: 3, sessionRef: 'SPA-0138..0140', 
+      service: 1575, tip: 200, deductions: 1020, net: 755 },
+    { officer: 'Ploy Kaewrat', grade: 'Grade 1', sessions: 2, sessionRef: 'SPA-0141..0142', 
+      service: 1200, tip: 0, deductions: 0, net: 1200 },
+    { officer: 'Mali Suwat', grade: 'Grade 2', sessions: 1, sessionRef: 'SPA-0143', 
+      service: 525, tip: 0, deductions: 0, net: 525 },
+  ];
+  
+  // Paid today data
+  const paidToday = [
+    { billNo: 'VB-2026-0318', officer: 'Dao Siriwan', sessions: 'SPA-0136, SPA-0137', 
+      service: 500, tip: 100, deductions: 0, net: 600, payment: 'Petty Cash', time: '11:45', cashier: 'Som K.' },
+  ];
+
+  // Calculate totals
+  const totalOutstanding = outstandingBills.reduce((sum, b) => sum + b.net, 0);
+  const totalTodayService = todaySessions.reduce((sum, t) => sum + t.service, 0);
+  const totalTodayNet = todaySessions.reduce((sum, t) => sum + t.net, 0);
+  const totalDeductions = todaySessions.reduce((sum, t) => sum + t.deductions, 0);
+  const totalPaid = paidToday.reduce((sum, p) => sum + p.net, 0);
+  const totalTips = todaySessions.reduce((sum, t) => sum + t.tip, 0) + 
+                    outstandingBills.reduce((sum, b) => sum + b.tip, 0) + 
+                    paidToday.reduce((sum, p) => sum + p.tip, 0);
+
+  // Update stats
+  document.getElementById('payout-today-sessions').textContent = '฿' + totalTodayService.toLocaleString();
+  document.getElementById('payout-outstanding').textContent = '฿' + totalOutstanding.toLocaleString();
+  document.getElementById('payout-deductions').textContent = '-฿' + totalDeductions.toLocaleString();
+  document.getElementById('payout-paid-today').textContent = '฿' + totalPaid.toLocaleString();
+  
+  // Update summary
+  document.getElementById('summary-today').textContent = '฿' + totalTodayService.toLocaleString();
+  document.getElementById('summary-outstanding').textContent = '฿' + totalOutstanding.toLocaleString();
+  document.getElementById('summary-deductions').textContent = '-฿' + totalDeductions.toLocaleString();
+  document.getElementById('summary-paid').textContent = '฿' + totalPaid.toLocaleString();
+  document.getElementById('summary-tips').textContent = '฿' + totalTips.toLocaleString();
+
+  // Update counts
+  document.getElementById('outstanding-count').textContent = outstandingBills.length + ' bills';
+  document.getElementById('today-sessions-count').textContent = todaySessions.length + ' officers';
+  document.getElementById('paid-today-count').textContent = paidToday.length + ' transaction' + (paidToday.length !== 1 ? 's' : '');
+
+  // Render Outstanding Bills table (no checkboxes)
+  const outstandingTbody = document.getElementById('payout-outstanding-tbody');
+  if (outstandingTbody) {
+    outstandingTbody.innerHTML = outstandingBills.map(bill => `
+      <tr>
+        <td><strong>${bill.billNo}</strong></td>
+        <td>${bill.officer}</td>
+        <td><span class="chip chip-purple" style="font-size:10px;">${bill.grade}</span></td>
+        <td style="color:var(--gray-500);">${bill.date}</td>
+        <td style="font-size:11px;">${bill.sessions}</td>
+        <td style="font-weight:600;">฿${bill.service.toLocaleString()}</td>
+        <td style="color:var(--success);">${bill.tip > 0 ? '฿' + bill.tip.toLocaleString() : '—'}</td>
+        <td style="color:var(--gray-400);">${bill.deductions > 0 ? '฿' + bill.deductions.toLocaleString() : '—'}</td>
+        <td style="font-weight:700;color:var(--primary);">฿${bill.net.toLocaleString()}</td>
+        <td><span class="chip chip-warning">Posted / Unpaid</span></td>
+        <td><button class="btn btn-sm btn-primary" onclick="openPayoutModal('${bill.officer}', ${bill.service}, ${bill.tip}, ${bill.deductions}, ${bill.net}, '${bill.billNo}')">💵 Pay Now</button></td>
+      </tr>
+    `).join('') || '<tr><td colspan="11" style="text-align:center;padding:20px;color:var(--gray-400);">No outstanding bills</td></tr>';
+  }
+
+  // Render Today's Sessions table
+  const todayTbody = document.getElementById('payout-today-tbody');
+  if (todayTbody) {
+    todayTbody.innerHTML = todaySessions.map(session => `
+      <tr>
+        <td><strong>${session.officer}</strong><div style="font-size:10px;color:var(--gray-400);">hr.employee + res.partner vendor</div></td>
+        <td><span class="chip chip-purple" style="font-size:10px;">${session.grade}</span></td>
+        <td style="text-align:center;">${session.sessions} <span style="font-size:10px;color:var(--gray-400);">(${session.sessionRef})</span></td>
+        <td style="font-weight:600;">฿${session.service.toLocaleString()}</td>
+        <td style="color:var(--success);">${session.tip > 0 ? '฿' + session.tip.toLocaleString() : '—'}</td>
+        <td style="color:var(--danger);">${session.deductions > 0 ? '-฿' + session.deductions.toLocaleString() : '—'}</td>
+        <td style="font-weight:700;color:var(--primary);">฿${session.net.toLocaleString()}</td>
+        <td><button class="btn btn-sm btn-primary" onclick="openPayoutModal('${session.officer}', ${session.service}, ${session.tip}, ${session.deductions}, ${session.net}, null)">Create Bill</button></td>
+      </tr>
+    `).join('') || '<tr><td colspan="8" style="text-align:center;padding:20px;color:var(--gray-400);">No sessions today</td></tr>';
+  }
+
+  // Render Paid Today table
+  const paidTbody = document.getElementById('payout-paid-tbody');
+  if (paidTbody) {
+    paidTbody.innerHTML = paidToday.map(paid => `
+      <tr>
+        <td><strong>${paid.billNo}</strong></td>
+        <td>${paid.officer}</td>
+        <td style="font-size:11px;">${paid.sessions}</td>
+        <td style="font-weight:600;">฿${paid.service.toLocaleString()}</td>
+        <td style="color:var(--success);">+฿${paid.tip.toLocaleString()}</td>
+        <td style="color:var(--gray-400);">${paid.deductions > 0 ? '฿' + paid.deductions.toLocaleString() : '—'}</td>
+        <td style="font-weight:700;color:var(--success);">฿${paid.net.toLocaleString()}</td>
+        <td><span class="chip chip-success">${paid.payment}</span></td>
+        <td>${paid.time}</td>
+        <td>${paid.cashier}</td>
+      </tr>
+    `).join('') || '<tr><td colspan="10" style="text-align:center;padding:20px;color:var(--gray-400);">No payments today</td></tr>';
+  }
+}
+
+/* ── Unified Modal Opener for both Create Bill and Pay Now ── */
+function openPayoutModal(officerName, service, tip, deductions, net, billNo) {
+  // Set the officer dropdown to the correct officer
+  const officerSel = document.getElementById('payout-officer-sel');
+  if (officerSel) {
+    for (let i = 0; i < officerSel.options.length; i++) {
+      if (officerSel.options[i].text.includes(officerName)) {
+        officerSel.selectedIndex = i;
+        break;
+      }
+    }
+  }
+  
+  // Update the modal title based on context
+  const modalTitle = document.querySelector('#modal-payout-request .modal-title');
+  if (modalTitle) {
+    modalTitle.textContent = billNo ? `💵 Pay Bill - ${billNo}` : `💵 Create Daily Bill - ${officerName}`;
+  }
+  
+  // Update balance display
+  document.getElementById('po-earnings').textContent = '฿' + service.toLocaleString();
+  document.getElementById('po-tips').textContent = '+฿' + tip.toLocaleString();
+  document.getElementById('po-deductions').textContent = deductions > 0 ? '-฿' + deductions.toLocaleString() : '฿0';
+  document.getElementById('po-net').textContent = '฿' + net.toLocaleString();
+  
+  // Populate sessions table with sample data (you can replace with real data)
+  const sessionsTbody = document.getElementById('pd-sessions');
+  if (sessionsTbody) {
+    if (officerName.includes('Napa')) {
+      sessionsTbody.innerHTML = `
+        <tr>
+          <td style="padding:8px 10px;border-bottom:1px solid var(--gray-100);"><strong>SPA-0138</strong></td>
+          <td style="padding:8px 10px;border-bottom:1px solid var(--gray-100);">Thai Massage</td>
+          <td style="padding:8px 10px;border-bottom:1px solid var(--gray-100);text-align:center;">1.5 hrs</td>
+          <td style="padding:8px 10px;border-bottom:1px solid var(--gray-100);text-align:right;">฿350/hr</td>
+          <td style="padding:8px 10px;border-bottom:1px solid var(--gray-100);text-align:right;font-weight:600;">฿525</td>
+        </tr>
+        <tr>
+          <td style="padding:8px 10px;border-bottom:1px solid var(--gray-100);"><strong>SPA-0139</strong></td>
+          <td style="padding:8px 10px;border-bottom:1px solid var(--gray-100);">Aromatherapy</td>
+          <td style="padding:8px 10px;border-bottom:1px solid var(--gray-100);text-align:center;">2.0 hrs</td>
+          <td style="padding:8px 10px;border-bottom:1px solid var(--gray-100);text-align:right;">฿350/hr</td>
+          <td style="padding:8px 10px;border-bottom:1px solid var(--gray-100);text-align:right;font-weight:600;">฿700</td>
+        </tr>
+        <tr>
+          <td style="padding:8px 10px;border-bottom:1px solid var(--gray-100);"><strong>SPA-0141</strong></td>
+          <td style="padding:8px 10px;border-bottom:1px solid var(--gray-100);">Thai Massage</td>
+          <td style="padding:8px 10px;border-bottom:1px solid var(--gray-100);text-align:center;">1.5 hrs</td>
+          <td style="padding:8px 10px;border-bottom:1px solid var(--gray-100);text-align:right;">฿350/hr</td>
+          <td style="padding:8px 10px;border-bottom:1px solid var(--gray-100);text-align:right;font-weight:600;">฿525</td>
+        </tr>
+      `;
+    } else if (officerName.includes('Ploy')) {
+      sessionsTbody.innerHTML = `
+        <tr>
+          <td style="padding:8px 10px;border-bottom:1px solid var(--gray-100);"><strong>SPA-0142</strong></td>
+          <td style="padding:8px 10px;border-bottom:1px solid var(--gray-100);">Aromatherapy</td>
+          <td style="padding:8px 10px;border-bottom:1px solid var(--gray-100);text-align:center;">1.5 hrs</td>
+          <td style="padding:8px 10px;border-bottom:1px solid var(--gray-100);text-align:right;">฿300/hr</td>
+          <td style="padding:8px 10px;border-bottom:1px solid var(--gray-100);text-align:right;font-weight:600;">฿450</td>
+        </tr>
+        <tr>
+          <td style="padding:8px 10px;border-bottom:1px solid var(--gray-100);"><strong>SPA-0140</strong></td>
+          <td style="padding:8px 10px;border-bottom:1px solid var(--gray-100);">Deep Tissue</td>
+          <td style="padding:8px 10px;border-bottom:1px solid var(--gray-100);text-align:center;">1.0 hr</td>
+          <td style="padding:8px 10px;border-bottom:1px solid var(--gray-100);text-align:right;">฿300/hr</td>
+          <td style="padding:8px 10px;border-bottom:1px solid var(--gray-100);text-align:right;font-weight:600;">฿300</td>
+        </tr>
+      `;
+    } else if (officerName.includes('Mali')) {
+      sessionsTbody.innerHTML = `
+        <tr>
+          <td style="padding:8px 10px;border-bottom:1px solid var(--gray-100);"><strong>SPA-0143</strong></td>
+          <td style="padding:8px 10px;border-bottom:1px solid var(--gray-100);">Deep Tissue</td>
+          <td style="padding:8px 10px;border-bottom:1px solid var(--gray-100);text-align:center;">1.5 hrs</td>
+          <td style="padding:8px 10px;border-bottom:1px solid var(--gray-100);text-align:right;">฿350/hr</td>
+          <td style="padding:8px 10px;border-bottom:1px solid var(--gray-100);text-align:right;font-weight:600;">฿525</td>
+        </tr>
+      `;
+    }
+  }
+  
+  // Populate deductions list
+  const dedList = document.getElementById('pd-deduction-list');
+  if (dedList) {
+    if (deductions > 0) {
+      dedList.innerHTML = `
+        <div style="padding:10px 14px;border-bottom:1px solid var(--gray-100);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">
+          <div><strong>RCNI-0041</strong> · Massage Oil — Lavender</div>
+          <div style="color:var(--danger);font-weight:600;">-฿420</div>
+        </div>
+        <div style="padding:10px 14px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">
+          <div><strong>RCNI-0039</strong> · Uniform — Standard Set</div>
+          <div style="color:var(--danger);font-weight:600;">-฿600</div>
+        </div>
+      `;
+    } else {
+      dedList.innerHTML = '<div style="padding:12px 14px;font-size:12px;color:var(--gray-500);text-align:center;">No approved deductions for this officer</div>';
+    }
+  }
+  
+  // Hide guard message and show form
+  const guardMsg = document.getElementById('payout-guard-msg');
+  const formBody = document.getElementById('payout-form-body');
+  const confirmBtn = document.getElementById('payout-confirm-btn');
+  
+  if (guardMsg) guardMsg.style.display = 'none';
+  if (formBody) formBody.style.display = 'block';
+  if (confirmBtn) confirmBtn.disabled = false;
+  
+  // Store pending data for confirmation
+  window._pendingPayout = {
+    officerName: officerName,
+    service: service,
+    tip: tip,
+    deductions: deductions,
+    net: net,
+    billNo: billNo
+  };
+  
+  // Show the modal
+  const modal = document.getElementById('modal-payout-request');
+  if (modal) {
+    modal.classList.add('open');
+    modal.style.display = 'flex';
+  }
+}
+
+/* ── Unified Confirm Payout Function ── */
+function confirmPayout() {
+  const pending = window._pendingPayout;
+  if (!pending) {
+    closeModal('modal-payout-request');
+    return;
+  }
+  
+  const { officerName, service, tip, deductions, net, billNo } = pending;
+  
+  if (billNo) {
+    // This is an outstanding bill payment
+    showToast(`💵 Payment processed for ${billNo} — ${officerName} · Net ฿${net.toLocaleString()}`, 'success');
+    
+    // Simulate moving this bill to paid today
+    const paidTbody = document.getElementById('payout-paid-tbody');
+    if (paidTbody) {
+      const newRow = document.createElement('tr');
+      newRow.innerHTML = `
+        <td><strong>${billNo}</strong></td>
+        <td>${officerName}</td>
+        <td style="font-size:11px;">Bill payment</td>
+        <td>฿${service.toLocaleString()}</td>
+        <td style="color:var(--success);">${tip > 0 ? '+฿' + tip.toLocaleString() : '—'}</td>
+        <td>${deductions > 0 ? '฿' + deductions.toLocaleString() : '—'}</td>
+        <td style="font-weight:700;color:var(--success);">฿${net.toLocaleString()}</td>
+        <td><span class="chip chip-success">Petty Cash</span></td>
+        <td>${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</td>
+        <td>Cashier</td>
+      `;
+      paidTbody.prepend(newRow);
+      
+      // Update counts
+      const paidCount = document.getElementById('paid-today-count');
       const currentCount = parseInt(paidCount.textContent) || 0;
       paidCount.textContent = (currentCount + 1) + ' transactions';
       
@@ -5721,31 +5994,30 @@ function confirmPayout() {
     showToast(`📋 Daily bill created for ${officerName} — Net ฿${net.toLocaleString()}`, 'success');
   }
   
+  // Close the modal
   closeModal('modal-payout-request');
   
-  // Clear pending
+  // Clear pending data
   window._pendingPayout = null;
 }
 
-/* ── Collapsible Function ─────────────────────────────────────────────── */
-function toggleCollapsible(header) {
-  const content = header.nextElementSibling;
-  const icon = header.querySelector('.collapse-icon');
-  
-  if (content.classList.contains('collapsed')) {
-    content.classList.remove('collapsed');
-    content.style.display = 'block';
-    icon.style.transform = 'rotate(0deg)';
-    header.classList.remove('collapsed');
-  } else {
-    content.classList.add('collapsed');
-    content.style.display = 'none';
-    icon.style.transform = 'rotate(-90deg)';
-    header.classList.add('collapsed');
+/* ── Helper Functions ── */
+function closeModal(id) {
+  const modal = document.getElementById(id);
+  if (modal) {
+    modal.classList.remove('open');
+    modal.style.display = 'none';
   }
 }
 
-/* ── Filter Function ──────────────────────────────────────────────────── */
+function showModal(id) {
+  const modal = document.getElementById(id);
+  if (modal) {
+    modal.classList.add('open');
+    modal.style.display = 'flex';
+  }
+}
+
 function filterPayoutOfficer() {
   const filter = document.getElementById('payout-officer-filter').value;
   if (filter === 'all') {
@@ -5754,7 +6026,6 @@ function filterPayoutOfficer() {
     showToast(`Filtered to: ${filter}`, 'success');
   }
 }
-
 /* ── Create Daily Bill Function ────────────────────────────────────────── */
 function createDailyBill(officer, service, tip, deductions, net) {
   showToast(`📋 Daily bill created for ${officer} — Net ฿${net.toLocaleString()}`, 'success');
