@@ -319,522 +319,6 @@
 .modal-header {
   padding: 16px 20px;
   border-bottom: 1px solid var(--gray-200);
- 
-  /* BUTTONS */
-  .btn{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:var(--radius);font-size:13px;font-weight:500;cursor:pointer;border:none;transition:all 0.15s;font-family:var(--font);}
-  .btn-primary{background:var(--odoo-purple);color:white;}
-  .btn-primary:hover{background:var(--odoo-purple-mid);}
-  .btn-secondary{background:var(--white);color:var(--gray-700);border:1px solid var(--gray-300);}
-  .btn-secondary:hover{background:var(--gray-100);}
-  .btn-success{background:var(--success);color:white;}
-  .btn-success:hover{background:#218838;}
-  .btn-danger{background:var(--danger);color:white;}
-  .btn-warning{background:var(--warning);color:#212529;}
-  .btn-info{background:var(--info);color:white;}
-  .btn-sm{padding:4px 10px;font-size:12px;}
-
-  /* FILTERS */
-  .filters-bar{display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap;}
-  .filter-chip{padding:5px 12px;border-radius:20px;font-size:12px;font-weight:500;cursor:pointer;border:1px solid var(--gray-300);background:var(--white);color:var(--gray-700);transition:all 0.15s;}
-  .filter-chip:hover{border-color:var(--odoo-purple);color:var(--odoo-purple);}
-  .filter-chip.active{background:var(--odoo-purple);color:white;border-color:var(--odoo-purple);}
-  .search-box{display:flex;align-items:center;gap:8px;border:1px solid var(--gray-300);border-radius:var(--radius);padding:6px 12px;background:var(--white);}
-  .search-box input{border:none;outline:none;font-size:13px;font-family:var(--font);width:200px;color:var(--gray-800);}
-
-  /* TABLE */
-  .table-wrap{background:var(--white);border-radius:var(--radius-lg);box-shadow:var(--shadow-sm);overflow-x:auto;}
-  .table-wrap table{min-width:700px;}
-  table{width:100%;border-collapse:collapse;}
-  thead{background:var(--gray-50);}
-  th{padding:10px 16px;text-align:left;font-size:12px;font-weight:600;color:var(--gray-600);text-transform:uppercase;letter-spacing:0.5px;border-bottom:2px solid var(--gray-200);white-space:nowrap;}
-  td{padding:12px 16px;border-bottom:1px solid var(--gray-100);font-size:13px;color:var(--gray-800);vertical-align:middle;}
-  tr:last-child td{border-bottom:none;}
-  tbody tr{transition:background 0.1s;cursor:pointer;}
-  tbody tr:hover{background:var(--gray-50);}
-
-  /* BADGES */
-  .badge{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:12px;font-size:12px;font-weight:600;}
-  .badge::before{content:'';width:6px;height:6px;border-radius:50%;}
-  .badge-active{background:var(--success-light);color:#155724;} .badge-active::before{background:var(--success);}
-  .badge-inactive{background:var(--gray-100);color:var(--gray-600);} .badge-inactive::before{background:var(--gray-400);}
-  .badge-pending{background:var(--warning-light);color:#856404;} .badge-pending::before{background:var(--warning);}
-  .badge-confirmed{background:var(--success-light);color:#155724;} .badge-confirmed::before{background:var(--success);}
-  .badge-topup{background:#E3F2FD;color:#0D47A1;} .badge-topup::before{background:#1976D2;}
-  .badge-redeem{background:#F3E5F5;color:#4A148C;} .badge-redeem::before{background:#7B1FA2;}
-  .badge-refund{background:var(--warning-light);color:#856404;} .badge-refund::before{background:var(--warning);}
-  .badge-matched{background:var(--success-light);color:#155724;} .badge-matched::before{background:var(--success);}
-  .badge-unmatched{background:var(--danger-light);color:#721C24;} .badge-unmatched::before{background:var(--danger);}
-
-  /* DETAIL PANEL */
-  .detail-panel{background:var(--white);border-radius:var(--radius-lg);box-shadow:var(--shadow-sm);overflow:hidden;margin-bottom:16px;}
-  .detail-header{padding:16px 24px;border-bottom:1px solid var(--gray-200);display:flex;align-items:center;gap:12px;}
-  .detail-title{font-size:18px;font-weight:700;color:var(--gray-900);}
-  .detail-meta{font-size:12px;color:var(--gray-500);margin-top:2px;}
-  .detail-body{padding:24px;}
-  .detail-actions{padding:16px 24px;border-top:1px solid var(--gray-200);background:var(--gray-50);display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
-
-  /* FORM */
-  .form-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px 24px;}
-  .form-grid-2{display:grid;grid-template-columns:1fr 1fr;gap:20px 24px;}
-  .form-group{display:flex;flex-direction:column;gap:5px;}
-  .form-group.full{grid-column:1/-1;}
-  .form-label{font-size:12px;font-weight:600;color:var(--gray-600);text-transform:uppercase;letter-spacing:0.4px;}
-  .form-label .req{color:var(--danger);margin-left:2px;}
-  .form-control{padding:8px 12px;border:1px solid var(--gray-300);border-radius:var(--radius);font-size:13px;font-family:var(--font);color:var(--gray-800);transition:border-color 0.15s,box-shadow 0.15s;outline:none;background:var(--white);}
-  .form-control:focus{border-color:var(--odoo-purple);box-shadow:0 0 0 3px var(--odoo-purple-light);}
-  .form-control[readonly]{background:var(--gray-50);color:var(--gray-600);}
-  select.form-control{cursor:pointer;}
-  .form-hint{font-size:11px;color:var(--gray-500);}
-
-  /* SECTION DIVIDER */
-  .section-divider{margin:24px 0 16px;}
-  .section-divider h3{font-size:13px;font-weight:700;color:var(--odoo-purple);text-transform:uppercase;letter-spacing:0.6px;padding-bottom:8px;border-bottom:2px solid var(--odoo-purple-light);}
-
-  /* INFO CARD */
-  .info-card{background:var(--gray-50);border:1px solid var(--gray-200);border-radius:var(--radius);padding:14px 16px;}
-  .info-row{display:flex;justify-content:space-between;align-items:center;font-size:13px;padding:4px 0;}
-  .info-label{color:var(--gray-600);}
-  .info-value{font-weight:600;color:var(--gray-900);}
-
-  /* STATS */
-  .stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:20px;}
-  .stats-row-3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:20px;}
-  .stat-card{background:var(--white);border-radius:var(--radius-lg);padding:16px 20px;box-shadow:var(--shadow-sm);border-left:4px solid transparent;}
-  .stat-card.green{border-left-color:var(--success);}
-  .stat-card.red{border-left-color:var(--danger);}
-  .stat-card.blue{border-left-color:var(--info);}
-  .stat-card.purple{border-left-color:var(--odoo-purple);}
-  .stat-card.orange{border-left-color:#FF6B00;}
-  .stat-number{font-size:28px;font-weight:800;color:var(--gray-900);line-height:1;}
-  .stat-label{font-size:12px;color:var(--gray-500);margin-top:4px;font-weight:500;}
-
-  /* MODAL */
-  .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:2000;display:none;align-items:center;justify-content:center;}
-  .modal-overlay.open{display:flex;}
-  .modal{background:var(--white);border-radius:var(--radius-lg);box-shadow:var(--shadow-lg);width:520px;max-width:95vw;max-height:90vh;overflow-y:auto;animation:slideUp 0.2s ease;}
-  .modal-lg{width:700px;}
-  @keyframes slideUp{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
-  .modal-header{padding:16px 20px;border-bottom:1px solid var(--gray-200);display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;background:var(--white);z-index:1;}
-  .modal-title{font-size:16px;font-weight:700;color:var(--gray-900);}
-  .modal-close{cursor:pointer;color:var(--gray-500);font-size:18px;line-height:1;}
-  .modal-close:hover{color:var(--gray-900);}
-  .modal-body{padding:20px;}
-  .modal-footer{padding:14px 20px;border-top:1px solid var(--gray-200);display:flex;justify-content:flex-end;gap:8px;background:var(--gray-50);border-radius:0 0 var(--radius-lg) var(--radius-lg);}
-
-  /* TOAST */
-  .toast{position:fixed;bottom:24px;right:24px;z-index:3000;background:var(--gray-900);color:white;padding:12px 20px;border-radius:var(--radius);font-size:13px;font-weight:500;box-shadow:var(--shadow-lg);display:none;align-items:center;gap:8px;animation:fadeInUp 0.3s ease;}
-  .toast.show{display:flex;}
-  @keyframes fadeInUp{from{transform:translateY(12px);opacity:0}to{transform:translateY(0);opacity:1}}
-  .toast.success{background:var(--success);}
-  .toast.error{background:var(--danger);}
-  .toast.warning{background:#856404;}
-
-  /* MEMBER CARD WIDGET */
-  .member-card-widget{background:linear-gradient(135deg,var(--odoo-purple) 0%,#9B6B8A 100%);border-radius:var(--radius-lg);padding:20px 24px;color:white;position:relative;overflow:hidden;margin-bottom:20px;}
-  .member-card-widget::before{content:'';position:absolute;top:-30px;right:-30px;width:120px;height:120px;border-radius:50%;background:rgba(255,255,255,0.08);}
-  .member-card-widget::after{content:'';position:absolute;bottom:-20px;left:40px;width:80px;height:80px;border-radius:50%;background:rgba(255,255,255,0.05);}
-  .mcw-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:1px;opacity:0.8;margin-bottom:4px;}
-  .mcw-name{font-size:20px;font-weight:700;margin-bottom:2px;}
-  .mcw-id{font-size:12px;opacity:0.7;margin-bottom:16px;}
-  .mcw-balance-label{font-size:11px;opacity:0.8;text-transform:uppercase;letter-spacing:0.5px;}
-  .mcw-balance{font-size:36px;font-weight:800;line-height:1.1;}
-  .mcw-points{font-size:12px;opacity:0.7;margin-top:2px;}
-  .mcw-row{display:flex;justify-content:space-between;align-items:flex-end;}
-
-  /* BALANCE CHIP */
-  .balance-chip{display:inline-flex;align-items:center;gap:6px;background:var(--odoo-purple-light);color:var(--odoo-purple);font-size:13px;font-weight:700;padding:6px 14px;border-radius:20px;border:1px solid var(--odoo-purple);}
-
-  /* RECONCILE ROW */
-  .recon-row{display:grid;grid-template-columns:2fr 1fr 1fr 1fr 120px;gap:12px;align-items:center;padding:12px 16px;border-bottom:1px solid var(--gray-100);}
-  .recon-row:last-child{border-bottom:none;}
-  .recon-header{display:grid;grid-template-columns:2fr 1fr 1fr 1fr 120px;gap:12px;padding:8px 16px;border-bottom:2px solid var(--gray-200);background:var(--gray-50);}
-  .recon-header span{font-size:11px;font-weight:700;color:var(--gray-600);text-transform:uppercase;letter-spacing:0.5px;}
-  .recon-alert{background:var(--danger-light);border:1px solid #F5C6CB;border-radius:var(--radius);padding:10px 14px;margin:8px 16px;display:flex;align-items:center;gap:10px;font-size:13px;color:#721C24;}
-
-  /* FLOW STEPS */
-  .flow-bar{display:flex;align-items:center;background:var(--white);border-radius:var(--radius-lg);padding:12px 20px;margin-bottom:16px;box-shadow:var(--shadow-sm);overflow-x:auto;gap:0;}
-  .flow-step{display:flex;align-items:center;gap:6px;padding:6px 12px;border-radius:var(--radius);font-size:12px;font-weight:600;color:var(--gray-500);white-space:nowrap;cursor:pointer;}
-  .flow-step.done{color:var(--success);}
-  .flow-step.active{color:var(--odoo-purple);background:var(--odoo-purple-light);}
-  .flow-step .sn{width:20px;height:20px;border-radius:50%;background:currentColor;display:flex;align-items:center;justify-content:center;}
-  .flow-step .sn span{color:white;font-size:10px;font-weight:800;}
-  .flow-arrow{color:var(--gray-300);font-size:16px;padding:0 4px;}
-
-  /* CHIP */
-  .chip{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:600;}
-  .chip-purple{background:var(--odoo-purple-light);color:var(--odoo-purple);}
-  .chip-green{background:var(--success-light);color:#155724;}
-  .chip-blue{background:#E3F2FD;color:#0D47A1;}
-  .chip-orange{background:#FFF3E0;color:#E65100;}
-  .chip-gray{background:var(--gray-100);color:var(--gray-700);}
-
-  /* ALERT BOX */
-  .alert{padding:12px 16px;border-radius:var(--radius);font-size:13px;margin-bottom:16px;display:flex;align-items:flex-start;gap:10px;}
-  .alert-info{background:var(--info-light);color:#0C5460;border:1px solid #BEE5EB;}
-  .alert-warning{background:var(--warning-light);color:#856404;border:1px solid #FFE69C;}
-  .alert-success{background:var(--success-light);color:#155724;border:1px solid #C3E6CB;}
-  .alert-danger{background:var(--danger-light);color:#721C24;border:1px solid #F5C6CB;}
-
-  /* SPLIT TENDER */
-  .split-row{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--gray-100);}
-  .split-row:last-child{border-bottom:none;}
-  .split-method{flex:1;font-size:13px;font-weight:600;color:var(--gray-800);}
-  .split-amount{width:140px;}
-
-  /* SUBLEDGER NOTE */
-  .subledger-note{display:flex;align-items:center;gap:8px;background:#EEF2FF;border:1px solid #C7D2FE;border-radius:var(--radius);padding:8px 12px;font-size:12px;color:#3730A3;margin-top:8px;}
-
-  /* TOPUP HISTORY MINI */
-  .tx-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--gray-100);font-size:13px;}
-  .tx-row:last-child{border-bottom:none;}
-  .tx-type-topup{color:#1976D2;font-weight:600;}
-  .tx-type-redeem{color:#7B1FA2;font-weight:600;}
-
-  /* HAMBURGER */
-  .hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:4px;margin-right:4px;}
-  .hamburger span{display:block;width:20px;height:2px;background:white;border-radius:2px;transition:all 0.2s;}
-
-  /* SIDEBAR OVERLAY */
-  .sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:850;}
-  .sidebar-overlay.open{display:block;}
-
-  /* SIDEBAR SLIDE TRANSITION */
-  .sidebar{transition:transform 0.25s ease;}
-
-  /* RESPONSIVE */
-  @media(max-width:768px){
-    :root{--sidebar-width:260px;}
-    .hamburger{display:flex!important;}
-    .topbar-apps{display:none!important;}
-    .sidebar{transform:translateX(-100%);}
-    .sidebar.open{transform:translateX(0);box-shadow:var(--shadow-lg);}
-    .main{left:0!important;}
-    .stats-row{grid-template-columns:1fr 1fr!important;}
-    .stats-row-3{grid-template-columns:1fr 1fr!important;}
-    .form-grid{grid-template-columns:1fr!important;}
-    .form-grid-2{grid-template-columns:1fr!important;}
-    .page{padding:12px 14px!important;}
-    .breadcrumb-bar{padding:0 14px!important;}
-    .page-header{flex-wrap:wrap!important;}
-    .flow-bar{padding:8px 12px!important;overflow-x:auto!important;}
-    .flow-step{padding:4px 6px!important;font-size:11px!important;}
-    .detail-panel{margin-bottom:12px!important;}
-    .folio-layout{grid-template-columns:1fr!important;}
-    .transfer-layout{grid-template-columns:1fr!important;}
-    .booking-layout{grid-template-columns:1fr!important;}
-  }
-  /* Collapsible sections */
-  .collapsible-header {
-    cursor: pointer;
-    user-select: none;
-    transition: background-color 0.2s;
-  }
-  .collapsible-header:hover {
-    background-color: var(--gray-100);
-  }
-  .collapsible-header .collapse-icon {
-    transition: transform 0.3s;
-  }
-  .collapsible-header.collapsed .collapse-icon {
-    transform: rotate(-90deg);
-  }
-  .collapsible-content {
-    transition: all 0.3s ease;
-  }
-  .collapsible-content.collapsed {
-    display: none;
-  }
- /* Modal positioning fix - responsive and expandable */
-.modal-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.4);
-  z-index: 2000;
-  display: none;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-}
-
-.modal {
-  background: var(--white);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-lg);
-  width: 520px;
-  max-width: calc(100vw - 40px);
-  max-height: calc(100vh - 40px);
-  animation: slideUp 0.2s ease;
-  position: relative;
-  z-index: 2001;
-  display: flex;
-  flex-direction: column;
-}
-
-.modal-lg {
-  width: 700px;
-}
-
-.modal-header {
-  padding: 16px 20px;
-  border-bottom: 1px solid var(--gray-200);
- 
-  /* BUTTONS */
-  .btn{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:var(--radius);font-size:13px;font-weight:500;cursor:pointer;border:none;transition:all 0.15s;font-family:var(--font);}
-  .btn-primary{background:var(--odoo-purple);color:white;}
-  .btn-primary:hover{background:var(--odoo-purple-mid);}
-  .btn-secondary{background:var(--white);color:var(--gray-700);border:1px solid var(--gray-300);}
-  .btn-secondary:hover{background:var(--gray-100);}
-  .btn-success{background:var(--success);color:white;}
-  .btn-success:hover{background:#218838;}
-  .btn-danger{background:var(--danger);color:white;}
-  .btn-warning{background:var(--warning);color:#212529;}
-  .btn-info{background:var(--info);color:white;}
-  .btn-sm{padding:4px 10px;font-size:12px;}
-
-  /* FILTERS */
-  .filters-bar{display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap;}
-  .filter-chip{padding:5px 12px;border-radius:20px;font-size:12px;font-weight:500;cursor:pointer;border:1px solid var(--gray-300);background:var(--white);color:var(--gray-700);transition:all 0.15s;}
-  .filter-chip:hover{border-color:var(--odoo-purple);color:var(--odoo-purple);}
-  .filter-chip.active{background:var(--odoo-purple);color:white;border-color:var(--odoo-purple);}
-  .search-box{display:flex;align-items:center;gap:8px;border:1px solid var(--gray-300);border-radius:var(--radius);padding:6px 12px;background:var(--white);}
-  .search-box input{border:none;outline:none;font-size:13px;font-family:var(--font);width:200px;color:var(--gray-800);}
-
-  /* TABLE */
-  .table-wrap{background:var(--white);border-radius:var(--radius-lg);box-shadow:var(--shadow-sm);overflow-x:auto;}
-  .table-wrap table{min-width:700px;}
-  table{width:100%;border-collapse:collapse;}
-  thead{background:var(--gray-50);}
-  th{padding:10px 16px;text-align:left;font-size:12px;font-weight:600;color:var(--gray-600);text-transform:uppercase;letter-spacing:0.5px;border-bottom:2px solid var(--gray-200);white-space:nowrap;}
-  td{padding:12px 16px;border-bottom:1px solid var(--gray-100);font-size:13px;color:var(--gray-800);vertical-align:middle;}
-  tr:last-child td{border-bottom:none;}
-  tbody tr{transition:background 0.1s;cursor:pointer;}
-  tbody tr:hover{background:var(--gray-50);}
-
-  /* BADGES */
-  .badge{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:12px;font-size:12px;font-weight:600;}
-  .badge::before{content:'';width:6px;height:6px;border-radius:50%;}
-  .badge-active{background:var(--success-light);color:#155724;} .badge-active::before{background:var(--success);}
-  .badge-inactive{background:var(--gray-100);color:var(--gray-600);} .badge-inactive::before{background:var(--gray-400);}
-  .badge-pending{background:var(--warning-light);color:#856404;} .badge-pending::before{background:var(--warning);}
-  .badge-confirmed{background:var(--success-light);color:#155724;} .badge-confirmed::before{background:var(--success);}
-  .badge-topup{background:#E3F2FD;color:#0D47A1;} .badge-topup::before{background:#1976D2;}
-  .badge-redeem{background:#F3E5F5;color:#4A148C;} .badge-redeem::before{background:#7B1FA2;}
-  .badge-refund{background:var(--warning-light);color:#856404;} .badge-refund::before{background:var(--warning);}
-  .badge-matched{background:var(--success-light);color:#155724;} .badge-matched::before{background:var(--success);}
-  .badge-unmatched{background:var(--danger-light);color:#721C24;} .badge-unmatched::before{background:var(--danger);}
-
-  /* DETAIL PANEL */
-  .detail-panel{background:var(--white);border-radius:var(--radius-lg);box-shadow:var(--shadow-sm);overflow:hidden;margin-bottom:16px;}
-  .detail-header{padding:16px 24px;border-bottom:1px solid var(--gray-200);display:flex;align-items:center;gap:12px;}
-  .detail-title{font-size:18px;font-weight:700;color:var(--gray-900);}
-  .detail-meta{font-size:12px;color:var(--gray-500);margin-top:2px;}
-  .detail-body{padding:24px;}
-  .detail-actions{padding:16px 24px;border-top:1px solid var(--gray-200);background:var(--gray-50);display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
-
-  /* FORM */
-  .form-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px 24px;}
-  .form-grid-2{display:grid;grid-template-columns:1fr 1fr;gap:20px 24px;}
-  .form-group{display:flex;flex-direction:column;gap:5px;}
-  .form-group.full{grid-column:1/-1;}
-  .form-label{font-size:12px;font-weight:600;color:var(--gray-600);text-transform:uppercase;letter-spacing:0.4px;}
-  .form-label .req{color:var(--danger);margin-left:2px;}
-  .form-control{padding:8px 12px;border:1px solid var(--gray-300);border-radius:var(--radius);font-size:13px;font-family:var(--font);color:var(--gray-800);transition:border-color 0.15s,box-shadow 0.15s;outline:none;background:var(--white);}
-  .form-control:focus{border-color:var(--odoo-purple);box-shadow:0 0 0 3px var(--odoo-purple-light);}
-  .form-control[readonly]{background:var(--gray-50);color:var(--gray-600);}
-  select.form-control{cursor:pointer;}
-  .form-hint{font-size:11px;color:var(--gray-500);}
-
-  /* SECTION DIVIDER */
-  .section-divider{margin:24px 0 16px;}
-  .section-divider h3{font-size:13px;font-weight:700;color:var(--odoo-purple);text-transform:uppercase;letter-spacing:0.6px;padding-bottom:8px;border-bottom:2px solid var(--odoo-purple-light);}
-
-  /* INFO CARD */
-  .info-card{background:var(--gray-50);border:1px solid var(--gray-200);border-radius:var(--radius);padding:14px 16px;}
-  .info-row{display:flex;justify-content:space-between;align-items:center;font-size:13px;padding:4px 0;}
-  .info-label{color:var(--gray-600);}
-  .info-value{font-weight:600;color:var(--gray-900);}
-
-  /* STATS */
-  .stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:20px;}
-  .stats-row-3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:20px;}
-  .stat-card{background:var(--white);border-radius:var(--radius-lg);padding:16px 20px;box-shadow:var(--shadow-sm);border-left:4px solid transparent;}
-  .stat-card.green{border-left-color:var(--success);}
-  .stat-card.red{border-left-color:var(--danger);}
-  .stat-card.blue{border-left-color:var(--info);}
-  .stat-card.purple{border-left-color:var(--odoo-purple);}
-  .stat-card.orange{border-left-color:#FF6B00;}
-  .stat-number{font-size:28px;font-weight:800;color:var(--gray-900);line-height:1;}
-  .stat-label{font-size:12px;color:var(--gray-500);margin-top:4px;font-weight:500;}
-
-  /* MODAL */
-  .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:2000;display:none;align-items:center;justify-content:center;}
-  .modal-overlay.open{display:flex;}
-  .modal{background:var(--white);border-radius:var(--radius-lg);box-shadow:var(--shadow-lg);width:520px;max-width:95vw;max-height:90vh;overflow-y:auto;animation:slideUp 0.2s ease;}
-  .modal-lg{width:700px;}
-  @keyframes slideUp{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
-  .modal-header{padding:16px 20px;border-bottom:1px solid var(--gray-200);display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;background:var(--white);z-index:1;}
-  .modal-title{font-size:16px;font-weight:700;color:var(--gray-900);}
-  .modal-close{cursor:pointer;color:var(--gray-500);font-size:18px;line-height:1;}
-  .modal-close:hover{color:var(--gray-900);}
-  .modal-body{padding:20px;}
-  .modal-footer{padding:14px 20px;border-top:1px solid var(--gray-200);display:flex;justify-content:flex-end;gap:8px;background:var(--gray-50);border-radius:0 0 var(--radius-lg) var(--radius-lg);}
-
-  /* TOAST */
-  .toast{position:fixed;bottom:24px;right:24px;z-index:3000;background:var(--gray-900);color:white;padding:12px 20px;border-radius:var(--radius);font-size:13px;font-weight:500;box-shadow:var(--shadow-lg);display:none;align-items:center;gap:8px;animation:fadeInUp 0.3s ease;}
-  .toast.show{display:flex;}
-  @keyframes fadeInUp{from{transform:translateY(12px);opacity:0}to{transform:translateY(0);opacity:1}}
-  .toast.success{background:var(--success);}
-  .toast.error{background:var(--danger);}
-  .toast.warning{background:#856404;}
-
-  /* MEMBER CARD WIDGET */
-  .member-card-widget{background:linear-gradient(135deg,var(--odoo-purple) 0%,#9B6B8A 100%);border-radius:var(--radius-lg);padding:20px 24px;color:white;position:relative;overflow:hidden;margin-bottom:20px;}
-  .member-card-widget::before{content:'';position:absolute;top:-30px;right:-30px;width:120px;height:120px;border-radius:50%;background:rgba(255,255,255,0.08);}
-  .member-card-widget::after{content:'';position:absolute;bottom:-20px;left:40px;width:80px;height:80px;border-radius:50%;background:rgba(255,255,255,0.05);}
-  .mcw-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:1px;opacity:0.8;margin-bottom:4px;}
-  .mcw-name{font-size:20px;font-weight:700;margin-bottom:2px;}
-  .mcw-id{font-size:12px;opacity:0.7;margin-bottom:16px;}
-  .mcw-balance-label{font-size:11px;opacity:0.8;text-transform:uppercase;letter-spacing:0.5px;}
-  .mcw-balance{font-size:36px;font-weight:800;line-height:1.1;}
-  .mcw-points{font-size:12px;opacity:0.7;margin-top:2px;}
-  .mcw-row{display:flex;justify-content:space-between;align-items:flex-end;}
-
-  /* BALANCE CHIP */
-  .balance-chip{display:inline-flex;align-items:center;gap:6px;background:var(--odoo-purple-light);color:var(--odoo-purple);font-size:13px;font-weight:700;padding:6px 14px;border-radius:20px;border:1px solid var(--odoo-purple);}
-
-  /* RECONCILE ROW */
-  .recon-row{display:grid;grid-template-columns:2fr 1fr 1fr 1fr 120px;gap:12px;align-items:center;padding:12px 16px;border-bottom:1px solid var(--gray-100);}
-  .recon-row:last-child{border-bottom:none;}
-  .recon-header{display:grid;grid-template-columns:2fr 1fr 1fr 1fr 120px;gap:12px;padding:8px 16px;border-bottom:2px solid var(--gray-200);background:var(--gray-50);}
-  .recon-header span{font-size:11px;font-weight:700;color:var(--gray-600);text-transform:uppercase;letter-spacing:0.5px;}
-  .recon-alert{background:var(--danger-light);border:1px solid #F5C6CB;border-radius:var(--radius);padding:10px 14px;margin:8px 16px;display:flex;align-items:center;gap:10px;font-size:13px;color:#721C24;}
-
-  /* FLOW STEPS */
-  .flow-bar{display:flex;align-items:center;background:var(--white);border-radius:var(--radius-lg);padding:12px 20px;margin-bottom:16px;box-shadow:var(--shadow-sm);overflow-x:auto;gap:0;}
-  .flow-step{display:flex;align-items:center;gap:6px;padding:6px 12px;border-radius:var(--radius);font-size:12px;font-weight:600;color:var(--gray-500);white-space:nowrap;cursor:pointer;}
-  .flow-step.done{color:var(--success);}
-  .flow-step.active{color:var(--odoo-purple);background:var(--odoo-purple-light);}
-  .flow-step .sn{width:20px;height:20px;border-radius:50%;background:currentColor;display:flex;align-items:center;justify-content:center;}
-  .flow-step .sn span{color:white;font-size:10px;font-weight:800;}
-  .flow-arrow{color:var(--gray-300);font-size:16px;padding:0 4px;}
-
-  /* CHIP */
-  .chip{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:600;}
-  .chip-purple{background:var(--odoo-purple-light);color:var(--odoo-purple);}
-  .chip-green{background:var(--success-light);color:#155724;}
-  .chip-blue{background:#E3F2FD;color:#0D47A1;}
-  .chip-orange{background:#FFF3E0;color:#E65100;}
-  .chip-gray{background:var(--gray-100);color:var(--gray-700);}
-
-  /* ALERT BOX */
-  .alert{padding:12px 16px;border-radius:var(--radius);font-size:13px;margin-bottom:16px;display:flex;align-items:flex-start;gap:10px;}
-  .alert-info{background:var(--info-light);color:#0C5460;border:1px solid #BEE5EB;}
-  .alert-warning{background:var(--warning-light);color:#856404;border:1px solid #FFE69C;}
-  .alert-success{background:var(--success-light);color:#155724;border:1px solid #C3E6CB;}
-  .alert-danger{background:var(--danger-light);color:#721C24;border:1px solid #F5C6CB;}
-
-  /* SPLIT TENDER */
-  .split-row{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--gray-100);}
-  .split-row:last-child{border-bottom:none;}
-  .split-method{flex:1;font-size:13px;font-weight:600;color:var(--gray-800);}
-  .split-amount{width:140px;}
-
-  /* SUBLEDGER NOTE */
-  .subledger-note{display:flex;align-items:center;gap:8px;background:#EEF2FF;border:1px solid #C7D2FE;border-radius:var(--radius);padding:8px 12px;font-size:12px;color:#3730A3;margin-top:8px;}
-
-  /* TOPUP HISTORY MINI */
-  .tx-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--gray-100);font-size:13px;}
-  .tx-row:last-child{border-bottom:none;}
-  .tx-type-topup{color:#1976D2;font-weight:600;}
-  .tx-type-redeem{color:#7B1FA2;font-weight:600;}
-
-  /* HAMBURGER */
-  .hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:4px;margin-right:4px;}
-  .hamburger span{display:block;width:20px;height:2px;background:white;border-radius:2px;transition:all 0.2s;}
-
-  /* SIDEBAR OVERLAY */
-  .sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:850;}
-  .sidebar-overlay.open{display:block;}
-
-  /* SIDEBAR SLIDE TRANSITION */
-  .sidebar{transition:transform 0.25s ease;}
-
-  /* RESPONSIVE */
-  @media(max-width:768px){
-    :root{--sidebar-width:260px;}
-    .hamburger{display:flex!important;}
-    .topbar-apps{display:none!important;}
-    .sidebar{transform:translateX(-100%);}
-    .sidebar.open{transform:translateX(0);box-shadow:var(--shadow-lg);}
-    .main{left:0!important;}
-    .stats-row{grid-template-columns:1fr 1fr!important;}
-    .stats-row-3{grid-template-columns:1fr 1fr!important;}
-    .form-grid{grid-template-columns:1fr!important;}
-    .form-grid-2{grid-template-columns:1fr!important;}
-    .page{padding:12px 14px!important;}
-    .breadcrumb-bar{padding:0 14px!important;}
-    .page-header{flex-wrap:wrap!important;}
-    .flow-bar{padding:8px 12px!important;overflow-x:auto!important;}
-    .flow-step{padding:4px 6px!important;font-size:11px!important;}
-    .detail-panel{margin-bottom:12px!important;}
-    .folio-layout{grid-template-columns:1fr!important;}
-    .transfer-layout{grid-template-columns:1fr!important;}
-    .booking-layout{grid-template-columns:1fr!important;}
-  }
-  /* Collapsible sections */
-  .collapsible-header {
-    cursor: pointer;
-    user-select: none;
-    transition: background-color 0.2s;
-  }
-  .collapsible-header:hover {
-    background-color: var(--gray-100);
-  }
-  .collapsible-header .collapse-icon {
-    transition: transform 0.3s;
-  }
-  .collapsible-header.collapsed .collapse-icon {
-    transform: rotate(-90deg);
-  }
-  .collapsible-content {
-    transition: all 0.3s ease;
-  }
-  .collapsible-content.collapsed {
-    display: none;
-  }
- /* Modal positioning fix - responsive and expandable */
-.modal-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.4);
-  z-index: 2000;
-  display: none;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-}
-
-.modal {
-  background: var(--white);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-lg);
-  width: 520px;
-  max-width: calc(100vw - 40px);
-  max-height: calc(100vh - 40px);
-  animation: slideUp 0.2s ease;
-  position: relative;
-  z-index: 2001;
-  display: flex;
-  flex-direction: column;
-}
-
-.modal-lg {
-  width: 700px;
-}
-
-.modal-header {
-  padding: 16px 20px;
-  border-bottom: 1px solid var(--gray-200);
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -878,98 +362,9 @@
     align-items: flex-start;
   }
   
-/* MODAL - Unified and properly centered */
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.5);
-  z-index: 999999; /* Very high z-index to ensure it's above everything */
-  display: none;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-  box-sizing: border-box;
-}
-
-.modal-overlay.open {
-  display: flex !important;
-}
-
-.modal {
-  background: var(--white);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-lg);
-  width: 520px;
-  max-width: calc(100% - 40px);
-  max-height: calc(100vh - 40px);
-  animation: slideUp 0.2s ease;
-  position: relative;
-  z-index: 1000000;
-  display: flex;
-  flex-direction: column;
-  margin: 0 auto; /* Ensures horizontal centering */
-}
-
-.modal-lg {
-  width: 700px;
-}
-
-.modal-header {
-  padding: 16px 20px;
-  border-bottom: 1px solid var(--gray-200);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background: var(--white);
-  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
-  flex-shrink: 0;
-  /* Remove sticky positioning */
-  position: relative;
-  top: auto;
-}
-
-.modal-body {
-  padding: 20px;
-  overflow-y: auto;
-  flex: 1 1 auto;
-}
-
-.modal-footer {
-  padding: 14px 20px;
-  border-top: 1px solid var(--gray-200);
-  display: flex;
-  justify-content: flex-end;
-  gap: 8px;
-  background: var(--gray-50);
-  border-radius: 0 0 var(--radius-lg) var(--radius-lg);
-  flex-shrink: 0;
-}
-
-@keyframes slideUp {
-  from {
-    transform: translateY(20px);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
-}
-
-/* Responsive adjustments */
-@media (max-width: 768px) {
-  .modal-overlay {
-    padding: 10px;
-  }
-  
   .modal {
+    margin: 10px 0;
     max-height: calc(100vh - 20px);
-    margin: 0 auto;
   }
   
   .modal-body {
@@ -990,11 +385,24 @@
   .modal {
     width: 100%;
     max-width: 100%;
-    border-radius: 12px;
   }
   
   .modal-overlay {
-    padding: 8px;
+    padding: 0;
+  }
+  
+  .modal {
+    border-radius: 0;
+    max-height: 100vh;
+    margin: 0;
+  }
+  
+  .modal-header {
+    border-radius: 0;
+  }
+  
+  .modal-footer {
+    border-radius: 0;
   }
 }
   @keyframes pulsebell { 0%,100%{transform:scale(1);opacity:1;} 50%{transform:scale(1.25);opacity:.7;} }
@@ -3615,95 +3023,80 @@
     </div>
   </div>
 </div><!-- ── Payout Request Modal — F03 / F07 / F08  (READ-ONLY net — no inline deduction editing) ── -->
-<!-- ── Payout Request Modal ── -->
-<div id="modal-payout-request" class="modal-overlay" onclick="if(event.target===this)closeModal('modal-payout-request')">
-  <div class="modal" style="width:600px;" onclick="event.stopPropagation()">
-    <div class="modal-header">
-      <div class="modal-title">💵 Payout Detail</div>
-      <button class="modal-close" onclick="closeModal('modal-payout-request')">✕</button>
-    </div>
+<div id="modal-payout-request" class="modal-overlay" style="display:none;" onclick="if(event.target===this)closeModal('modal-payout-request')">
+  <div class="modal" style="width:520px;">
+    <div class="modal-header"><div class="modal-title">💵 Request Payout</div><button class="modal-close" onclick="closeModal('modal-payout-request')">✕</button></div>
     <div class="modal-body">
-      
       <div class="form-group" style="margin-bottom:14px;">
         <label class="form-label">Officer</label>
-        <select class="form-control" id="payout-officer-sel">
+        <select class="form-control" id="payout-officer-sel" onchange="checkPayoutGuard()">
           <option value="">— Select officer —</option>
-          <option value="napa">Napa Prachaya</option>
-          <option value="ploy">Ploy Kaewrat</option>
-          <option value="mali">Mali Suwat</option>
-          <option value="dao">Dao Siriwan</option>
+          <option value="napa" data-busy="true">Napa Prachaya (⚠ Active session: SPA-0141)</option>
+          <option value="ploy" data-busy="false">Ploy Kaewrat</option>
+          <option value="mali" data-busy="false">Mali Suwat</option>
         </select>
       </div>
 
-      <!-- Read-only AP balance breakdown -->
-      <div style="border:1px solid var(--gray-200);border-radius:var(--radius);overflow:hidden;margin-bottom:14px;">
-        <div style="background:var(--gray-50);padding:8px 14px;font-size:11px;font-weight:700;color:var(--gray-600);text-transform:uppercase;letter-spacing:0.5px;border-bottom:1px solid var(--gray-200);">
-          AP Ledger Balance — Read-Only
+      <!-- F08 Guard -->
+      <div id="payout-guard-msg" style="display:none;background:var(--danger-light);border-radius:var(--radius);padding:10px 14px;margin-bottom:12px;font-size:13px;color:var(--danger);">
+        <strong>⛔ F08 — Payout Blocked:</strong> This officer has an active spa session (SPA-0141). The session must be completed before requesting payout.
+      </div>
+
+      <div id="payout-form-body" style="display:none;">
+        <!-- Read-only AP balance breakdown -->
+        <div style="border:1px solid var(--gray-200);border-radius:var(--radius);overflow:hidden;margin-bottom:14px;">
+          <div style="background:var(--gray-50);padding:8px 14px;font-size:11px;font-weight:700;color:var(--gray-600);text-transform:uppercase;letter-spacing:0.5px;border-bottom:1px solid var(--gray-200);">
+            AP Ledger Balance — Read-Only (sourced from account.move.line)
+          </div>
+          <div style="padding:12px 14px;font-size:13px;display:flex;flex-direction:column;gap:8px;">
+            <div style="display:flex;justify-content:space-between;">
+              <span style="color:var(--gray-600);">Service Earnings (vendor bill lines)</span>
+              <strong id="po-earnings">—</strong>
+            </div>
+            <div style="display:flex;justify-content:space-between;">
+              <span style="color:var(--gray-600);">Tips — F07 (SPA-TIP vendor bill lines, posted by E08 server action)</span>
+              <strong id="po-tips" style="color:var(--success);">—</strong>
+            </div>
+            <div style="display:flex;justify-content:space-between;padding-top:6px;border-top:1px dashed var(--gray-200);">
+              <span style="color:var(--gray-600);">Approved Deductions (credit notes — Section I)
+                <button onclick="showModal('modal-deduction-log')" style="margin-left:6px;background:none;border:none;color:var(--odoo-purple);font-size:11px;cursor:pointer;text-decoration:underline;">view detail →</button>
+              </span>
+              <strong id="po-deductions" style="color:var(--danger);">—</strong>
+            </div>
+          </div>
+          <div style="background:var(--primary-light);padding:10px 14px;border-top:2px solid #B2DFDB;display:flex;justify-content:space-between;align-items:center;">
+            <div>
+              <div style="font-size:11px;font-weight:700;color:var(--gray-600);text-transform:uppercase;letter-spacing:0.5px;">Net Payable (Cash Out)</div>
+              <div style="font-size:11px;color:var(--gray-500);margin-top:1px;">Computed from AP ledger · not editable here</div>
+            </div>
+            <div style="font-size:22px;font-weight:800;color:var(--primary);" id="po-net">—</div>
+          </div>
         </div>
-        <div style="padding:12px 14px;font-size:13px;display:flex;flex-direction:column;gap:8px;">
-          <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;">
-            <span style="color:var(--gray-600);">Service Earnings</span>
-            <strong id="po-earnings">฿0</strong>
-          </div>
-          <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;">
-            <span style="color:var(--gray-600);">Tips — F07</span>
-            <strong id="po-tips" style="color:var(--success);">+฿0</strong>
-          </div>
-          <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;padding-top:6px;border-top:1px dashed var(--gray-200);">
-            <span style="color:var(--gray-600);">Approved Deductions</span>
-            <strong id="po-deductions" style="color:var(--danger);">฿0</strong>
-          </div>
-        </div>
-        <div style="background:var(--primary-light);padding:10px 14px;border-top:2px solid #B2DFDB;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">
+
+        <!-- Info box about adding deductions -->
+        <div style="background:#FFF8E1;border:1px solid #FFE082;border-radius:var(--radius);padding:10px 14px;margin-bottom:14px;font-size:12px;color:#5D4037;display:flex;gap:10px;">
+          <span style="font-size:16px;">ℹ️</span>
           <div>
-            <div style="font-size:11px;font-weight:700;color:var(--gray-600);text-transform:uppercase;letter-spacing:0.5px;">Net Payable</div>
+            <strong>Need to add a deduction?</strong> Go to <strong>Accounting → Internal Sales</strong>, raise the sale to this officer (vendor credit method), get manager approval, then return here — the net will recalculate automatically.
           </div>
-          <div style="font-size:22px;font-weight:800;color:var(--primary);" id="po-net">฿0</div>
         </div>
-      </div>
 
-      <!-- Sessions breakdown - responsive table wrapper -->
-      <div style="margin-bottom:16px;">
-        <div style="font-size:12px;font-weight:700;color:var(--gray-700);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;">Sessions Breakdown</div>
-        <div style="overflow-x:auto;border:1px solid var(--gray-200);border-radius:var(--radius);">
-          <table style="width:100%;border-collapse:collapse;min-width:400px;">
-            <thead>
-              <tr style="background:var(--gray-50);border-bottom:1px solid var(--gray-200);">
-                <th style="padding:8px 10px;font-size:11px;text-align:left;">Session</th>
-                <th style="padding:8px 10px;font-size:11px;text-align:left;">Service</th>
-                <th style="padding:8px 10px;font-size:11px;text-align:center;">Duration</th>
-                <th style="padding:8px 10px;font-size:11px;text-align:right;">Rate</th>
-                <th style="padding:8px 10px;font-size:11px;text-align:right;">Charge</th>
-              </tr>
-            </thead>
-            <tbody id="pd-sessions">
-              <!-- Populated by JS -->
-            </tbody>
-          </table>
+        <div class="form-group" style="margin-bottom:12px;">
+          <label class="form-label">Payment Method (F05 — Cash Journal Only)</label>
+          <select class="form-control">
+            <option>Cash — Petty Cash Journal</option>
+          </select>
         </div>
-      </div>
-
-      <!-- Deductions list - responsive -->
-      <div style="margin-bottom:16px;">
-        <div style="font-size:12px;font-weight:700;color:var(--gray-700);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;">Approved Deductions</div>
-        <div id="pd-deduction-list" style="border:1px solid var(--gray-200);border-radius:var(--radius);overflow:hidden;">
-          <!-- Populated by JS -->
+        <div style="font-size:11px;color:var(--gray-500);line-height:1.7;">
+          F07 — Tips sourced from checkout invoices, not entered manually.<br>
+          F04 — Full audit trail recorded: officer, sessions, deductions, net, cashier, timestamp.<br>
+          F08 — On payout confirm, officer status set to <strong>Off Shift</strong>.
         </div>
-      </div>
-
-      <div style="background:#FFF8E1;border:1px solid #FFE082;border-radius:var(--radius);padding:10px 14px;font-size:12px;color:#5D4037;display:flex;gap:10px;margin-bottom:12px;flex-wrap:wrap;">
-        <span style="font-size:15px;">ℹ️</span>
-        <div>To add a deduction: go to <strong>Accounting → Internal Sales</strong>, raise a sale to this officer with <em>Vendor Credit</em> payment method, then return after approval.</div>
-      </div>
-
-      <div style="font-size:12px;color:var(--gray-500);">
-        F05 — Cash payment via Petty Cash Journal only. Separate from payroll.<br>
-        F08 — Confirm sets officer status to Off Shift.
       </div>
     </div>
     <div class="modal-footer">
       <button class="btn btn-secondary" onclick="closeModal('modal-payout-request')">Cancel</button>
-      <button class="btn btn-primary" id="payout-confirm-btn" onclick="confirmPayout()">💵 Confirm Payout</button>
+      <button class="btn btn-primary" id="payout-confirm-btn" disabled onclick="confirmPayout()">💵 Confirm Payout</button>
     </div>
   </div>
 </div>
@@ -5845,6 +5238,7 @@ function showPayoutDetailModal(officerName, service, tip, deductions, net, billN
   // Set the officer dropdown to the correct officer
   const officerSel = document.getElementById('payout-officer-sel');
   if (officerSel) {
+    // Find the option that matches this officer
     for (let i = 0; i < officerSel.options.length; i++) {
       if (officerSel.options[i].text.includes(officerName)) {
         officerSel.selectedIndex = i;
@@ -5853,351 +5247,38 @@ function showPayoutDetailModal(officerName, service, tip, deductions, net, billN
     }
   }
   
-  // Update the modal title
+  // Update the modal title to show context
   const modalTitle = document.querySelector('#modal-payout-request .modal-title');
   if (modalTitle) {
     modalTitle.textContent = billNo ? `💵 Pay Bill - ${billNo}` : `💵 Create Daily Bill - ${officerName}`;
   }
   
-  // Update balance display
+  // Update the read-only AP balance display
   document.getElementById('po-earnings').textContent = '฿' + service.toLocaleString();
   document.getElementById('po-tips').textContent = '+฿' + tip.toLocaleString();
   document.getElementById('po-deductions').textContent = deductions > 0 ? '-฿' + deductions.toLocaleString() : '฿0';
   document.getElementById('po-net').textContent = '฿' + net.toLocaleString();
   
-  // Populate sessions table (example data - you should get real data from your DB)
-  const sessionsTbody = document.getElementById('pd-sessions');
-  if (sessionsTbody) {
-    // This is example data - replace with actual session data from your DB
-    sessionsTbody.innerHTML = `
-      <tr>
-        <td style="padding:8px 10px;border-bottom:1px solid var(--gray-100);"><strong>SPA-0138</strong></td>
-        <td style="padding:8px 10px;border-bottom:1px solid var(--gray-100);">Thai Massage</td>
-        <td style="padding:8px 10px;border-bottom:1px solid var(--gray-100);text-align:center;">1.5 hrs</td>
-        <td style="padding:8px 10px;border-bottom:1px solid var(--gray-100);text-align:right;">฿350/hr</td>
-        <td style="padding:8px 10px;border-bottom:1px solid var(--gray-100);text-align:right;font-weight:600;">฿525</td>
-      </tr>
-      <tr>
-        <td style="padding:8px 10px;border-bottom:1px solid var(--gray-100);"><strong>SPA-0139</strong></td>
-        <td style="padding:8px 10px;border-bottom:1px solid var(--gray-100);">Aromatherapy</td>
-        <td style="padding:8px 10px;border-bottom:1px solid var(--gray-100);text-align:center;">1.0 hrs</td>
-        <td style="padding:8px 10px;border-bottom:1px solid var(--gray-100);text-align:right;">฿300/hr</td>
-        <td style="padding:8px 10px;border-bottom:1px solid var(--gray-100);text-align:right;font-weight:600;">฿300</td>
-      </tr>
-    `;
-  }
+  // Store the context for confirmation
+  window._pendingPayout = {
+    officerName: officerName,
+    service: service,
+    tip: tip,
+    deductions: deductions,
+    net: net,
+    billNo: billNo
+  };
   
-  // Populate deductions list
-  const dedList = document.getElementById('pd-deduction-list');
-  if (dedList) {
-    if (deductions > 0) {
-      dedList.innerHTML = `
-        <div style="padding:10px 14px;border-bottom:1px solid var(--gray-100);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">
-          <div><strong>RCNI-0041</strong> · Massage Oil — Lavender</div>
-          <div style="color:var(--danger);font-weight:600;">-฿420</div>
-        </div>
-        <div style="padding:10px 14px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">
-          <div><strong>RCNI-0039</strong> · Uniform — Standard Set</div>
-          <div style="color:var(--danger);font-weight:600;">-฿600</div>
-        </div>
-      `;
-    } else {
-      dedList.innerHTML = '<div style="padding:12px 14px;font-size:12px;color:var(--gray-500);text-align:center;">No approved deductions for this officer</div>';
-    }
-  }
-  
-  // Hide guard message and show form
+  // Hide the guard message and show the form
   document.getElementById('payout-guard-msg').style.display = 'none';
   document.getElementById('payout-form-body').style.display = 'block';
   document.getElementById('payout-confirm-btn').disabled = false;
   
-  // Store pending data
-  window._pendingPayout = {
-    officerName: officerName,
-    service: service,
-    tip: tip,
-    deductions: deductions,
-    net: net,
-    billNo: billNo
-  };
-  
+  // Show the modal
   showModal('modal-payout-request');
 }
 
 /* ── Override confirmPayout to handle both cases ──────────────────────── */
-function confirmPayout() {
-  const pending = window._pendingPayout;
-  if (!pending) {
-    closeModal('modal-payout-request');
-    return;
-  }
-  
-  const { officerName, service, tip, deductions, net, billNo } = pending;
-  
-  if (billNo) {
-    // This is an outstanding bill payment
-    showToast(`💵 Payment processed for ${billNo} — ${officerName} · Net ฿${net.toLocaleString()}`, 'success');
-    
-    // Simulate moving this bill to paid today
-    const paidTbody = document.getElementById('payout-paid-tbody');
-    if (paidTbody) {
-      const newRow = document.createElement('tr');
-      newRow.innerHTML = `
-        <td><strong>${billNo}</strong></td>
-        <td>${officerName}</td>
-        <td style="font-size:11px;">Bill payment</td>
-        <td>฿${service.toLocaleString()}</td>
-        <td style="color:var(--success);">${tip > 0 ? '+฿' + tip.toLocaleString() : '—'}</td>
-        <td>${deductions > 0 ? '฿' + deductions.toLocaleString() : '—'}</td>
-        <td style="font-weight:700;color:var(--success);">฿${net.toLocaleString()}</td>
-        <td><span class="chip chip-success">Petty Cash</span></td>
-        <td>${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</td>
-        <td>Cashier</td>
-      `;
-      paidTbody.prepend(newRow);
-      
-      // Update counts
-      const paidCount = document.getElementById('paid-today-count');
-/* ── Vendor Payments Functions ──────────────────────────────────────────── */
-function renderPayoutPage() {
-  // Outstanding bills data
-  const outstandingBills = [
-    { id: 1, billNo: 'VB-2026-0312', officer: 'Napa Prachaya', grade: 'Grade 2', date: '08 Mar', 
-      sessions: 'SPA-0131, SPA-0132', service: 1050, tip: 0, deductions: 0, net: 1050, status: 'posted' },
-    { id: 2, billNo: 'VB-2026-0315', officer: 'Mali Suwat', grade: 'Grade 2', date: '08 Mar', 
-      sessions: 'SPA-0133', service: 700, tip: 150, deductions: 0, net: 850, status: 'posted' },
-  ];
-  
-  // Today's sessions data
-  const todaySessions = [
-    { officer: 'Napa Prachaya', grade: 'Grade 2', sessions: 3, sessionRef: 'SPA-0138..0140', 
-      service: 1575, tip: 200, deductions: 1020, net: 755 },
-    { officer: 'Ploy Kaewrat', grade: 'Grade 1', sessions: 2, sessionRef: 'SPA-0141..0142', 
-      service: 1200, tip: 0, deductions: 0, net: 1200 },
-    { officer: 'Mali Suwat', grade: 'Grade 2', sessions: 1, sessionRef: 'SPA-0143', 
-      service: 525, tip: 0, deductions: 0, net: 525 },
-  ];
-  
-  // Paid today data
-  const paidToday = [
-    { billNo: 'VB-2026-0318', officer: 'Dao Siriwan', sessions: 'SPA-0136, SPA-0137', 
-      service: 500, tip: 100, deductions: 0, net: 600, payment: 'Petty Cash', time: '11:45', cashier: 'Som K.' },
-  ];
-
-  // Calculate totals
-  const totalOutstanding = outstandingBills.reduce((sum, b) => sum + b.net, 0);
-  const totalTodayService = todaySessions.reduce((sum, t) => sum + t.service, 0);
-  const totalTodayNet = todaySessions.reduce((sum, t) => sum + t.net, 0);
-  const totalDeductions = todaySessions.reduce((sum, t) => sum + t.deductions, 0);
-  const totalPaid = paidToday.reduce((sum, p) => sum + p.net, 0);
-  const totalTips = todaySessions.reduce((sum, t) => sum + t.tip, 0) + 
-                    outstandingBills.reduce((sum, b) => sum + b.tip, 0) + 
-                    paidToday.reduce((sum, p) => sum + p.tip, 0);
-
-  // Update stats
-  document.getElementById('payout-today-sessions').textContent = '฿' + totalTodayService.toLocaleString();
-  document.getElementById('payout-outstanding').textContent = '฿' + totalOutstanding.toLocaleString();
-  document.getElementById('payout-deductions').textContent = '-฿' + totalDeductions.toLocaleString();
-  document.getElementById('payout-paid-today').textContent = '฿' + totalPaid.toLocaleString();
-  
-  // Update summary
-  document.getElementById('summary-today').textContent = '฿' + totalTodayService.toLocaleString();
-  document.getElementById('summary-outstanding').textContent = '฿' + totalOutstanding.toLocaleString();
-  document.getElementById('summary-deductions').textContent = '-฿' + totalDeductions.toLocaleString();
-  document.getElementById('summary-paid').textContent = '฿' + totalPaid.toLocaleString();
-  document.getElementById('summary-tips').textContent = '฿' + totalTips.toLocaleString();
-
-  // Update counts
-  document.getElementById('outstanding-count').textContent = outstandingBills.length + ' bills';
-  document.getElementById('today-sessions-count').textContent = todaySessions.length + ' officers';
-  document.getElementById('paid-today-count').textContent = paidToday.length + ' transaction' + (paidToday.length !== 1 ? 's' : '');
-
-  // Render Outstanding Bills table (no checkboxes)
-  const outstandingTbody = document.getElementById('payout-outstanding-tbody');
-  if (outstandingTbody) {
-    outstandingTbody.innerHTML = outstandingBills.map(bill => `
-      <tr>
-        <td><strong>${bill.billNo}</strong></td>
-        <td>${bill.officer}</td>
-        <td><span class="chip chip-purple" style="font-size:10px;">${bill.grade}</span></td>
-        <td style="color:var(--gray-500);">${bill.date}</td>
-        <td style="font-size:11px;">${bill.sessions}</td>
-        <td style="font-weight:600;">฿${bill.service.toLocaleString()}</td>
-        <td style="color:var(--success);">${bill.tip > 0 ? '฿' + bill.tip.toLocaleString() : '—'}</td>
-        <td style="color:var(--gray-400);">${bill.deductions > 0 ? '฿' + bill.deductions.toLocaleString() : '—'}</td>
-        <td style="font-weight:700;color:var(--primary);">฿${bill.net.toLocaleString()}</td>
-        <td><span class="chip chip-warning">Posted / Unpaid</span></td>
-        <td><button class="btn btn-sm btn-primary" onclick="openPayoutModal('${bill.officer}', ${bill.service}, ${bill.tip}, ${bill.deductions}, ${bill.net}, '${bill.billNo}')">💵 Pay Now</button></td>
-      </tr>
-    `).join('') || '<tr><td colspan="11" style="text-align:center;padding:20px;color:var(--gray-400);">No outstanding bills</td></tr>';
-  }
-
-  // Render Today's Sessions table
-  const todayTbody = document.getElementById('payout-today-tbody');
-  if (todayTbody) {
-    todayTbody.innerHTML = todaySessions.map(session => `
-      <tr>
-        <td><strong>${session.officer}</strong><div style="font-size:10px;color:var(--gray-400);">hr.employee + res.partner vendor</div></td>
-        <td><span class="chip chip-purple" style="font-size:10px;">${session.grade}</span></td>
-        <td style="text-align:center;">${session.sessions} <span style="font-size:10px;color:var(--gray-400);">(${session.sessionRef})</span></td>
-        <td style="font-weight:600;">฿${session.service.toLocaleString()}</td>
-        <td style="color:var(--success);">${session.tip > 0 ? '฿' + session.tip.toLocaleString() : '—'}</td>
-        <td style="color:var(--danger);">${session.deductions > 0 ? '-฿' + session.deductions.toLocaleString() : '—'}</td>
-        <td style="font-weight:700;color:var(--primary);">฿${session.net.toLocaleString()}</td>
-        <td><button class="btn btn-sm btn-primary" onclick="openPayoutModal('${session.officer}', ${session.service}, ${session.tip}, ${session.deductions}, ${session.net}, null)">Create Bill</button></td>
-      </tr>
-    `).join('') || '<tr><td colspan="8" style="text-align:center;padding:20px;color:var(--gray-400);">No sessions today</td></tr>';
-  }
-
-  // Render Paid Today table
-  const paidTbody = document.getElementById('payout-paid-tbody');
-  if (paidTbody) {
-    paidTbody.innerHTML = paidToday.map(paid => `
-      <tr>
-        <td><strong>${paid.billNo}</strong></td>
-        <td>${paid.officer}</td>
-        <td style="font-size:11px;">${paid.sessions}</td>
-        <td style="font-weight:600;">฿${paid.service.toLocaleString()}</td>
-        <td style="color:var(--success);">+฿${paid.tip.toLocaleString()}</td>
-        <td style="color:var(--gray-400);">${paid.deductions > 0 ? '฿' + paid.deductions.toLocaleString() : '—'}</td>
-        <td style="font-weight:700;color:var(--success);">฿${paid.net.toLocaleString()}</td>
-        <td><span class="chip chip-success">${paid.payment}</span></td>
-        <td>${paid.time}</td>
-        <td>${paid.cashier}</td>
-      </tr>
-    `).join('') || '<tr><td colspan="10" style="text-align:center;padding:20px;color:var(--gray-400);">No payments today</td></tr>';
-  }
-}
-
-/* ── Unified Modal Opener for both Create Bill and Pay Now ── */
-function openPayoutModal(officerName, service, tip, deductions, net, billNo) {
-  // Set the officer dropdown to the correct officer
-  const officerSel = document.getElementById('payout-officer-sel');
-  if (officerSel) {
-    for (let i = 0; i < officerSel.options.length; i++) {
-      if (officerSel.options[i].text.includes(officerName)) {
-        officerSel.selectedIndex = i;
-        break;
-      }
-    }
-  }
-  
-  // Update the modal title based on context
-  const modalTitle = document.querySelector('#modal-payout-request .modal-title');
-  if (modalTitle) {
-    modalTitle.textContent = billNo ? `💵 Pay Bill - ${billNo}` : `💵 Create Daily Bill - ${officerName}`;
-  }
-  
-  // Update balance display
-  document.getElementById('po-earnings').textContent = '฿' + service.toLocaleString();
-  document.getElementById('po-tips').textContent = '+฿' + tip.toLocaleString();
-  document.getElementById('po-deductions').textContent = deductions > 0 ? '-฿' + deductions.toLocaleString() : '฿0';
-  document.getElementById('po-net').textContent = '฿' + net.toLocaleString();
-  
-  // Populate sessions table with sample data (you can replace with real data)
-  const sessionsTbody = document.getElementById('pd-sessions');
-  if (sessionsTbody) {
-    if (officerName.includes('Napa')) {
-      sessionsTbody.innerHTML = `
-        <tr>
-          <td style="padding:8px 10px;border-bottom:1px solid var(--gray-100);"><strong>SPA-0138</strong></td>
-          <td style="padding:8px 10px;border-bottom:1px solid var(--gray-100);">Thai Massage</td>
-          <td style="padding:8px 10px;border-bottom:1px solid var(--gray-100);text-align:center;">1.5 hrs</td>
-          <td style="padding:8px 10px;border-bottom:1px solid var(--gray-100);text-align:right;">฿350/hr</td>
-          <td style="padding:8px 10px;border-bottom:1px solid var(--gray-100);text-align:right;font-weight:600;">฿525</td>
-        </tr>
-        <tr>
-          <td style="padding:8px 10px;border-bottom:1px solid var(--gray-100);"><strong>SPA-0139</strong></td>
-          <td style="padding:8px 10px;border-bottom:1px solid var(--gray-100);">Aromatherapy</td>
-          <td style="padding:8px 10px;border-bottom:1px solid var(--gray-100);text-align:center;">2.0 hrs</td>
-          <td style="padding:8px 10px;border-bottom:1px solid var(--gray-100);text-align:right;">฿350/hr</td>
-          <td style="padding:8px 10px;border-bottom:1px solid var(--gray-100);text-align:right;font-weight:600;">฿700</td>
-        </tr>
-        <tr>
-          <td style="padding:8px 10px;border-bottom:1px solid var(--gray-100);"><strong>SPA-0141</strong></td>
-          <td style="padding:8px 10px;border-bottom:1px solid var(--gray-100);">Thai Massage</td>
-          <td style="padding:8px 10px;border-bottom:1px solid var(--gray-100);text-align:center;">1.5 hrs</td>
-          <td style="padding:8px 10px;border-bottom:1px solid var(--gray-100);text-align:right;">฿350/hr</td>
-          <td style="padding:8px 10px;border-bottom:1px solid var(--gray-100);text-align:right;font-weight:600;">฿525</td>
-        </tr>
-      `;
-    } else if (officerName.includes('Ploy')) {
-      sessionsTbody.innerHTML = `
-        <tr>
-          <td style="padding:8px 10px;border-bottom:1px solid var(--gray-100);"><strong>SPA-0142</strong></td>
-          <td style="padding:8px 10px;border-bottom:1px solid var(--gray-100);">Aromatherapy</td>
-          <td style="padding:8px 10px;border-bottom:1px solid var(--gray-100);text-align:center;">1.5 hrs</td>
-          <td style="padding:8px 10px;border-bottom:1px solid var(--gray-100);text-align:right;">฿300/hr</td>
-          <td style="padding:8px 10px;border-bottom:1px solid var(--gray-100);text-align:right;font-weight:600;">฿450</td>
-        </tr>
-        <tr>
-          <td style="padding:8px 10px;border-bottom:1px solid var(--gray-100);"><strong>SPA-0140</strong></td>
-          <td style="padding:8px 10px;border-bottom:1px solid var(--gray-100);">Deep Tissue</td>
-          <td style="padding:8px 10px;border-bottom:1px solid var(--gray-100);text-align:center;">1.0 hr</td>
-          <td style="padding:8px 10px;border-bottom:1px solid var(--gray-100);text-align:right;">฿300/hr</td>
-          <td style="padding:8px 10px;border-bottom:1px solid var(--gray-100);text-align:right;font-weight:600;">฿300</td>
-        </tr>
-      `;
-    } else if (officerName.includes('Mali')) {
-      sessionsTbody.innerHTML = `
-        <tr>
-          <td style="padding:8px 10px;border-bottom:1px solid var(--gray-100);"><strong>SPA-0143</strong></td>
-          <td style="padding:8px 10px;border-bottom:1px solid var(--gray-100);">Deep Tissue</td>
-          <td style="padding:8px 10px;border-bottom:1px solid var(--gray-100);text-align:center;">1.5 hrs</td>
-          <td style="padding:8px 10px;border-bottom:1px solid var(--gray-100);text-align:right;">฿350/hr</td>
-          <td style="padding:8px 10px;border-bottom:1px solid var(--gray-100);text-align:right;font-weight:600;">฿525</td>
-        </tr>
-      `;
-    }
-  }
-  
-  // Populate deductions list
-  const dedList = document.getElementById('pd-deduction-list');
-  if (dedList) {
-    if (deductions > 0) {
-      dedList.innerHTML = `
-        <div style="padding:10px 14px;border-bottom:1px solid var(--gray-100);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">
-          <div><strong>RCNI-0041</strong> · Massage Oil — Lavender</div>
-          <div style="color:var(--danger);font-weight:600;">-฿420</div>
-        </div>
-        <div style="padding:10px 14px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">
-          <div><strong>RCNI-0039</strong> · Uniform — Standard Set</div>
-          <div style="color:var(--danger);font-weight:600;">-฿600</div>
-        </div>
-      `;
-    } else {
-      dedList.innerHTML = '<div style="padding:12px 14px;font-size:12px;color:var(--gray-500);text-align:center;">No approved deductions for this officer</div>';
-    }
-  }
-  
-  // Hide guard message and show form
-  const guardMsg = document.getElementById('payout-guard-msg');
-  const formBody = document.getElementById('payout-form-body');
-  const confirmBtn = document.getElementById('payout-confirm-btn');
-  
-  if (guardMsg) guardMsg.style.display = 'none';
-  if (formBody) formBody.style.display = 'block';
-  if (confirmBtn) confirmBtn.disabled = false;
-  
-  // Store pending data for confirmation
-  window._pendingPayout = {
-    officerName: officerName,
-    service: service,
-    tip: tip,
-    deductions: deductions,
-    net: net,
-    billNo: billNo
-  };
-  
-  // Show the modal
-  const modal = document.getElementById('modal-payout-request');
-  if (modal) {
-    modal.classList.add('open');
-    modal.style.display = 'flex';
-  }
-}
-
-/* ── Unified Confirm Payout Function ── */
 function confirmPayout() {
   const pending = window._pendingPayout;
   if (!pending) {
@@ -6252,30 +5333,31 @@ function confirmPayout() {
     showToast(`📋 Daily bill created for ${officerName} — Net ฿${net.toLocaleString()}`, 'success');
   }
   
-  // Close the modal
   closeModal('modal-payout-request');
   
-  // Clear pending data
+  // Clear pending
   window._pendingPayout = null;
 }
 
-/* ── Helper Functions ── */
-function closeModal(id) {
-  const modal = document.getElementById(id);
-  if (modal) {
-    modal.classList.remove('open');
-    modal.style.display = 'none';
+/* ── Collapsible Function ─────────────────────────────────────────────── */
+function toggleCollapsible(header) {
+  const content = header.nextElementSibling;
+  const icon = header.querySelector('.collapse-icon');
+  
+  if (content.classList.contains('collapsed')) {
+    content.classList.remove('collapsed');
+    content.style.display = 'block';
+    icon.style.transform = 'rotate(0deg)';
+    header.classList.remove('collapsed');
+  } else {
+    content.classList.add('collapsed');
+    content.style.display = 'none';
+    icon.style.transform = 'rotate(-90deg)';
+    header.classList.add('collapsed');
   }
 }
 
-function showModal(id) {
-  const modal = document.getElementById(id);
-  if (modal) {
-    modal.classList.add('open');
-    modal.style.display = 'flex';
-  }
-}
-
+/* ── Filter Function ──────────────────────────────────────────────────── */
 function filterPayoutOfficer() {
   const filter = document.getElementById('payout-officer-filter').value;
   if (filter === 'all') {
@@ -6284,6 +5366,7 @@ function filterPayoutOfficer() {
     showToast(`Filtered to: ${filter}`, 'success');
   }
 }
+
 /* ── Create Daily Bill Function ────────────────────────────────────────── */
 function createDailyBill(officer, service, tip, deductions, net) {
   showToast(`📋 Daily bill created for ${officer} — Net ฿${net.toLocaleString()}`, 'success');
