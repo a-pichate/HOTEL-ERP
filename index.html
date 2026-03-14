@@ -2808,14 +2808,14 @@
   <div style="padding:8px 20px 0;">
     <div style="background:#EBF3FB;border-left:3px solid var(--odoo-blue);border-radius:var(--radius);padding:10px 14px;font-size:12px;color:#1F4E79;">
       <strong>Model C — Daily Payout Flow:</strong> Officer tells cashier "finished". Cashier clicks Create Daily Bill → vendor bill auto-created from today's PO lines + pending deduction negative lines.
-      <strong>Hold = native Odoo AP</strong> — post bill, defer payment. Officer can accumulate multiple days and collect anytime via Pay All Outstanding.
+      <strong>Hold = native Odoo AP</strong> — post bill, defer payment. Officer can accumulate multiple days and collect anytime.
       Session fee and SPA-TIP are separate vendor bills (E08 fires on guest invoice post independently).
     </div>
   </div>
 
   <div style="padding:16px 20px;">
 
-    <!-- ===== OUTSTANDING BILLS - COLLAPSIBLE ===== -->
+    <!-- ===== OUTSTANDING BILLS - COLLAPSIBLE (Default Collapsed) ===== -->
     <div class="detail-panel" style="margin-bottom:16px;">
       <div class="detail-header collapsible-header" onclick="toggleCollapsible(this)" style="cursor:pointer;user-select:none;">
         <div style="display:flex;align-items:center;gap:8px;">
@@ -2825,12 +2825,11 @@
         </div>
         <span style="font-size:11px;color:var(--gray-500);">Hold = Native AP · Click to toggle</span>
       </div>
-      <div class="collapsible-content" style="padding:0;">
-        <div style="font-size:11px;color:var(--gray-500);padding:8px 16px 0;">Vendor bills posted but payment not yet registered · officer chose to hold · pay any time</div>
+      <div class="collapsible-content collapsed" style="display:none;">
+        <div style="font-size:11px;color:var(--gray-500);padding:8px 16px 0;">Vendor bills posted but payment not yet registered · officer chose to hold</div>
         <div class="table-wrap" style="margin-top:8px;">
           <table class="data-table">
             <thead><tr>
-              <th style="width:30px;"><input type="checkbox" onchange="toggleAllBills(this, 'prior')" id="select-all-prior"></th>
               <th>Bill #</th><th>Officer</th><th>Grade</th><th>Date</th>
               <th>Sessions</th><th>Service</th><th>Tip</th><th>Deductions</th><th>Net Payable</th><th>Status</th><th>Action</th>
             </tr></thead>
@@ -2838,12 +2837,6 @@
               <!-- Dynamically populated -->
             </tbody>
           </table>
-        </div>
-        <!-- Pay Selected / Pay All — inside Outstanding section -->
-        <div style="margin:12px 16px 16px;display:flex;gap:8px;align-items:center;">
-          <button class="btn btn-secondary btn-sm" onclick="paySelectedBills()">💳 Pay Selected</button>
-          <button class="btn btn-primary btn-sm" onclick="payAllOutstandingBills()">⚡ Pay All Outstanding</button>
-          <span style="font-size:11px;color:var(--gray-500);">Tick rows above then Pay Selected — or Pay All to clear in one action</span>
         </div>
       </div>
     </div>
@@ -5065,12 +5058,11 @@ function renderPayoutPage() {
   document.getElementById('today-sessions-count').textContent = todaySessions.length + ' officers';
   document.getElementById('paid-today-count').textContent = paidToday.length + ' transaction' + (paidToday.length !== 1 ? 's' : '');
 
-  // Render Outstanding Bills table
+  // Render Outstanding Bills table (no checkboxes)
   const outstandingTbody = document.getElementById('payout-outstanding-tbody');
   if (outstandingTbody) {
     outstandingTbody.innerHTML = outstandingBills.map(bill => `
       <tr>
-        <td style="width:30px;"><input type="checkbox" class="bill-check prior-check" data-id="${bill.id}" data-amt="${bill.net}" data-officer="${bill.officer}"></td>
         <td><strong>${bill.billNo}</strong></td>
         <td>${bill.officer}</td>
         <td><span class="chip chip-purple" style="font-size:10px;">${bill.grade}</span></td>
@@ -5081,9 +5073,9 @@ function renderPayoutPage() {
         <td style="color:var(--gray-400);">${bill.deductions > 0 ? '฿' + bill.deductions.toLocaleString() : '—'}</td>
         <td style="font-weight:700;color:var(--primary);">฿${bill.net.toLocaleString()}</td>
         <td><span class="chip chip-warning">Posted / Unpaid</span></td>
-        <td><button class="btn btn-sm btn-primary" onclick="paySingleBill(${bill.id}, '${bill.officer}', ${bill.net})">💵 Pay Now</button></td>
+        <td><button class="btn btn-sm btn-primary" onclick="payOutstandingBill('${bill.billNo}', '${bill.officer}', ${bill.service}, ${bill.tip}, ${bill.deductions}, ${bill.net})">💵 Pay Now</button></td>
       </tr>
-    `).join('') || '<tr><td colspan="12" style="text-align:center;padding:20px;color:var(--gray-400);">No outstanding bills</td></tr>';
+    `).join('') || '<tr><td colspan="11" style="text-align:center;padding:20px;color:var(--gray-400);">No outstanding bills</td></tr>';
   }
 
   // Render Today's Sessions table
@@ -5123,6 +5115,60 @@ function renderPayoutPage() {
   }
 }
 
+/* ── Pay Outstanding Bill Function (works like Create Daily Bill) ──────── */
+function payOutstandingBill(billNo, officer, service, tip, deductions, net) {
+  // This function works exactly like createDailyBill but for outstanding bills
+  showToast(`💵 Payment processed for ${billNo} — ${officer} · Net ฿${net.toLocaleString()}`, 'success');
+  
+  // In a real implementation, you would:
+  // 1. Update the bill status in the database to 'paid'
+  // 2. Create a payment record
+  // 3. Move this bill to the "Paid Today" section
+  
+  // For demo purposes, we'll simulate moving this bill to paid today
+  const paidTbody = document.getElementById('payout-paid-tbody');
+  if (paidTbody) {
+    // Add a new row to Paid Today table (simulating the payment)
+    const newRow = document.createElement('tr');
+    newRow.innerHTML = `
+      <td><strong>${billNo}</strong></td>
+      <td>${officer}</td>
+      <td style="font-size:11px;">SPA-XXXX</td>
+      <td>฿${service.toLocaleString()}</td>
+      <td style="color:var(--success);">${tip > 0 ? '+฿' + tip.toLocaleString() : '—'}</td>
+      <td>${deductions > 0 ? '฿' + deductions.toLocaleString() : '—'}</td>
+      <td style="font-weight:700;color:var(--success);">฿${net.toLocaleString()}</td>
+      <td><span class="chip chip-success">Petty Cash</span></td>
+      <td>${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</td>
+      <td>Cashier</td>
+    `;
+    paidTbody.prepend(newRow);
+    
+    // Update the paid count
+    const paidCount = document.getElementById('paid-today-count');
+    const currentCount = parseInt(paidCount.textContent) || 0;
+    paidCount.textContent = (currentCount + 1) + ' transactions';
+    
+    // Remove the row from outstanding bills
+    const row = event?.target?.closest('tr');
+    if (row) {
+      row.remove();
+      
+      // Update outstanding count
+      const outstandingRows = document.querySelectorAll('#payout-outstanding-tbody tr').length;
+      document.getElementById('outstanding-count').textContent = outstandingRows + ' bills';
+    }
+  }
+}
+
+/* ── Create Daily Bill Function ────────────────────────────────────────── */
+function createDailyBill(officer, service, tip, deductions, net) {
+  showToast(`📋 Daily bill created for ${officer} — Net ฿${net.toLocaleString()}`, 'success');
+  
+  // In a real implementation, you would create a vendor bill in the database
+  // For demo, we just show a toast
+}
+
 /* ── Collapsible Function ─────────────────────────────────────────────── */
 function toggleCollapsible(header) {
   const content = header.nextElementSibling;
@@ -5141,64 +5187,7 @@ function toggleCollapsible(header) {
   }
 }
 
-/* ── Payment Functions ────────────────────────────────────────────────── */
-function toggleAllBills(checkbox, group) {
-  document.querySelectorAll(`.${group}-check`).forEach(c => c.checked = checkbox.checked);
-}
-
-function paySelectedBills() {
-  const checked = [...document.querySelectorAll('.bill-check:checked')];
-  if (checked.length === 0) {
-    showToast('Select at least one bill to pay', 'error');
-    return;
-  }
-  
-  const total = checked.reduce((sum, cb) => sum + (parseInt(cb.dataset.amt) || 0), 0);
-  const officers = [...new Set(checked.map(cb => cb.dataset.officer))];
-  
-  showToast(`💳 Payment registered for ${checked.length} bill(s) — ฿${total.toLocaleString()} via Petty Cash for ${officers.join(', ')}`, 'success');
-  
-  // Uncheck all and optionally remove from UI (for demo)
-  checked.forEach(cb => {
-    cb.checked = false;
-    cb.closest('tr').style.opacity = '0.5';
-    setTimeout(() => {
-      cb.closest('tr').remove();
-      renderPayoutPage(); // Re-render to update counts
-    }, 1000);
-  });
-  
-  document.getElementById('select-all-prior').checked = false;
-}
-
-function payAllOutstandingBills() {
-  const allBills = [...document.querySelectorAll('.bill-check')];
-  if (allBills.length === 0) {
-    showToast('No outstanding bills to pay', 'warning');
-    return;
-  }
-  
-  const total = allBills.reduce((sum, cb) => sum + (parseInt(cb.dataset.amt) || 0), 0);
-  showToast(`⚡ Paid all outstanding bills — ฿${total.toLocaleString()} registered via Petty Cash. ${allBills.length} vendor bills cleared.`, 'success');
-  
-  allBills.forEach(cb => {
-    cb.closest('tr').style.opacity = '0.5';
-    setTimeout(() => {
-      cb.closest('tr').remove();
-      renderPayoutPage();
-    }, 1000);
-  });
-}
-
-function paySingleBill(billId, officer, amount) {
-  showToast(`💵 Payment of ฿${amount.toLocaleString()} for ${officer} registered`, 'success');
-  // In a real implementation, you would update the DB here
-}
-
-function createDailyBill(officer, service, tip, deductions, net) {
-  showToast(`📋 Daily bill created for ${officer} — Net ฿${net.toLocaleString()}`, 'success');
-}
-
+/* ── Filter Function ──────────────────────────────────────────────────── */
 function filterPayoutOfficer() {
   const filter = document.getElementById('payout-officer-filter').value;
   if (filter === 'all') {
@@ -5207,7 +5196,6 @@ function filterPayoutOfficer() {
     showToast(`Filtered to: ${filter}`, 'success');
   }
 }
-
   
 function dbShowPayoutDetail(officerId){
   const summary = api.getPayoutSummary().find(o=>o.officer_id===officerId);
