@@ -265,7 +265,27 @@
     .transfer-layout{grid-template-columns:1fr!important;}
     .booking-layout{grid-template-columns:1fr!important;}
   }
-
+  /* Collapsible sections */
+  .collapsible-header {
+    cursor: pointer;
+    user-select: none;
+    transition: background-color 0.2s;
+  }
+  .collapsible-header:hover {
+    background-color: var(--gray-100);
+  }
+  .collapsible-header .collapse-icon {
+    transition: transform 0.3s;
+  }
+  .collapsible-header.collapsed .collapse-icon {
+    transform: rotate(-90deg);
+  }
+  .collapsible-content {
+    transition: all 0.3s ease;
+  }
+  .collapsible-content.collapsed {
+    display: none;
+  }
 
   @keyframes pulsebell { 0%,100%{transform:scale(1);opacity:1;} 50%{transform:scale(1.25);opacity:.7;} }
 </style>
@@ -2755,13 +2775,13 @@
     </div>
   </div>
 </div>
-
-<!-- ════════════════════════════════════════════════════════════
-     SECTION F — STAFF PAYOUT  (F01–F08)
-     ════════════════════════════════════════════════════════════ -->
 </div><!-- closes page-spa-officers -->
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     SECTION F — STAFF PAYOUT  (F01–F08)
+     ═══════════════════════════════════════════════════════════════════════════ -->
 <div id="page-payout" class="page">
-  <div class="breadcrumb-bar"><span>Accounting</span><span class="bc-sep">›</span><span>Vendor Payments</span><span class="bc-sep">›</span><span>Officer Daily Payout</span>
+  <div class="breadcrumb-bar">
+    <span>Accounting</span><span class="bc-sep">›</span><span>Vendor Payments</span><span class="bc-sep">›</span><span>Officer Daily Payout</span>
     <div style="margin-left:auto;display:flex;gap:8px;">
       <select class="form-control" id="payout-officer-filter" onchange="filterPayoutOfficer()" style="width:220px;height:32px;font-size:13px;">
         <option value="all">— All Officers —</option>
@@ -2777,10 +2797,10 @@
   <!-- Stats -->
   <div style="padding:16px 20px 0;">
     <div class="stats-row" style="grid-template-columns:repeat(4,1fr);">
-      <div class="stat-card"><div class="stat-value" style="color:var(--primary);">฿4,575</div><div class="stat-label">Today Sessions</div></div>
-      <div class="stat-card"><div class="stat-value" style="color:var(--warning);">฿2,100</div><div class="stat-label">Outstanding (Prior Days)</div></div>
-      <div class="stat-card"><div class="stat-value" style="color:var(--danger);">-฿1,020</div><div class="stat-label">Pending Deductions</div></div>
-      <div class="stat-card"><div class="stat-value" style="color:var(--success);">฿600</div><div class="stat-label">Paid Today</div></div>
+      <div class="stat-card"><div class="stat-value" id="payout-today-sessions" style="color:var(--primary);">฿4,575</div><div class="stat-label">Today Sessions</div></div>
+      <div class="stat-card"><div class="stat-value" id="payout-outstanding" style="color:var(--warning);">฿2,100</div><div class="stat-label">Outstanding (Prior Days)</div></div>
+      <div class="stat-card"><div class="stat-value" id="payout-deductions" style="color:var(--danger);">-฿1,020</div><div class="stat-label">Pending Deductions</div></div>
+      <div class="stat-card"><div class="stat-value" id="payout-paid-today" style="color:var(--success);">฿600</div><div class="stat-label">Paid Today</div></div>
     </div>
   </div>
 
@@ -2793,136 +2813,102 @@
     </div>
   </div>
 
-  <!-- Daily Payout Screen -->
   <div style="padding:16px 20px;">
 
-    <!-- Outstanding from prior days -->
-    <div class="section-title" style="margin-bottom:4px;">⏳ Outstanding Bills — Prior Days (Hold = Native AP)</div>
-    <div style="font-size:11px;color:var(--gray-500);margin-bottom:10px;">Vendor bills posted but payment not yet registered · officer chose to hold · pay any time</div>
-    <div class="table-wrap">
-    <table class="data-table">
-      <thead><tr>
-        <th><input type="checkbox" onchange="toggleAllBills(this,'prior')"></th>
-        <th>Bill #</th><th>Officer</th><th>Grade</th><th>Date</th>
-        <th>Sessions</th><th>Service</th><th>Tip</th><th>Deductions</th><th>Net Payable</th><th>Status</th><th>Action</th>
-      </tr></thead>
-      <tbody id="payout-tbody">
-        <tr>
-          <td><input type="checkbox" class="bill-check prior-check" data-amt="1050" data-officer="Napa Prachaya"></td>
-          <td><strong>VB-2026-0312</strong></td><td>Napa Prachaya</td>
-          <td><span class="chip chip-purple" style="font-size:10px;">Grade 2</span></td>
-          <td style="color:var(--gray-500);">08 Mar</td>
-          <td>SPA-0131, SPA-0132</td>
-          <td style="font-weight:600;">฿1,050</td>
-          <td style="color:var(--success);">฿0</td>
-          <td style="color:var(--gray-400);">—</td>
-          <td style="font-weight:700;color:var(--primary);">฿1,050</td>
-          <td><span class="chip chip-warning">Posted / Unpaid</span></td>
-          <td><button class="btn btn-sm btn-primary" onclick="showPayoutDetail('Napa Prachaya','1050','0','0','1050')">💵 Pay Now</button></td>
-        </tr>
-        <tr>
-          <td><input type="checkbox" class="bill-check prior-check" data-amt="700" data-officer="Mali Suwat"></td>
-          <td><strong>VB-2026-0315</strong></td><td>Mali Suwat</td>
-          <td><span class="chip chip-purple" style="font-size:10px;">Grade 2</span></td>
-          <td style="color:var(--gray-500);">08 Mar</td>
-          <td>SPA-0133</td>
-          <td style="font-weight:600;">฿700</td>
-          <td style="color:var(--success);">฿150</td>
-          <td style="color:var(--gray-400);">—</td>
-          <td style="font-weight:700;color:var(--primary);">฿850</td>
-          <td><span class="chip chip-warning">Posted / Unpaid</span></td>
-          <td><button class="btn btn-sm btn-primary" onclick="showPayoutDetail('Mali Suwat','700','150','0','850')">💵 Pay Now</button></td>
-        </tr>
-      </tbody>
-    </table>
-    </div>
-    <!-- Pay Selected / Pay All — inside Outstanding section -->
-    <div style="margin-top:10px;display:flex;gap:8px;align-items:center;">
-      <button class="btn btn-secondary btn-sm" onclick="paySelected()">💳 Pay Selected</button>
-      <button class="btn btn-primary btn-sm" onclick="payAllOutstanding()">⚡ Pay All Outstanding</button>
-      <span style="font-size:11px;color:var(--gray-500);">Tick rows above then Pay Selected — or Pay All to clear in one action</span>
+    <!-- ===== OUTSTANDING BILLS - COLLAPSIBLE ===== -->
+    <div class="detail-panel" style="margin-bottom:16px;">
+      <div class="detail-header collapsible-header" onclick="toggleCollapsible(this)" style="cursor:pointer;user-select:none;">
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span class="collapse-icon" style="transition:transform 0.3s;">▶</span>
+          <div class="detail-title">⏳ Outstanding Bills — Prior Days</div>
+          <span class="badge badge-warning" id="outstanding-count">2 bills</span>
+        </div>
+        <span style="font-size:11px;color:var(--gray-500);">Hold = Native AP · Click to toggle</span>
+      </div>
+      <div class="collapsible-content" style="padding:0;">
+        <div style="font-size:11px;color:var(--gray-500);padding:8px 16px 0;">Vendor bills posted but payment not yet registered · officer chose to hold · pay any time</div>
+        <div class="table-wrap" style="margin-top:8px;">
+          <table class="data-table">
+            <thead><tr>
+              <th style="width:30px;"><input type="checkbox" onchange="toggleAllBills(this, 'prior')" id="select-all-prior"></th>
+              <th>Bill #</th><th>Officer</th><th>Grade</th><th>Date</th>
+              <th>Sessions</th><th>Service</th><th>Tip</th><th>Deductions</th><th>Net Payable</th><th>Status</th><th>Action</th>
+            </tr></thead>
+            <tbody id="payout-outstanding-tbody">
+              <!-- Dynamically populated -->
+            </tbody>
+          </table>
+        </div>
+        <!-- Pay Selected / Pay All — inside Outstanding section -->
+        <div style="margin:12px 16px 16px;display:flex;gap:8px;align-items:center;">
+          <button class="btn btn-secondary btn-sm" onclick="paySelectedBills()">💳 Pay Selected</button>
+          <button class="btn btn-primary btn-sm" onclick="payAllOutstandingBills()">⚡ Pay All Outstanding</button>
+          <span style="font-size:11px;color:var(--gray-500);">Tick rows above then Pay Selected — or Pay All to clear in one action</span>
+        </div>
+      </div>
     </div>
 
-    <!-- Today's sessions ready for billing -->
-    <div class="section-title" style="margin:20px 0 4px;">📋 Today's Sessions — Ready to Bill (10 Mar)</div>
-    <div style="font-size:11px;color:var(--gray-500);margin-bottom:10px;">PO lines not yet invoiced · officer confirmed finished · pending deductions will auto-append as negative lines</div>
-    <div class="table-wrap">
-    <table class="data-table">
-      <thead><tr>
-        <th>Officer</th><th>Grade</th><th>Sessions Today</th>
-        <th>Service (SPA-THAI/AROMA)</th><th>SPA-TIP</th>
-        <th>Pending Deductions</th><th>Net Today</th><th>Action</th>
-      </tr></thead>
-      <tbody>
-        <tr>
-          <td><strong>Napa Prachaya</strong><div style="font-size:10px;color:var(--gray-400);">hr.employee + res.partner vendor</div></td>
-          <td><span class="chip chip-purple" style="font-size:10px;">Grade 2</span></td>
-          <td style="text-align:center;">3 <span style="font-size:10px;color:var(--gray-400);">(SPA-0138..0140)</span></td>
-          <td style="font-weight:600;">฿1,575</td>
-          <td style="color:var(--success);">฿200 <span style="font-size:10px;">(from E08)</span></td>
-          <td style="color:var(--danger);">-฿1,020
-            <button onclick="showModal('modal-deduction-log')" style="background:none;border:none;color:var(--odoo-purple);font-size:10px;cursor:pointer;text-decoration:underline;padding:0;display:block;">2 items</button>
-          </td>
-          <td style="font-weight:700;color:var(--primary);">฿755</td>
-          <td><button class="btn btn-sm btn-primary" onclick="showPayoutDetail('Napa Prachaya','1575','200','1020','755')">Create Bill</button></td>
-        </tr>
-        <tr>
-          <td><strong>Ploy Kaewrat</strong><div style="font-size:10px;color:var(--gray-400);">hr.employee + res.partner vendor</div></td>
-          <td><span class="chip chip-purple" style="font-size:10px;">Grade 1</span></td>
-          <td style="text-align:center;">2 <span style="font-size:10px;color:var(--gray-400);">(SPA-0141..0142)</span></td>
-          <td style="font-weight:600;">฿1,200</td>
-          <td style="color:var(--success);">฿0</td>
-          <td style="color:var(--gray-400);">—</td>
-          <td style="font-weight:700;color:var(--primary);">฿1,200</td>
-          <td><button class="btn btn-sm btn-primary" onclick="showPayoutDetail('Ploy Kaewrat','1200','0','0','1200')">Create Bill</button></td>
-        </tr>
-        <tr>
-          <td><strong>Mali Suwat</strong><div style="font-size:10px;color:var(--gray-400);">hr.employee + res.partner vendor</div></td>
-          <td><span class="chip chip-purple" style="font-size:10px;">Grade 2</span></td>
-          <td style="text-align:center;">1 <span style="font-size:10px;color:var(--gray-400);">(SPA-0143)</span></td>
-          <td style="font-weight:600;">฿525</td>
-          <td style="color:var(--success);">฿0</td>
-          <td style="color:var(--gray-400);">—</td>
-          <td style="font-weight:700;color:var(--primary);">฿525</td>
-          <td><button class="btn btn-sm btn-primary" onclick="showPayoutDetail('Mali Suwat','525','0','0','525')">Create Bill</button></td>
-        </tr>
-      </tbody>
-    </table>
+    <!-- ===== TODAY'S SESSIONS - COLLAPSIBLE ===== -->
+    <div class="detail-panel" style="margin-bottom:16px;">
+      <div class="detail-header collapsible-header" onclick="toggleCollapsible(this)" style="cursor:pointer;user-select:none;">
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span class="collapse-icon" style="transition:transform 0.3s;">▶</span>
+          <div class="detail-title">📋 Today's Sessions — Ready to Bill</div>
+          <span class="badge badge-info" id="today-sessions-count">3 officers</span>
+        </div>
+        <span style="font-size:11px;color:var(--gray-500);">10 Mar 2026 · Click to toggle</span>
+      </div>
+      <div class="collapsible-content" style="padding:0;">
+        <div style="font-size:11px;color:var(--gray-500);padding:8px 16px 0;">PO lines not yet invoiced · officer confirmed finished · pending deductions will auto-append as negative lines</div>
+        <div class="table-wrap" style="margin-top:8px;">
+          <table class="data-table">
+            <thead><tr>
+              <th>Officer</th><th>Grade</th><th>Sessions Today</th>
+              <th>Service (SPA-THAI/AROMA)</th><th>SPA-TIP</th>
+              <th>Pending Deductions</th><th>Net Today</th><th>Action</th>
+            </tr></thead>
+            <tbody id="payout-today-tbody">
+              <!-- Dynamically populated -->
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
 
-    <!-- Completed today -->
-    <div class="section-title" style="margin:20px 0 4px;">✅ Paid Today — Audit Trail</div>
-    <div class="table-wrap">
-    <table class="data-table">
-      <thead><tr>
-        <th>Bill #</th><th>Officer</th><th>Sessions</th>
-        <th>Service</th><th>Tip</th><th>Deductions</th>
-        <th>Net Paid</th><th>Payment</th><th>Time</th><th>Cashier</th>
-      </tr></thead>
-      <tbody>
-        <tr>
-          <td><strong>VB-2026-0318</strong></td>
-          <td>Dao Siriwan</td>
-          <td>SPA-0136, SPA-0137</td>
-          <td>฿500</td>
-          <td style="color:var(--success);">+฿100</td>
-          <td style="color:var(--gray-400);">฿0</td>
-          <td style="font-weight:700;">฿600</td>
-          <td><span class="chip chip-success">Petty Cash</span></td>
-          <td>11:45</td><td>Som K.</td>
-        </tr>
-      </tbody>
-    </table>
+    <!-- ===== PAID TODAY - COLLAPSIBLE ===== -->
+    <div class="detail-panel" style="margin-bottom:16px;">
+      <div class="detail-header collapsible-header" onclick="toggleCollapsible(this)" style="cursor:pointer;user-select:none;">
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span class="collapse-icon" style="transition:transform 0.3s;">▶</span>
+          <div class="detail-title">✅ Paid Today — Audit Trail</div>
+          <span class="badge badge-success" id="paid-today-count">1 transaction</span>
+        </div>
+        <span style="font-size:11px;color:var(--gray-500);">Click to toggle</span>
+      </div>
+      <div class="collapsible-content" style="padding:0;">
+        <div class="table-wrap" style="margin-top:8px;">
+          <table class="data-table">
+            <thead><tr>
+              <th>Bill #</th><th>Officer</th><th>Sessions</th>
+              <th>Service</th><th>Tip</th><th>Deductions</th>
+              <th>Net Paid</th><th>Payment</th><th>Time</th><th>Cashier</th>
+            </tr></thead>
+            <tbody id="payout-paid-tbody">
+              <!-- Dynamically populated -->
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
 
     <!-- Daily summary -->
     <div style="margin-top:16px;padding:12px 16px;background:var(--primary-light);border-radius:var(--radius);font-size:13px;">
       <strong>Daily Summary (10 Mar):</strong>
-      Session fees billed today: <strong>฿4,575</strong> &nbsp;|&nbsp;
-      Outstanding prior days: <strong>฿1,900</strong> &nbsp;|&nbsp;
-      Pending deductions: <strong>-฿1,020</strong> &nbsp;|&nbsp;
-      Paid out: <strong>฿600</strong> &nbsp;|&nbsp;
-      SPA-TIP via E08 (separate): <strong>฿450</strong>
+      Session fees billed today: <strong id="summary-today">฿4,575</strong> &nbsp;|&nbsp;
+      Outstanding prior days: <strong id="summary-outstanding">฿1,900</strong> &nbsp;|&nbsp;
+      Pending deductions: <strong id="summary-deductions">-฿1,020</strong> &nbsp;|&nbsp;
+      Paid out: <strong id="summary-paid">฿600</strong> &nbsp;|&nbsp;
+      SPA-TIP via E08 (separate): <strong id="summary-tips">฿450</strong>
     </div>
   </div>
 </div><!-- ── Payout Request Modal — F03 / F07 / F08  (READ-ONLY net — no inline deduction editing) ── -->
@@ -4538,7 +4524,7 @@ function renderPage(pageId){
     case 'spa':          renderSpaSessions(); break;
     case 'spa-officers': renderSpaOfficers(); break;
     case 'transfer':     renderTransferPage(); break;
-    case 'payout':       renderPayout(); break;
+    case 'payout':       renderPayoutPage(); break;
     case 'members':      renderMembers(); break;
     case 'internal-sale': renderInternalSale(); break;
     case 'salesperson':  renderSalesperson(); break;
@@ -4916,6 +4902,203 @@ function renderPayout(){
   }).join('') || '<tr><td colspan="7" style="text-align:center;padding:20px;color:var(--gray-400);">No officer data</td></tr>';
 }
 
+/* ── Vendor Payments Functions ──────────────────────────────────────────── */
+function renderPayoutPage() {
+  // Outstanding bills data
+  const outstandingBills = [
+    { id: 1, billNo: 'VB-2026-0312', officer: 'Napa Prachaya', grade: 'Grade 2', date: '08 Mar', 
+      sessions: 'SPA-0131, SPA-0132', service: 1050, tip: 0, deductions: 0, net: 1050, status: 'posted' },
+    { id: 2, billNo: 'VB-2026-0315', officer: 'Mali Suwat', grade: 'Grade 2', date: '08 Mar', 
+      sessions: 'SPA-0133', service: 700, tip: 150, deductions: 0, net: 850, status: 'posted' },
+  ];
+  
+  // Today's sessions data
+  const todaySessions = [
+    { officer: 'Napa Prachaya', grade: 'Grade 2', sessions: 3, sessionRef: 'SPA-0138..0140', 
+      service: 1575, tip: 200, deductions: 1020, net: 755 },
+    { officer: 'Ploy Kaewrat', grade: 'Grade 1', sessions: 2, sessionRef: 'SPA-0141..0142', 
+      service: 1200, tip: 0, deductions: 0, net: 1200 },
+    { officer: 'Mali Suwat', grade: 'Grade 2', sessions: 1, sessionRef: 'SPA-0143', 
+      service: 525, tip: 0, deductions: 0, net: 525 },
+  ];
+  
+  // Paid today data
+  const paidToday = [
+    { billNo: 'VB-2026-0318', officer: 'Dao Siriwan', sessions: 'SPA-0136, SPA-0137', 
+      service: 500, tip: 100, deductions: 0, net: 600, payment: 'Petty Cash', time: '11:45', cashier: 'Som K.' },
+  ];
+
+  // Calculate totals
+  const totalOutstanding = outstandingBills.reduce((sum, b) => sum + b.net, 0);
+  const totalTodayService = todaySessions.reduce((sum, t) => sum + t.service, 0);
+  const totalTodayNet = todaySessions.reduce((sum, t) => sum + t.net, 0);
+  const totalDeductions = todaySessions.reduce((sum, t) => sum + t.deductions, 0);
+  const totalPaid = paidToday.reduce((sum, p) => sum + p.net, 0);
+  const totalTips = todaySessions.reduce((sum, t) => sum + t.tip, 0) + 
+                    outstandingBills.reduce((sum, b) => sum + b.tip, 0) + 
+                    paidToday.reduce((sum, p) => sum + p.tip, 0);
+
+  // Update stats
+  document.getElementById('payout-today-sessions').textContent = '฿' + totalTodayService.toLocaleString();
+  document.getElementById('payout-outstanding').textContent = '฿' + totalOutstanding.toLocaleString();
+  document.getElementById('payout-deductions').textContent = '-฿' + totalDeductions.toLocaleString();
+  document.getElementById('payout-paid-today').textContent = '฿' + totalPaid.toLocaleString();
+  
+  // Update summary
+  document.getElementById('summary-today').textContent = '฿' + totalTodayService.toLocaleString();
+  document.getElementById('summary-outstanding').textContent = '฿' + totalOutstanding.toLocaleString();
+  document.getElementById('summary-deductions').textContent = '-฿' + totalDeductions.toLocaleString();
+  document.getElementById('summary-paid').textContent = '฿' + totalPaid.toLocaleString();
+  document.getElementById('summary-tips').textContent = '฿' + totalTips.toLocaleString();
+
+  // Update counts
+  document.getElementById('outstanding-count').textContent = outstandingBills.length + ' bills';
+  document.getElementById('today-sessions-count').textContent = todaySessions.length + ' officers';
+  document.getElementById('paid-today-count').textContent = paidToday.length + ' transaction' + (paidToday.length !== 1 ? 's' : '');
+
+  // Render Outstanding Bills table
+  const outstandingTbody = document.getElementById('payout-outstanding-tbody');
+  if (outstandingTbody) {
+    outstandingTbody.innerHTML = outstandingBills.map(bill => `
+      <tr>
+        <td style="width:30px;"><input type="checkbox" class="bill-check prior-check" data-id="${bill.id}" data-amt="${bill.net}" data-officer="${bill.officer}"></td>
+        <td><strong>${bill.billNo}</strong></td>
+        <td>${bill.officer}</td>
+        <td><span class="chip chip-purple" style="font-size:10px;">${bill.grade}</span></td>
+        <td style="color:var(--gray-500);">${bill.date}</td>
+        <td style="font-size:11px;">${bill.sessions}</td>
+        <td style="font-weight:600;">฿${bill.service.toLocaleString()}</td>
+        <td style="color:var(--success);">${bill.tip > 0 ? '฿' + bill.tip.toLocaleString() : '—'}</td>
+        <td style="color:var(--gray-400);">${bill.deductions > 0 ? '฿' + bill.deductions.toLocaleString() : '—'}</td>
+        <td style="font-weight:700;color:var(--primary);">฿${bill.net.toLocaleString()}</td>
+        <td><span class="chip chip-warning">Posted / Unpaid</span></td>
+        <td><button class="btn btn-sm btn-primary" onclick="paySingleBill(${bill.id}, '${bill.officer}', ${bill.net})">💵 Pay Now</button></td>
+      </tr>
+    `).join('') || '<tr><td colspan="12" style="text-align:center;padding:20px;color:var(--gray-400);">No outstanding bills</td></tr>';
+  }
+
+  // Render Today's Sessions table
+  const todayTbody = document.getElementById('payout-today-tbody');
+  if (todayTbody) {
+    todayTbody.innerHTML = todaySessions.map(session => `
+      <tr>
+        <td><strong>${session.officer}</strong><div style="font-size:10px;color:var(--gray-400);">hr.employee + res.partner vendor</div></td>
+        <td><span class="chip chip-purple" style="font-size:10px;">${session.grade}</span></td>
+        <td style="text-align:center;">${session.sessions} <span style="font-size:10px;color:var(--gray-400);">(${session.sessionRef})</span></td>
+        <td style="font-weight:600;">฿${session.service.toLocaleString()}</td>
+        <td style="color:var(--success);">${session.tip > 0 ? '฿' + session.tip.toLocaleString() : '—'}</td>
+        <td style="color:var(--danger);">${session.deductions > 0 ? '-฿' + session.deductions.toLocaleString() : '—'}</td>
+        <td style="font-weight:700;color:var(--primary);">฿${session.net.toLocaleString()}</td>
+        <td><button class="btn btn-sm btn-primary" onclick="createDailyBill('${session.officer}', ${session.service}, ${session.tip}, ${session.deductions}, ${session.net})">Create Bill</button></td>
+      </tr>
+    `).join('') || '<tr><td colspan="8" style="text-align:center;padding:20px;color:var(--gray-400);">No sessions today</td></tr>';
+  }
+
+  // Render Paid Today table
+  const paidTbody = document.getElementById('payout-paid-tbody');
+  if (paidTbody) {
+    paidTbody.innerHTML = paidToday.map(paid => `
+      <tr>
+        <td><strong>${paid.billNo}</strong></td>
+        <td>${paid.officer}</td>
+        <td style="font-size:11px;">${paid.sessions}</td>
+        <td style="font-weight:600;">฿${paid.service.toLocaleString()}</td>
+        <td style="color:var(--success);">+฿${paid.tip.toLocaleString()}</td>
+        <td style="color:var(--gray-400);">${paid.deductions > 0 ? '฿' + paid.deductions.toLocaleString() : '—'}</td>
+        <td style="font-weight:700;color:var(--success);">฿${paid.net.toLocaleString()}</td>
+        <td><span class="chip chip-success">${paid.payment}</span></td>
+        <td>${paid.time}</td>
+        <td>${paid.cashier}</td>
+      </tr>
+    `).join('') || '<tr><td colspan="10" style="text-align:center;padding:20px;color:var(--gray-400);">No payments today</td></tr>';
+  }
+}
+
+/* ── Collapsible Function ─────────────────────────────────────────────── */
+function toggleCollapsible(header) {
+  const content = header.nextElementSibling;
+  const icon = header.querySelector('.collapse-icon');
+  
+  if (content.classList.contains('collapsed')) {
+    content.classList.remove('collapsed');
+    content.style.display = 'block';
+    icon.style.transform = 'rotate(0deg)';
+    header.classList.remove('collapsed');
+  } else {
+    content.classList.add('collapsed');
+    content.style.display = 'none';
+    icon.style.transform = 'rotate(-90deg)';
+    header.classList.add('collapsed');
+  }
+}
+
+/* ── Payment Functions ────────────────────────────────────────────────── */
+function toggleAllBills(checkbox, group) {
+  document.querySelectorAll(`.${group}-check`).forEach(c => c.checked = checkbox.checked);
+}
+
+function paySelectedBills() {
+  const checked = [...document.querySelectorAll('.bill-check:checked')];
+  if (checked.length === 0) {
+    showToast('Select at least one bill to pay', 'error');
+    return;
+  }
+  
+  const total = checked.reduce((sum, cb) => sum + (parseInt(cb.dataset.amt) || 0), 0);
+  const officers = [...new Set(checked.map(cb => cb.dataset.officer))];
+  
+  showToast(`💳 Payment registered for ${checked.length} bill(s) — ฿${total.toLocaleString()} via Petty Cash for ${officers.join(', ')}`, 'success');
+  
+  // Uncheck all and optionally remove from UI (for demo)
+  checked.forEach(cb => {
+    cb.checked = false;
+    cb.closest('tr').style.opacity = '0.5';
+    setTimeout(() => {
+      cb.closest('tr').remove();
+      renderPayoutPage(); // Re-render to update counts
+    }, 1000);
+  });
+  
+  document.getElementById('select-all-prior').checked = false;
+}
+
+function payAllOutstandingBills() {
+  const allBills = [...document.querySelectorAll('.bill-check')];
+  if (allBills.length === 0) {
+    showToast('No outstanding bills to pay', 'warning');
+    return;
+  }
+  
+  const total = allBills.reduce((sum, cb) => sum + (parseInt(cb.dataset.amt) || 0), 0);
+  showToast(`⚡ Paid all outstanding bills — ฿${total.toLocaleString()} registered via Petty Cash. ${allBills.length} vendor bills cleared.`, 'success');
+  
+  allBills.forEach(cb => {
+    cb.closest('tr').style.opacity = '0.5';
+    setTimeout(() => {
+      cb.closest('tr').remove();
+      renderPayoutPage();
+    }, 1000);
+  });
+}
+
+function paySingleBill(billId, officer, amount) {
+  showToast(`💵 Payment of ฿${amount.toLocaleString()} for ${officer} registered`, 'success');
+  // In a real implementation, you would update the DB here
+}
+
+function createDailyBill(officer, service, tip, deductions, net) {
+  showToast(`📋 Daily bill created for ${officer} — Net ฿${net.toLocaleString()}`, 'success');
+}
+
+function filterPayoutOfficer() {
+  const filter = document.getElementById('payout-officer-filter').value;
+  if (filter === 'all') {
+    showToast('Showing all officers', 'success');
+  } else {
+    showToast(`Filtered to: ${filter}`, 'success');
+  }
+}
+  
 function dbShowPayoutDetail(officerId){
   const summary = api.getPayoutSummary().find(o=>o.officer_id===officerId);
   if(!summary) return;
