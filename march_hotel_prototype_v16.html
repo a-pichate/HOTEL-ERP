@@ -2808,14 +2808,14 @@
   <div style="padding:8px 20px 0;">
     <div style="background:#EBF3FB;border-left:3px solid var(--odoo-blue);border-radius:var(--radius);padding:10px 14px;font-size:12px;color:#1F4E79;">
       <strong>Model C — Daily Payout Flow:</strong> Officer tells cashier "finished". Cashier clicks Create Daily Bill → vendor bill auto-created from today's PO lines + pending deduction negative lines.
-      <strong>Hold = native Odoo AP</strong> — post bill, defer payment. Officer can accumulate multiple days and collect anytime via Pay All Outstanding.
+      <strong>Hold = native Odoo AP</strong> — post bill, defer payment. Officer can accumulate multiple days and collect anytime.
       Session fee and SPA-TIP are separate vendor bills (E08 fires on guest invoice post independently).
     </div>
   </div>
 
   <div style="padding:16px 20px;">
 
-    <!-- ===== OUTSTANDING BILLS - COLLAPSIBLE ===== -->
+    <!-- ===== OUTSTANDING BILLS - COLLAPSIBLE (Default Collapsed) ===== -->
     <div class="detail-panel" style="margin-bottom:16px;">
       <div class="detail-header collapsible-header" onclick="toggleCollapsible(this)" style="cursor:pointer;user-select:none;">
         <div style="display:flex;align-items:center;gap:8px;">
@@ -2825,12 +2825,11 @@
         </div>
         <span style="font-size:11px;color:var(--gray-500);">Hold = Native AP · Click to toggle</span>
       </div>
-      <div class="collapsible-content" style="padding:0;">
-        <div style="font-size:11px;color:var(--gray-500);padding:8px 16px 0;">Vendor bills posted but payment not yet registered · officer chose to hold · pay any time</div>
+      <div class="collapsible-content collapsed" style="display:none;">
+        <div style="font-size:11px;color:var(--gray-500);padding:8px 16px 0;">Vendor bills posted but payment not yet registered · officer chose to hold</div>
         <div class="table-wrap" style="margin-top:8px;">
           <table class="data-table">
             <thead><tr>
-              <th style="width:30px;"><input type="checkbox" onchange="toggleAllBills(this, 'prior')" id="select-all-prior"></th>
               <th>Bill #</th><th>Officer</th><th>Grade</th><th>Date</th>
               <th>Sessions</th><th>Service</th><th>Tip</th><th>Deductions</th><th>Net Payable</th><th>Status</th><th>Action</th>
             </tr></thead>
@@ -2838,12 +2837,6 @@
               <!-- Dynamically populated -->
             </tbody>
           </table>
-        </div>
-        <!-- Pay Selected / Pay All — inside Outstanding section -->
-        <div style="margin:12px 16px 16px;display:flex;gap:8px;align-items:center;">
-          <button class="btn btn-secondary btn-sm" onclick="paySelectedBills()">💳 Pay Selected</button>
-          <button class="btn btn-primary btn-sm" onclick="payAllOutstandingBills()">⚡ Pay All Outstanding</button>
-          <span style="font-size:11px;color:var(--gray-500);">Tick rows above then Pay Selected — or Pay All to clear in one action</span>
         </div>
       </div>
     </div>
@@ -4811,25 +4804,135 @@ function renderSpaSessions(){
   const sessions = api.getSessions();
   const tbody = document.getElementById('spa-sessions-tbody');
   if(!tbody) return;
+  
+  if(sessions.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="13" style="text-align:center;padding:20px;color:var(--gray-400);">No active spa sessions</td></tr>';
+    return;
+  }
+  
   tbody.innerHTML = sessions.map(s=>{
     const officer = api.find('res_partner', s.officer_id);
-    const stateBadge = {in_progress:'<span class="badge badge-warning">In Progress</span>',completed:'<span class="badge badge-confirmed">Completed</span>',draft:'<span class="badge">Draft</span>',cancelled:'<span class="badge badge-danger">Cancelled</span>'}[s.state]||'';
-    const ddStr = s.date_deadline ? s.date_deadline.slice(11,16) : '';
+    const folio   = s.folio_id ? api.find('folio', s.folio_id) : null;
+    const guest   = folio ? api.find('res_partner', folio.partner_id) : null;
+    
+    // Format timers based on session state
+    let timerHtml = '';
+    let timerColor = 'var(--gray-500)';
+    if (s.state === 'in_progress' && s.date_deadline) {
+      // Calculate time remaining (simplified for demo)
+      const deadline = new Date(s.date_deadline.replace(' ', 'T'));
+      const now = new Date();
+      const diffMs = deadline - now;
+      if (diffMs > 0) {
+        const diffHrs = Math.floor(diffMs / 3600000);
+        const diffMins = Math.floor((diffMs % 3600000) / 60000);
+        const diffSecs = Math.floor((diffMs % 60000) / 1000);
+        timerHtml = `${String(diffHrs).padStart(2,'0')}:${String(diffMins).padStart(2,'0')}:${String(diffSecs).padStart(2,'0')}`;
+        timerColor = diffMins < 5 ? 'var(--danger)' : 'var(--warning)';
+      } else {
+        timerHtml = '00:00:00';
+        timerColor = 'var(--danger)';
+      }
+    }
+    
+    const stateBadge = {
+      'in_progress': '<span class="badge badge-warning">In Progress</span>',
+      'completed': '<span class="badge badge-confirmed">Completed</span>',
+      'draft': '<span class="badge">Draft</span>',
+      'cancelled': '<span class="badge badge-danger">Cancelled</span>'
+    }[s.state] || s.state;
+    
+    // Calculate PO lines cost breakdown
+    const lines = db.spa_session_line.filter(l => l.session_id === s.id) || [];
+    const serviceLine = lines.find(l => l.line_type === 'service') || { price_subtotal: s.cost_total || 0 };
+    const tipLine = lines.find(l => l.line_type === 'tip') || { price_subtotal: 0 };
+    
+    const costBreakdown = `
+      <div>Line 1: Service = <strong>฿${(serviceLine.price_subtotal || 0).toLocaleString()}</strong></div>
+      <div style="color:var(--gray-400);font-style:italic;">Line 2: SPA-TIP = <strong>฿${(tipLine.price_subtotal || 0).toLocaleString()}</strong> (pending checkout)</div>
+    `;
+    
+    // Notification button (pulse if nearing end)
+    const notifyBtnClass = (s.state === 'in_progress' && timerColor === 'var(--danger)') 
+      ? 'style="animation:pulsebell 1s ease-in-out infinite;"' 
+      : '';
+    
+    // Action buttons based on state
+    let actionButtons = '';
+    if (s.state === 'in_progress') {
+      actionButtons = `
+        <div style="display:flex;gap:4px;flex-wrap:wrap;">
+          <button class="btn btn-sm btn-outline" onclick="showModal('modal-extend-${s.id}')" title="C07 — Time Extension">+Extend</button>
+          <button class="btn btn-sm btn-success" onclick="showModal('modal-complete-${s.id}')" title="C10 — Post to Folio">Complete</button>
+        </div>
+      `;
+    } else if (s.state === 'completed') {
+      actionButtons = `<span class="chip chip-green" style="font-size:10px;">Done</span>`;
+    }
+    
     return `<tr>
-      <td><strong>${s.name}</strong></td>
-      <td>${s.officer_name}</td>
-      <td>${officer?.x_grade||''}</td>
-      <td>${s.guest_display}</td>
-      <td>${s.spa_room||'—'}</td>
+      <td><strong>PO-SPA-${String(s.id).padStart(4,'0')}</strong></td>
+      <td>${s.guest_display || guest?.name || s.guest_name || '—'}<br><small style="color:var(--gray-500);">${folio?.name || s.folio_name || 'Walk-in'}</small></td>
+      <td><span class="chip chip-info">${s.spa_room || '—'}</span></td>
+      <td>${officer?.name || '—'}<br><small style="color:${officer?.is_available ? 'var(--success)' : 'var(--warning)'};">${officer?.is_available ? '● Available' : '● Busy'}</small></td>
+      <td>${api.find('product', officer?.x_service_product_id)?.name || 'Service'}</td>
+      <td>${s.date_start ? s.date_start.slice(11,16) : '—'}</td>
+      <td style="font-weight:600;color:${timerColor === 'var(--danger)' ? 'var(--danger)' : 'var(--warning)'};">${s.date_deadline ? s.date_deadline.slice(11,16) : '—'}</td>
+      <td><span class="session-timer" style="font-family:monospace;font-size:13px;font-weight:700;color:${timerColor};">${timerHtml || '—'}</span></td>
       <td>${s.duration} hrs</td>
-      <td>${ddStr}</td>
-      <td>${stateBadge}</td>
-      <td>฿${s.sell_total.toLocaleString()}</td>
-      <td>
-        ${s.state==='in_progress'?`<button class="btn btn-sm btn-success" onclick="dbCompleteSession(${s.id})">✓ Complete</button>`:''}
-        ${s.state==='in_progress'?`<button class="btn btn-sm btn-secondary" style="margin-left:4px;" onclick="showModal('modal-notify-log')">📋 Log</button>`:''}
-      </td></tr>`;
-  }).join('') || '<tr><td colspan="10" style="text-align:center;color:var(--gray-400);padding:20px;">No sessions yet</td></tr>';
+      <td style="font-size:11px;line-height:1.7;">${costBreakdown}</td>
+      <td style="font-weight:600;color:var(--odoo-purple);">฿${(s.sell_total || 0).toLocaleString()}</td>
+      <td style="text-align:center;">
+        <button onclick="openNotifyLog('${s.id}','${s.guest_display || guest?.name || s.guest_name || 'Guest'}')" 
+          title="Log guest notification" 
+          style="background:none;border:1px solid var(--gray-300);border-radius:6px;padding:3px 7px;cursor:pointer;font-size:14px;" 
+          id="notify-btn-${s.id}" ${notifyBtnClass}>🔔</button>
+      </td>
+      <td>${actionButtons}</td>
+    </tr>`;
+  }).join('');
+}
+
+function openNotifyLog(sessionId, guestName) {
+  window._currentNotifySession = sessionId;
+  document.getElementById('notify-session-label').textContent = `Session SPA-${String(sessionId).padStart(4,'0')} · ${guestName}`;
+  document.getElementById('notify-log-text').value = '';
+  
+  // Load existing logs if any
+  const logs = window._notifyLogs?.[sessionId] || [];
+  const historyEl = document.getElementById('notify-history-list');
+  const historyWrap = document.getElementById('notify-history-wrap');
+  
+  if (logs.length > 0) {
+    historyEl.innerHTML = logs.map(log => `<div>${log}</div>`).join('');
+    historyWrap.style.display = 'block';
+  } else {
+    historyWrap.style.display = 'none';
+  }
+  
+  showModal('modal-notify-log');
+}
+
+function stampNotify(text) {
+  document.getElementById('notify-log-text').value = text;
+}
+
+function saveNotifyLog() {
+  const text = document.getElementById('notify-log-text').value.trim();
+  if (!text) { showToast('Please enter a log note', 'error'); return; }
+  
+  const sessionId = window._currentNotifySession;
+  if (!sessionId) return;
+  
+  // Initialize logs storage
+  if (!window._notifyLogs) window._notifyLogs = {};
+  if (!window._notifyLogs[sessionId]) window._notifyLogs[sessionId] = [];
+  
+  const timestamp = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+  window._notifyLogs[sessionId].push(`${timestamp} — ${text}`);
+  
+  closeModal('modal-notify-log');
+  showToast('Notification logged', 'success');
 }
 
 function dbCompleteSession(sessionId){
@@ -4901,7 +5004,6 @@ function renderPayout(){
       </td></tr>`;
   }).join('') || '<tr><td colspan="7" style="text-align:center;padding:20px;color:var(--gray-400);">No officer data</td></tr>';
 }
-
 /* ── Vendor Payments Functions ──────────────────────────────────────────── */
 function renderPayoutPage() {
   // Outstanding bills data
@@ -4956,12 +5058,11 @@ function renderPayoutPage() {
   document.getElementById('today-sessions-count').textContent = todaySessions.length + ' officers';
   document.getElementById('paid-today-count').textContent = paidToday.length + ' transaction' + (paidToday.length !== 1 ? 's' : '');
 
-  // Render Outstanding Bills table
+  // Render Outstanding Bills table (no checkboxes)
   const outstandingTbody = document.getElementById('payout-outstanding-tbody');
   if (outstandingTbody) {
     outstandingTbody.innerHTML = outstandingBills.map(bill => `
       <tr>
-        <td style="width:30px;"><input type="checkbox" class="bill-check prior-check" data-id="${bill.id}" data-amt="${bill.net}" data-officer="${bill.officer}"></td>
         <td><strong>${bill.billNo}</strong></td>
         <td>${bill.officer}</td>
         <td><span class="chip chip-purple" style="font-size:10px;">${bill.grade}</span></td>
@@ -4972,9 +5073,9 @@ function renderPayoutPage() {
         <td style="color:var(--gray-400);">${bill.deductions > 0 ? '฿' + bill.deductions.toLocaleString() : '—'}</td>
         <td style="font-weight:700;color:var(--primary);">฿${bill.net.toLocaleString()}</td>
         <td><span class="chip chip-warning">Posted / Unpaid</span></td>
-        <td><button class="btn btn-sm btn-primary" onclick="paySingleBill(${bill.id}, '${bill.officer}', ${bill.net})">💵 Pay Now</button></td>
+        <td><button class="btn btn-sm btn-primary" onclick="payOutstandingBill('${bill.billNo}', '${bill.officer}', ${bill.service}, ${bill.tip}, ${bill.deductions}, ${bill.net})">💵 Pay Now</button></td>
       </tr>
-    `).join('') || '<tr><td colspan="12" style="text-align:center;padding:20px;color:var(--gray-400);">No outstanding bills</td></tr>';
+    `).join('') || '<tr><td colspan="11" style="text-align:center;padding:20px;color:var(--gray-400);">No outstanding bills</td></tr>';
   }
 
   // Render Today's Sessions table
@@ -5014,6 +5115,60 @@ function renderPayoutPage() {
   }
 }
 
+/* ── Pay Outstanding Bill Function (works like Create Daily Bill) ──────── */
+function payOutstandingBill(billNo, officer, service, tip, deductions, net) {
+  // This function works exactly like createDailyBill but for outstanding bills
+  showToast(`💵 Payment processed for ${billNo} — ${officer} · Net ฿${net.toLocaleString()}`, 'success');
+  
+  // In a real implementation, you would:
+  // 1. Update the bill status in the database to 'paid'
+  // 2. Create a payment record
+  // 3. Move this bill to the "Paid Today" section
+  
+  // For demo purposes, we'll simulate moving this bill to paid today
+  const paidTbody = document.getElementById('payout-paid-tbody');
+  if (paidTbody) {
+    // Add a new row to Paid Today table (simulating the payment)
+    const newRow = document.createElement('tr');
+    newRow.innerHTML = `
+      <td><strong>${billNo}</strong></td>
+      <td>${officer}</td>
+      <td style="font-size:11px;">SPA-XXXX</td>
+      <td>฿${service.toLocaleString()}</td>
+      <td style="color:var(--success);">${tip > 0 ? '+฿' + tip.toLocaleString() : '—'}</td>
+      <td>${deductions > 0 ? '฿' + deductions.toLocaleString() : '—'}</td>
+      <td style="font-weight:700;color:var(--success);">฿${net.toLocaleString()}</td>
+      <td><span class="chip chip-success">Petty Cash</span></td>
+      <td>${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</td>
+      <td>Cashier</td>
+    `;
+    paidTbody.prepend(newRow);
+    
+    // Update the paid count
+    const paidCount = document.getElementById('paid-today-count');
+    const currentCount = parseInt(paidCount.textContent) || 0;
+    paidCount.textContent = (currentCount + 1) + ' transactions';
+    
+    // Remove the row from outstanding bills
+    const row = event?.target?.closest('tr');
+    if (row) {
+      row.remove();
+      
+      // Update outstanding count
+      const outstandingRows = document.querySelectorAll('#payout-outstanding-tbody tr').length;
+      document.getElementById('outstanding-count').textContent = outstandingRows + ' bills';
+    }
+  }
+}
+
+/* ── Create Daily Bill Function ────────────────────────────────────────── */
+function createDailyBill(officer, service, tip, deductions, net) {
+  showToast(`📋 Daily bill created for ${officer} — Net ฿${net.toLocaleString()}`, 'success');
+  
+  // In a real implementation, you would create a vendor bill in the database
+  // For demo, we just show a toast
+}
+
 /* ── Collapsible Function ─────────────────────────────────────────────── */
 function toggleCollapsible(header) {
   const content = header.nextElementSibling;
@@ -5032,64 +5187,7 @@ function toggleCollapsible(header) {
   }
 }
 
-/* ── Payment Functions ────────────────────────────────────────────────── */
-function toggleAllBills(checkbox, group) {
-  document.querySelectorAll(`.${group}-check`).forEach(c => c.checked = checkbox.checked);
-}
-
-function paySelectedBills() {
-  const checked = [...document.querySelectorAll('.bill-check:checked')];
-  if (checked.length === 0) {
-    showToast('Select at least one bill to pay', 'error');
-    return;
-  }
-  
-  const total = checked.reduce((sum, cb) => sum + (parseInt(cb.dataset.amt) || 0), 0);
-  const officers = [...new Set(checked.map(cb => cb.dataset.officer))];
-  
-  showToast(`💳 Payment registered for ${checked.length} bill(s) — ฿${total.toLocaleString()} via Petty Cash for ${officers.join(', ')}`, 'success');
-  
-  // Uncheck all and optionally remove from UI (for demo)
-  checked.forEach(cb => {
-    cb.checked = false;
-    cb.closest('tr').style.opacity = '0.5';
-    setTimeout(() => {
-      cb.closest('tr').remove();
-      renderPayoutPage(); // Re-render to update counts
-    }, 1000);
-  });
-  
-  document.getElementById('select-all-prior').checked = false;
-}
-
-function payAllOutstandingBills() {
-  const allBills = [...document.querySelectorAll('.bill-check')];
-  if (allBills.length === 0) {
-    showToast('No outstanding bills to pay', 'warning');
-    return;
-  }
-  
-  const total = allBills.reduce((sum, cb) => sum + (parseInt(cb.dataset.amt) || 0), 0);
-  showToast(`⚡ Paid all outstanding bills — ฿${total.toLocaleString()} registered via Petty Cash. ${allBills.length} vendor bills cleared.`, 'success');
-  
-  allBills.forEach(cb => {
-    cb.closest('tr').style.opacity = '0.5';
-    setTimeout(() => {
-      cb.closest('tr').remove();
-      renderPayoutPage();
-    }, 1000);
-  });
-}
-
-function paySingleBill(billId, officer, amount) {
-  showToast(`💵 Payment of ฿${amount.toLocaleString()} for ${officer} registered`, 'success');
-  // In a real implementation, you would update the DB here
-}
-
-function createDailyBill(officer, service, tip, deductions, net) {
-  showToast(`📋 Daily bill created for ${officer} — Net ฿${net.toLocaleString()}`, 'success');
-}
-
+/* ── Filter Function ──────────────────────────────────────────────────── */
 function filterPayoutOfficer() {
   const filter = document.getElementById('payout-officer-filter').value;
   if (filter === 'all') {
@@ -5174,6 +5272,8 @@ function dbConfirmTopUp(){
 /* ══════════════════════════════════════════════════════════════════════════
    INITIALISE — load from localStorage or seed fresh
    ══════════════════════════════════════════════════════════════════════════ */
+
+window._notifyLogs = {};
 (function initDB(){
   if(!loadDB()){
     seedDB();
