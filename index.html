@@ -5238,7 +5238,6 @@ function showPayoutDetailModal(officerName, service, tip, deductions, net, billN
   // Set the officer dropdown to the correct officer
   const officerSel = document.getElementById('payout-officer-sel');
   if (officerSel) {
-    // Find the option that matches this officer
     for (let i = 0; i < officerSel.options.length; i++) {
       if (officerSel.options[i].text.includes(officerName)) {
         officerSel.selectedIndex = i;
@@ -5247,19 +5246,65 @@ function showPayoutDetailModal(officerName, service, tip, deductions, net, billN
     }
   }
   
-  // Update the modal title to show context
+  // Update the modal title
   const modalTitle = document.querySelector('#modal-payout-request .modal-title');
   if (modalTitle) {
     modalTitle.textContent = billNo ? `💵 Pay Bill - ${billNo}` : `💵 Create Daily Bill - ${officerName}`;
   }
   
-  // Update the read-only AP balance display
+  // Update balance display
   document.getElementById('po-earnings').textContent = '฿' + service.toLocaleString();
   document.getElementById('po-tips').textContent = '+฿' + tip.toLocaleString();
   document.getElementById('po-deductions').textContent = deductions > 0 ? '-฿' + deductions.toLocaleString() : '฿0';
   document.getElementById('po-net').textContent = '฿' + net.toLocaleString();
   
-  // Store the context for confirmation
+  // Populate sessions table (example data - you should get real data from your DB)
+  const sessionsTbody = document.getElementById('pd-sessions');
+  if (sessionsTbody) {
+    // This is example data - replace with actual session data from your DB
+    sessionsTbody.innerHTML = `
+      <tr>
+        <td style="padding:8px 10px;border-bottom:1px solid var(--gray-100);"><strong>SPA-0138</strong></td>
+        <td style="padding:8px 10px;border-bottom:1px solid var(--gray-100);">Thai Massage</td>
+        <td style="padding:8px 10px;border-bottom:1px solid var(--gray-100);text-align:center;">1.5 hrs</td>
+        <td style="padding:8px 10px;border-bottom:1px solid var(--gray-100);text-align:right;">฿350/hr</td>
+        <td style="padding:8px 10px;border-bottom:1px solid var(--gray-100);text-align:right;font-weight:600;">฿525</td>
+      </tr>
+      <tr>
+        <td style="padding:8px 10px;border-bottom:1px solid var(--gray-100);"><strong>SPA-0139</strong></td>
+        <td style="padding:8px 10px;border-bottom:1px solid var(--gray-100);">Aromatherapy</td>
+        <td style="padding:8px 10px;border-bottom:1px solid var(--gray-100);text-align:center;">1.0 hrs</td>
+        <td style="padding:8px 10px;border-bottom:1px solid var(--gray-100);text-align:right;">฿300/hr</td>
+        <td style="padding:8px 10px;border-bottom:1px solid var(--gray-100);text-align:right;font-weight:600;">฿300</td>
+      </tr>
+    `;
+  }
+  
+  // Populate deductions list
+  const dedList = document.getElementById('pd-deduction-list');
+  if (dedList) {
+    if (deductions > 0) {
+      dedList.innerHTML = `
+        <div style="padding:10px 14px;border-bottom:1px solid var(--gray-100);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">
+          <div><strong>RCNI-0041</strong> · Massage Oil — Lavender</div>
+          <div style="color:var(--danger);font-weight:600;">-฿420</div>
+        </div>
+        <div style="padding:10px 14px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">
+          <div><strong>RCNI-0039</strong> · Uniform — Standard Set</div>
+          <div style="color:var(--danger);font-weight:600;">-฿600</div>
+        </div>
+      `;
+    } else {
+      dedList.innerHTML = '<div style="padding:12px 14px;font-size:12px;color:var(--gray-500);text-align:center;">No approved deductions for this officer</div>';
+    }
+  }
+  
+  // Hide guard message and show form
+  document.getElementById('payout-guard-msg').style.display = 'none';
+  document.getElementById('payout-form-body').style.display = 'block';
+  document.getElementById('payout-confirm-btn').disabled = false;
+  
+  // Store pending data
   window._pendingPayout = {
     officerName: officerName,
     service: service,
@@ -5269,12 +5314,6 @@ function showPayoutDetailModal(officerName, service, tip, deductions, net, billN
     billNo: billNo
   };
   
-  // Hide the guard message and show the form
-  document.getElementById('payout-guard-msg').style.display = 'none';
-  document.getElementById('payout-form-body').style.display = 'block';
-  document.getElementById('payout-confirm-btn').disabled = false;
-  
-  // Show the modal
   showModal('modal-payout-request');
 }
 
