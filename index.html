@@ -5073,7 +5073,7 @@ function renderPayoutPage() {
         <td style="color:var(--gray-400);">${bill.deductions > 0 ? '฿' + bill.deductions.toLocaleString() : '—'}</td>
         <td style="font-weight:700;color:var(--primary);">฿${bill.net.toLocaleString()}</td>
         <td><span class="chip chip-warning">Posted / Unpaid</span></td>
-        <td><button class="btn btn-sm btn-primary" onclick="payOutstandingBill('${bill.billNo}', '${bill.officer}', ${bill.service}, ${bill.tip}, ${bill.deductions}, ${bill.net})">💵 Pay Now</button></td>
+        <td><button class="btn btn-sm btn-primary" onclick="showPayoutDetailModal('${bill.officer}', ${bill.service}, ${bill.tip}, ${bill.deductions}, ${bill.net}, '${bill.billNo}')">💵 Pay Now</button></td>
       </tr>
     `).join('') || '<tr><td colspan="11" style="text-align:center;padding:20px;color:var(--gray-400);">No outstanding bills</td></tr>';
   }
@@ -5090,7 +5090,7 @@ function renderPayoutPage() {
         <td style="color:var(--success);">${session.tip > 0 ? '฿' + session.tip.toLocaleString() : '—'}</td>
         <td style="color:var(--danger);">${session.deductions > 0 ? '-฿' + session.deductions.toLocaleString() : '—'}</td>
         <td style="font-weight:700;color:var(--primary);">฿${session.net.toLocaleString()}</td>
-        <td><button class="btn btn-sm btn-primary" onclick="createDailyBill('${session.officer}', ${session.service}, ${session.tip}, ${session.deductions}, ${session.net})">Create Bill</button></td>
+        <td><button class="btn btn-sm btn-primary" onclick="showPayoutDetailModal('${session.officer}', ${session.service}, ${session.tip}, ${session.deductions}, ${session.net}, null)">Create Bill</button></td>
       </tr>
     `).join('') || '<tr><td colspan="8" style="text-align:center;padding:20px;color:var(--gray-400);">No sessions today</td></tr>';
   }
@@ -5115,49 +5115,137 @@ function renderPayoutPage() {
   }
 }
 
-/* ── Pay Outstanding Bill Function (works like Create Daily Bill) ──────── */
-function payOutstandingBill(billNo, officer, service, tip, deductions, net) {
-  // This function works exactly like createDailyBill but for outstanding bills
-  showToast(`💵 Payment processed for ${billNo} — ${officer} · Net ฿${net.toLocaleString()}`, 'success');
+/* ── Show Payout Detail Modal (reuses the existing payout request modal) ── */
+function showPayoutDetailModal(officerName, service, tip, deductions, net, billNo) {
+  // Set the officer dropdown to the correct officer
+  const officerSel = document.getElementById('payout-officer-sel');
+  if (officerSel) {
+    // Find the option that matches this officer
+    for (let i = 0; i < officerSel.options.length; i++) {
+      if (officerSel.options[i].text.includes(officerName)) {
+        officerSel.selectedIndex = i;
+        break;
+      }
+    }
+  }
   
-  // In a real implementation, you would:
-  // 1. Update the bill status in the database to 'paid'
-  // 2. Create a payment record
-  // 3. Move this bill to the "Paid Today" section
+  // Update the modal title to show context
+  const modalTitle = document.querySelector('#modal-payout-request .modal-title');
+  if (modalTitle) {
+    modalTitle.textContent = billNo ? `💵 Pay Bill - ${billNo}` : `💵 Create Daily Bill - ${officerName}`;
+  }
   
-  // For demo purposes, we'll simulate moving this bill to paid today
-  const paidTbody = document.getElementById('payout-paid-tbody');
-  if (paidTbody) {
-    // Add a new row to Paid Today table (simulating the payment)
-    const newRow = document.createElement('tr');
-    newRow.innerHTML = `
-      <td><strong>${billNo}</strong></td>
-      <td>${officer}</td>
-      <td style="font-size:11px;">SPA-XXXX</td>
-      <td>฿${service.toLocaleString()}</td>
-      <td style="color:var(--success);">${tip > 0 ? '+฿' + tip.toLocaleString() : '—'}</td>
-      <td>${deductions > 0 ? '฿' + deductions.toLocaleString() : '—'}</td>
-      <td style="font-weight:700;color:var(--success);">฿${net.toLocaleString()}</td>
-      <td><span class="chip chip-success">Petty Cash</span></td>
-      <td>${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</td>
-      <td>Cashier</td>
-    `;
-    paidTbody.prepend(newRow);
+  // Update the read-only AP balance display
+  document.getElementById('po-earnings').textContent = '฿' + service.toLocaleString();
+  document.getElementById('po-tips').textContent = '+฿' + tip.toLocaleString();
+  document.getElementById('po-deductions').textContent = deductions > 0 ? '-฿' + deductions.toLocaleString() : '฿0';
+  document.getElementById('po-net').textContent = '฿' + net.toLocaleString();
+  
+  // Store the context for confirmation
+  window._pendingPayout = {
+    officerName: officerName,
+    service: service,
+    tip: tip,
+    deductions: deductions,
+    net: net,
+    billNo: billNo
+  };
+  
+  // Hide the guard message and show the form
+  document.getElementById('payout-guard-msg').style.display = 'none';
+  document.getElementById('payout-form-body').style.display = 'block';
+  document.getElementById('payout-confirm-btn').disabled = false;
+  
+  // Show the modal
+  showModal('modal-payout-request');
+}
+
+/* ── Override confirmPayout to handle both cases ──────────────────────── */
+function confirmPayout() {
+  const pending = window._pendingPayout;
+  if (!pending) {
+    closeModal('modal-payout-request');
+    return;
+  }
+  
+  const { officerName, service, tip, deductions, net, billNo } = pending;
+  
+  if (billNo) {
+    // This is an outstanding bill payment
+    showToast(`💵 Payment processed for ${billNo} — ${officerName} · Net ฿${net.toLocaleString()}`, 'success');
     
-    // Update the paid count
-    const paidCount = document.getElementById('paid-today-count');
-    const currentCount = parseInt(paidCount.textContent) || 0;
-    paidCount.textContent = (currentCount + 1) + ' transactions';
-    
-    // Remove the row from outstanding bills
-    const row = event?.target?.closest('tr');
-    if (row) {
-      row.remove();
+    // Simulate moving this bill to paid today
+    const paidTbody = document.getElementById('payout-paid-tbody');
+    if (paidTbody) {
+      const newRow = document.createElement('tr');
+      newRow.innerHTML = `
+        <td><strong>${billNo}</strong></td>
+        <td>${officerName}</td>
+        <td style="font-size:11px;">Bill payment</td>
+        <td>฿${service.toLocaleString()}</td>
+        <td style="color:var(--success);">${tip > 0 ? '+฿' + tip.toLocaleString() : '—'}</td>
+        <td>${deductions > 0 ? '฿' + deductions.toLocaleString() : '—'}</td>
+        <td style="font-weight:700;color:var(--success);">฿${net.toLocaleString()}</td>
+        <td><span class="chip chip-success">Petty Cash</span></td>
+        <td>${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</td>
+        <td>Cashier</td>
+      `;
+      paidTbody.prepend(newRow);
+      
+      // Update counts
+      const paidCount = document.getElementById('paid-today-count');
+      const currentCount = parseInt(paidCount.textContent) || 0;
+      paidCount.textContent = (currentCount + 1) + ' transactions';
+      
+      // Remove from outstanding
+      const rows = document.querySelectorAll('#payout-outstanding-tbody tr');
+      for (let row of rows) {
+        if (row.textContent.includes(billNo)) {
+          row.remove();
+          break;
+        }
+      }
       
       // Update outstanding count
       const outstandingRows = document.querySelectorAll('#payout-outstanding-tbody tr').length;
       document.getElementById('outstanding-count').textContent = outstandingRows + ' bills';
     }
+  } else {
+    // This is a new daily bill creation
+    showToast(`📋 Daily bill created for ${officerName} — Net ฿${net.toLocaleString()}`, 'success');
+  }
+  
+  closeModal('modal-payout-request');
+  
+  // Clear pending
+  window._pendingPayout = null;
+}
+
+/* ── Collapsible Function ─────────────────────────────────────────────── */
+function toggleCollapsible(header) {
+  const content = header.nextElementSibling;
+  const icon = header.querySelector('.collapse-icon');
+  
+  if (content.classList.contains('collapsed')) {
+    content.classList.remove('collapsed');
+    content.style.display = 'block';
+    icon.style.transform = 'rotate(0deg)';
+    header.classList.remove('collapsed');
+  } else {
+    content.classList.add('collapsed');
+    content.style.display = 'none';
+    icon.style.transform = 'rotate(-90deg)';
+    header.classList.add('collapsed');
+  }
+}
+
+/* ── Filter Function ──────────────────────────────────────────────────── */
+function filterPayoutOfficer() {
+  const filter = document.getElementById('payout-officer-filter').value;
+  if (filter === 'all') {
+    showToast('Showing all officers', 'success');
+  } else {
+    showToast(`Filtered to: ${filter}`, 'success');
   }
 }
 
