@@ -5101,6 +5101,8 @@ function dbConfirmTopUp(){
 /* ══════════════════════════════════════════════════════════════════════════
    INITIALISE — load from localStorage or seed fresh
    ══════════════════════════════════════════════════════════════════════════ */
+
+window._notifyLogs = {};
 (function initDB(){
   if(!loadDB()){
     seedDB();
