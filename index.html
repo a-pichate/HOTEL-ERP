@@ -286,47 +286,125 @@
   .collapsible-content.collapsed {
     display: none;
   }
-  /* Modal positioning fix */
+ /* Modal positioning fix - responsive and expandable */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.4);
+  z-index: 2000;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.modal {
+  background: var(--white);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  width: 520px;
+  max-width: calc(100vw - 40px);
+  max-height: calc(100vh - 40px);
+  animation: slideUp 0.2s ease;
+  position: relative;
+  z-index: 2001;
+  display: flex;
+  flex-direction: column;
+}
+
+.modal-lg {
+  width: 700px;
+}
+
+.modal-header {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--gray-200);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--white);
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  flex-shrink: 0;
+}
+
+.modal-body {
+  padding: 20px;
+  overflow-y: visible;  /* Changed from auto to visible */
+  flex: 1 1 auto;
+}
+
+.modal-footer {
+  padding: 14px 20px;
+  border-top: 1px solid var(--gray-200);
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  background: var(--gray-50);
+  border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+  flex-shrink: 0;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
   .modal-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.4);
-    z-index: 2000;
-    display: none;
-    align-items: flex-start;  /* Changed from center to flex-start */
-    justify-content: center;
-    overflow-y: auto;  /* Allow scrolling if modal is too tall */
-    padding: 20px;  /* Add padding to prevent modal from touching edges */
+    padding: 10px;
+    align-items: flex-start;
   }
   
   .modal {
-    background: var(--white);
-    border-radius: var(--radius-lg);
-    box-shadow: var(--shadow-lg);
-    width: 520px;
-    max-width: calc(100vw - 40px);
-    margin: 60px auto 20px;  /* Add top margin to push it below the topbar */
-    max-height: calc(100vh - 80px);
-    overflow-y: auto;
-    animation: slideUp 0.2s ease;
-    position: relative;
-    z-index: 2001;
+    margin: 10px 0;
+    max-height: calc(100vh - 20px);
   }
   
-  .modal-lg {
-    width: 700px;
+  .modal-body {
+    padding: 15px;
   }
   
-  @keyframes slideUp {
-    from {
-      transform: translateY(20px);
-      opacity: 0;
-    }
-    to {
-      transform: translateY(0);
-      opacity: 1;
-    }
+  .modal-header {
+    padding: 12px 15px;
   }
+  
+  .modal-footer {
+    padding: 12px 15px;
+  }
+}
+
+/* For very small screens */
+@media (max-width: 480px) {
+  .modal {
+    width: 100%;
+    max-width: 100%;
+  }
+  
+  .modal-overlay {
+    padding: 0;
+  }
+  
+  .modal {
+    border-radius: 0;
+    max-height: 100vh;
+    margin: 0;
+  }
+  
+  .modal-header {
+    border-radius: 0;
+  }
+  
+  .modal-footer {
+    border-radius: 0;
+  }
+}
   @keyframes pulsebell { 0%,100%{transform:scale(1);opacity:1;} 50%{transform:scale(1.25);opacity:.7;} }
 </style>
 </head>
