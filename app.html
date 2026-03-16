@@ -1,0 +1,1559 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>March Hotel — ERPNext Prototype v6</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ── Design Language: Utilitarian / Institutional ─────────────────────── */
+:root {
+  --bg:        #f0f2f5;
+  --surface:   #ffffff;
+  --border:    #d1d5db;
+  --border2:   #e5e7eb;
+  --text:      #111827;
+  --text2:     #6b7280;
+  --text3:     #9ca3af;
+  --primary:   #1d4ed8;
+  --primary-h: #1e40af;
+  --primary-l: #eff6ff;
+  --danger:    #dc2626;
+  --danger-l:  #fef2f2;
+  --warn:      #d97706;
+  --warn-l:    #fffbeb;
+  --success:   #059669;
+  --success-l: #ecfdf5;
+  --sidebar-w: 220px;
+  --top-h:     44px;
+  --mono:      "IBM Plex Mono", monospace;
+  --sans:      "IBM Plex Sans", sans-serif;
+}
+*, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
+body { font-family:var(--sans); background:var(--bg); color:var(--text); font-size:13px; }
+
+/* ── Top Bar ─────────────────────────────────────────────────────────── */
+#topbar {
+  height:var(--top-h); background:#0f172a; color:white;
+  display:flex; align-items:center; justify-content:space-between;
+  padding:0 16px; position:fixed; top:0; left:0; right:0; z-index:100;
+}
+#topbar .brand { font-family:var(--mono); font-weight:600; font-size:13px; letter-spacing:.08em; }
+#topbar .meta  { font-size:11px; color:#94a3b8; font-family:var(--mono); }
+#topbar .actions { display:flex; gap:8px; }
+.btn-reset {
+  background:#dc2626; color:white; border:none; padding:4px 12px;
+  font-size:11px; font-family:var(--mono); cursor:pointer; border-radius:2px; letter-spacing:.05em;
+}
+.btn-reset:hover { background:#b91c1c; }
+
+/* ── Layout ──────────────────────────────────────────────────────────── */
+#layout {
+  display:flex; margin-top:var(--top-h); height:calc(100vh - var(--top-h));
+}
+#sidebar {
+  width:var(--sidebar-w); background:#0f172a; overflow-y:auto; flex-shrink:0;
+  padding:8px 0;
+}
+.nav-section { padding:16px 12px 4px; font-size:10px; color:#475569; text-transform:uppercase; letter-spacing:.1em; font-weight:600; }
+.nav-item {
+  display:flex; align-items:center; gap:8px;
+  padding:7px 16px; color:#cbd5e1; cursor:pointer; font-size:12px;
+  transition:background .12s; border-left:3px solid transparent;
+}
+.nav-item:hover { background:#1e293b; color:white; }
+.nav-item.active { background:#1e3a5f; color:white; border-left-color:#3b82f6; }
+.nav-icon { width:14px; text-align:center; opacity:.8; }
+
+/* ── Main ────────────────────────────────────────────────────────────── */
+#main { flex:1; overflow-y:auto; padding:20px; }
+.page { display:none; }
+.page.active { display:block; }
+
+/* ── Page Header ─────────────────────────────────────────────────────── */
+.page-header {
+  display:flex; align-items:center; justify-content:space-between;
+  margin-bottom:16px;
+}
+.page-title { font-size:18px; font-weight:600; color:var(--text); }
+.page-subtitle { font-size:12px; color:var(--text2); margin-top:2px; }
+
+/* ── Cards ───────────────────────────────────────────────────────────── */
+.card {
+  background:var(--surface); border:1px solid var(--border);
+  border-radius:4px; padding:16px; margin-bottom:16px;
+}
+.card-title { font-size:12px; font-weight:600; text-transform:uppercase; letter-spacing:.06em; color:var(--text2); margin-bottom:12px; }
+
+/* ── Stat Grid ───────────────────────────────────────────────────────── */
+.stat-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(160px,1fr)); gap:12px; margin-bottom:16px; }
+.stat-card { background:var(--surface); border:1px solid var(--border); border-radius:4px; padding:14px; }
+.stat-label { font-size:11px; color:var(--text2); text-transform:uppercase; letter-spacing:.06em; }
+.stat-value { font-size:24px; font-weight:600; font-family:var(--mono); margin:4px 0 2px; }
+.stat-sub   { font-size:11px; color:var(--text3); }
+
+/* ── Tables ──────────────────────────────────────────────────────────── */
+.table-wrap { overflow-x:auto; }
+table { width:100%; border-collapse:collapse; }
+th {
+  background:#f8fafc; text-align:left; padding:8px 10px;
+  font-size:11px; text-transform:uppercase; letter-spacing:.05em; color:var(--text2);
+  border-bottom:1px solid var(--border); font-weight:600;
+}
+td { padding:9px 10px; border-bottom:1px solid var(--border2); font-size:12px; vertical-align:middle; }
+tr:last-child td { border-bottom:none; }
+tr:hover td { background:#f8fafc; }
+.row-warn td { background:#fffbeb !important; }
+
+/* ── Badges ──────────────────────────────────────────────────────────── */
+.badge {
+  display:inline-block; padding:2px 7px; border-radius:2px;
+  font-size:10px; font-weight:600; text-transform:uppercase; letter-spacing:.05em;
+  font-family:var(--mono);
+}
+.badge-green  { background:#d1fae5; color:#065f46; }
+.badge-yellow { background:#fef3c7; color:#92400e; }
+.badge-blue   { background:#dbeafe; color:#1e40af; }
+.badge-red    { background:#fee2e2; color:#991b1b; }
+.badge-gray   { background:#f3f4f6; color:#4b5563; }
+.badge-purple { background:#ede9fe; color:#5b21b6; }
+.badge-orange { background:#ffedd5; color:#9a3412; }
+
+/* ── Buttons ─────────────────────────────────────────────────────────── */
+.btn {
+  display:inline-flex; align-items:center; gap:5px;
+  padding:6px 12px; border:none; border-radius:3px; cursor:pointer;
+  font-size:12px; font-family:var(--sans); font-weight:500; transition:all .12s;
+}
+.btn-primary   { background:var(--primary); color:white; }
+.btn-primary:hover { background:var(--primary-h); }
+.btn-outline   { background:transparent; color:var(--text); border:1px solid var(--border); }
+.btn-outline:hover { background:var(--bg); }
+.btn-danger    { background:var(--danger); color:white; }
+.btn-danger:hover { background:#b91c1c; }
+.btn-success   { background:var(--success); color:white; }
+.btn-success:hover { background:#047857; }
+.btn-sm { padding:4px 8px; font-size:11px; }
+.btn-xs { padding:2px 6px; font-size:10px; }
+
+/* ── Forms ───────────────────────────────────────────────────────────── */
+.form-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:12px; }
+.form-grid-3 { grid-template-columns:1fr 1fr 1fr; }
+.form-group { display:flex; flex-direction:column; gap:4px; }
+.form-group.full { grid-column:1/-1; }
+label { font-size:11px; font-weight:600; color:var(--text2); text-transform:uppercase; letter-spacing:.05em; }
+input, select, textarea {
+  padding:7px 9px; border:1px solid var(--border); border-radius:3px;
+  font-size:12px; font-family:var(--sans); background:var(--surface); color:var(--text);
+  width:100%;
+}
+input:focus, select:focus { outline:none; border-color:var(--primary); }
+
+/* ── Modal ───────────────────────────────────────────────────────────── */
+.modal-overlay {
+  position:fixed; inset:0; background:rgba(0,0,0,.45); display:none;
+  align-items:center; justify-content:center; z-index:200;
+}
+.modal-overlay.open { display:flex; }
+.modal-box {
+  background:var(--surface); border-radius:6px; width:520px; max-width:95vw;
+  max-height:85vh; overflow-y:auto; box-shadow:0 20px 60px rgba(0,0,0,.25);
+}
+.modal-header {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:14px 18px; border-bottom:1px solid var(--border);
+}
+.modal-title { font-size:14px; font-weight:600; }
+.modal-close { background:none; border:none; cursor:pointer; font-size:18px; color:var(--text2); line-height:1; }
+.modal-body  { padding:18px; }
+.modal-footer { padding:12px 18px; border-top:1px solid var(--border); display:flex; justify-content:flex-end; gap:8px; }
+
+/* ── Folio Detail Card ────────────────────────────────────────────────── */
+.folio-summary {
+  display:grid; grid-template-columns:repeat(4,1fr); gap:0;
+  border:1px solid var(--border); border-radius:4px; overflow:hidden; margin-bottom:16px;
+}
+.folio-summary-item { padding:12px; border-right:1px solid var(--border); }
+.folio-summary-item:last-child { border-right:none; }
+.folio-summary-label { font-size:10px; text-transform:uppercase; letter-spacing:.06em; color:var(--text2); font-weight:600; }
+.folio-summary-value { font-size:15px; font-weight:600; margin-top:3px; font-family:var(--mono); }
+
+/* ── Alerts ──────────────────────────────────────────────────────────── */
+.alert {
+  padding:10px 14px; border-radius:3px; font-size:12px; margin-bottom:12px;
+  display:flex; align-items:center; gap:8px;
+}
+.alert-info    { background:#eff6ff; border:1px solid #bfdbfe; color:#1e40af; }
+.alert-warn    { background:#fffbeb; border:1px solid #fde68a; color:#92400e; }
+.alert-success { background:#ecfdf5; border:1px solid #a7f3d0; color:#065f46; }
+.alert-danger  { background:#fef2f2; border:1px solid #fecaca; color:#991b1b; }
+
+/* ── Checkout Wizard ─────────────────────────────────────────────────── */
+.bucket-header { background:#f8fafc; padding:10px 14px; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; }
+.bucket-lines { padding:0; }
+.bucket-line { display:flex; align-items:center; gap:8px; padding:8px 14px; border-bottom:1px solid var(--border2); }
+.bucket-line:last-child { border-bottom:none; }
+.bucket-total { padding:10px 14px; background:#f8fafc; border-top:1px solid var(--border); font-weight:600; display:flex; justify-content:space-between; font-family:var(--mono); }
+
+/* ── Misc ────────────────────────────────────────────────────────────── */
+.sep { border:none; border-top:1px solid var(--border2); margin:12px 0; }
+.mono { font-family:var(--mono); }
+.text-right { text-align:right; }
+.text-muted { color:var(--text2); }
+.flex-row  { display:flex; align-items:center; gap:8px; }
+.flex-between { display:flex; align-items:center; justify-content:space-between; }
+.mb8  { margin-bottom:8px; }
+.mb16 { margin-bottom:16px; }
+.mt8  { margin-top:8px; }
+.room-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:10px; }
+.room-card { border:1px solid var(--border); border-radius:4px; padding:12px; background:var(--surface); }
+.room-card.occupied { border-left:3px solid var(--primary); }
+.room-card.vacant   { border-left:3px solid var(--success); }
+.room-card.maintenance { border-left:3px solid var(--warn); }
+.room-number { font-size:18px; font-weight:700; font-family:var(--mono); }
+.room-type   { font-size:11px; color:var(--text2); }
+.room-guest  { font-size:11px; color:var(--text); margin-top:4px; font-weight:500; }
+.room-rate   { font-size:12px; color:var(--text2); font-family:var(--mono); }
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div id="topbar">
+  <div class="brand">▣ MARCH HOTEL · ERPNext</div>
+  <div class="meta" id="topMeta">Loading…</div>
+  <div class="actions">
+    <button class="btn-reset" onclick="confirmReset()">↺ Reset to Seed Data</button>
+  </div>
+</div>
+
+<!-- LAYOUT -->
+<div id="layout">
+
+  <!-- SIDEBAR -->
+  <div id="sidebar">
+    <div class="nav-section">Front Desk</div>
+    <div class="nav-item active" data-page="dashboard" onclick="nav('dashboard')">
+      <span class="nav-icon">⊞</span> Dashboard
+    </div>
+    <div class="nav-item" data-page="rooms" onclick="nav('rooms')">
+      <span class="nav-icon">▦</span> Room Board
+    </div>
+    <div class="nav-item" data-page="bookings" onclick="nav('bookings')">
+      <span class="nav-icon">◈</span> Bookings
+    </div>
+    <div class="nav-item" data-page="folios" onclick="nav('folios')">
+      <span class="nav-icon">◉</span> Guest Folios
+    </div>
+
+    <div class="nav-section">Services</div>
+    <div class="nav-item" data-page="spa" onclick="nav('spa')">
+      <span class="nav-icon">✦</span> Spa Sessions
+    </div>
+    <div class="nav-item" data-page="restaurant" onclick="nav('restaurant')">
+      <span class="nav-icon">◆</span> F&B / POS
+    </div>
+
+    <div class="nav-section">Billing</div>
+    <div class="nav-item" data-page="checkout" onclick="nav('checkout')">
+      <span class="nav-icon">◎</span> Checkout Wizard
+    </div>
+    <div class="nav-item" data-page="invoices" onclick="nav('invoices')">
+      <span class="nav-icon">▤</span> Invoices
+    </div>
+    <div class="nav-item" data-page="payments" onclick="nav('payments')">
+      <span class="nav-icon">◈</span> Payments
+    </div>
+
+    <div class="nav-section">Procurement</div>
+    <div class="nav-item" data-page="purchase_orders" onclick="nav('purchase_orders')">
+      <span class="nav-icon">▣</span> Officer POs
+    </div>
+
+    <div class="nav-section">Master Data</div>
+    <div class="nav-item" data-page="members" onclick="nav('members')">
+      <span class="nav-icon">◉</span> Members
+    </div>
+    <div class="nav-item" data-page="officers" onclick="nav('officers')">
+      <span class="nav-icon">✦</span> Spa Officers
+    </div>
+    <div class="nav-item" data-page="items" onclick="nav('items')">
+      <span class="nav-icon">▤</span> Items
+    </div>
+  </div>
+
+  <!-- MAIN -->
+  <div id="main">
+
+    <!-- DASHBOARD -->
+    <div id="page-dashboard" class="page active">
+      <div class="page-header">
+        <div><div class="page-title">Dashboard</div><div class="page-subtitle">Hotel operations overview — 2026-03-16</div></div>
+      </div>
+      <div id="dash-stats" class="stat-grid"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+        <div class="card">
+          <div class="card-title">Due Checkout Today</div>
+          <div id="dash-due-checkout" class="table-wrap"></div>
+        </div>
+        <div class="card">
+          <div class="card-title">Active Spa Sessions</div>
+          <div id="dash-spa-today" class="table-wrap"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ROOMS -->
+    <div id="page-rooms" class="page">
+      <div class="page-header">
+        <div><div class="page-title">Room Board</div><div class="page-subtitle">All 10 rooms — live occupancy status</div></div>
+      </div>
+      <div id="room-grid" class="room-grid"></div>
+    </div>
+
+    <!-- BOOKINGS -->
+    <div id="page-bookings" class="page">
+      <div class="page-header">
+        <div><div class="page-title">Bookings</div><div class="page-subtitle">Hotel booking register</div></div>
+        <button class="btn btn-primary" onclick="openModal('modalNewBooking')">+ New Booking</button>
+      </div>
+      <div class="card">
+        <div class="table-wrap"><table id="tbl-bookings">
+          <thead><tr>
+            <th>Booking ID</th><th>Guest</th><th>Room</th>
+            <th>Check-in</th><th>Check-out</th><th>Nights</th>
+            <th>Room Rate</th><th>Status</th><th>Folio</th>
+          </tr></thead>
+          <tbody id="tbody-bookings"></tbody>
+        </table></div>
+      </div>
+    </div>
+
+    <!-- FOLIOS -->
+    <div id="page-folios" class="page">
+      <div class="page-header">
+        <div><div class="page-title">Guest Folios</div><div class="page-subtitle">Active guest folios — cashier workspace</div></div>
+      </div>
+      <div class="card">
+        <div id="folio-filter" class="flex-row mb8">
+          <span style="font-size:11px;color:var(--text2);font-weight:600">Filter:</span>
+          <button class="btn btn-sm btn-outline" onclick="renderFolios('all')">All Active</button>
+          <button class="btn btn-sm btn-outline" onclick="renderFolios('due_today')">Due Checkout Today</button>
+          <button class="btn btn-sm btn-outline" onclick="renderFolios('In House')">In House</button>
+          <button class="btn btn-sm btn-outline" onclick="renderFolios('Checked Out')">Checked Out</button>
+        </div>
+        <div class="table-wrap"><table>
+          <thead><tr>
+            <th>Folio</th><th>Guest</th><th>Room</th>
+            <th>Check-in</th><th>Check-out</th>
+            <th class="text-right">Folio Total</th>
+            <th>Invoice Status</th><th>Status</th><th>Actions</th>
+          </tr></thead>
+          <tbody id="tbody-folios"></tbody>
+        </table></div>
+      </div>
+    </div>
+
+    <!-- FOLIO DETAIL -->
+    <div id="page-folio-detail" class="page">
+      <div class="page-header">
+        <div>
+          <div class="flex-row">
+            <button class="btn btn-sm btn-outline" onclick="nav('folios')">← Back to Folios</button>
+            <div class="page-title" id="folio-detail-title">Folio Detail</div>
+          </div>
+          <div class="page-subtitle" id="folio-detail-subtitle"></div>
+        </div>
+        <div class="flex-row">
+          <button class="btn btn-outline" onclick="openAddCharge()">+ Add Charge</button>
+          <button class="btn btn-primary" id="btn-proceed-checkout" onclick="goToCheckout()">Proceed to Checkout →</button>
+        </div>
+      </div>
+      <div id="folio-summary-bar" class="folio-summary"></div>
+      <div class="card">
+        <div class="flex-between mb8">
+          <div class="card-title">Folio Charge Lines</div>
+        </div>
+        <div class="table-wrap"><table>
+          <thead><tr>
+            <th>Date</th><th>Item</th><th>Description</th><th>Type</th>
+            <th class="text-right">Qty</th><th class="text-right">Rate (฿)</th>
+            <th class="text-right">Amount (฿)</th><th>Invoiced</th><th></th>
+          </tr></thead>
+          <tbody id="tbody-folio-lines"></tbody>
+          <tfoot>
+            <tr><td colspan="6" class="text-right" style="font-weight:600;padding:10px">Folio Total</td>
+            <td class="text-right mono" id="folio-lines-total" style="font-weight:700;font-size:14px"></td>
+            <td colspan="2"></td></tr>
+          </tfoot>
+        </table></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Linked Spa Sessions</div>
+        <div class="table-wrap"><table>
+          <thead><tr><th>Session</th><th>Date</th><th>Service</th><th>Officer</th><th>Rate</th><th>Tip</th><th>PO</th></tr></thead>
+          <tbody id="tbody-folio-spa"></tbody>
+        </table></div>
+      </div>
+    </div>
+
+    <!-- SPA -->
+    <div id="page-spa" class="page">
+      <div class="page-header">
+        <div><div class="page-title">Spa Sessions</div><div class="page-subtitle">Spa session register — procurement-based</div></div>
+        <button class="btn btn-primary" onclick="openModal('modalNewSpa')">+ New Session</button>
+      </div>
+      <div class="card">
+        <div class="table-wrap"><table>
+          <thead><tr>
+            <th>Session ID</th><th>Date</th><th>Guest</th><th>Folio</th>
+            <th>Service</th><th>Officer</th><th class="text-right">Rate</th>
+            <th class="text-right">Tip</th><th>PO</th><th>Status</th>
+          </tr></thead>
+          <tbody id="tbody-spa"></tbody>
+        </table></div>
+      </div>
+    </div>
+
+    <!-- RESTAURANT / F&B POS -->
+    <div id="page-restaurant" class="page">
+      <div class="page-header">
+        <div><div class="page-title">F&B / Room Charge POS</div><div class="page-subtitle">Post F&B charges directly to guest folio</div></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+        <div class="card">
+          <div class="card-title">Post Room Charge</div>
+          <div class="form-group mb8">
+            <label>Select Folio (In House Guest)</label>
+            <select id="pos-folio"></select>
+          </div>
+          <div class="form-group mb8">
+            <label>F&B Item</label>
+            <select id="pos-item"></select>
+          </div>
+          <div class="form-grid mb8">
+            <div class="form-group">
+              <label>Qty</label>
+              <input type="number" id="pos-qty" value="1" min="1">
+            </div>
+            <div class="form-group">
+              <label>Unit Price (฿)</label>
+              <input type="number" id="pos-price" readonly>
+            </div>
+          </div>
+          <button class="btn btn-primary" style="width:100%" onclick="postFBCharge()">Post to Folio</button>
+          <div id="pos-result" style="margin-top:10px"></div>
+        </div>
+        <div class="card">
+          <div class="card-title">Recent F&B Charges Today</div>
+          <div class="table-wrap"><table>
+            <thead><tr><th>Time</th><th>Folio</th><th>Item</th><th class="text-right">Amt</th></tr></thead>
+            <tbody id="tbody-pos-recent"></tbody>
+          </table></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CHECKOUT WIZARD -->
+    <div id="page-checkout" class="page">
+      <div class="page-header">
+        <div><div class="page-title">Checkout Wizard (E09)</div><div class="page-subtitle">Assign folio lines to invoice buckets — line-assignment only</div></div>
+      </div>
+      <div class="card mb16">
+        <div class="card-title">Select Folio to Check Out</div>
+        <div class="flex-row">
+          <select id="checkout-folio-select" style="max-width:320px"></select>
+          <button class="btn btn-primary" onclick="openCheckoutWizard()">Open Checkout Wizard</button>
+        </div>
+      </div>
+      <div id="checkout-wizard-area"></div>
+    </div>
+
+    <!-- INVOICES -->
+    <div id="page-invoices" class="page">
+      <div class="page-header">
+        <div><div class="page-title">Sales Invoices</div><div class="page-subtitle">Accounting › Invoices — Register Payment (E06 / Route B)</div></div>
+      </div>
+      <div class="card">
+        <div class="flex-row mb8">
+          <span style="font-size:11px;color:var(--text2);font-weight:600">Filter:</span>
+          <button class="btn btn-sm btn-outline" onclick="renderInvoices('all')">All</button>
+          <button class="btn btn-sm btn-outline" onclick="renderInvoices('Unpaid')">Unpaid</button>
+          <button class="btn btn-sm btn-outline" onclick="renderInvoices('Partial')">Partial</button>
+          <button class="btn btn-sm btn-outline" onclick="renderInvoices('Paid')">Paid</button>
+        </div>
+        <div class="table-wrap"><table>
+          <thead><tr>
+            <th>Invoice #</th><th>Guest</th><th>Folio</th><th>Date</th>
+            <th class="text-right">Net</th><th class="text-right">VAT</th>
+            <th class="text-right">Total</th><th class="text-right">Outstanding</th>
+            <th>Pay Method</th><th>Status</th><th>Actions</th>
+          </tr></thead>
+          <tbody id="tbody-invoices"></tbody>
+        </table></div>
+      </div>
+    </div>
+
+    <!-- PAYMENTS -->
+    <div id="page-payments" class="page">
+      <div class="page-header">
+        <div><div class="page-title">Payment Entries</div><div class="page-subtitle">All registered payments against invoices</div></div>
+      </div>
+      <div class="card">
+        <div class="table-wrap"><table>
+          <thead><tr>
+            <th>Payment #</th><th>Date</th><th>Invoice</th><th>Guest</th>
+            <th class="text-right">Amount (฿)</th><th>Method</th><th>Journal Account</th><th>Status</th>
+          </tr></thead>
+          <tbody id="tbody-payments"></tbody>
+        </table></div>
+      </div>
+    </div>
+
+    <!-- PURCHASE ORDERS -->
+    <div id="page-purchase_orders" class="page">
+      <div class="page-header">
+        <div><div class="page-title">Officer Purchase Orders</div><div class="page-subtitle">Spa procurement — commission + tip payables</div></div>
+      </div>
+      <div class="card">
+        <div class="table-wrap"><table>
+          <thead><tr>
+            <th>PO #</th><th>Date</th><th>Officer (Vendor)</th><th>Session</th>
+            <th>Service</th><th class="text-right">Service Amt</th>
+            <th>Comm %</th><th class="text-right">Commission</th>
+            <th class="text-right">Tip</th><th class="text-right">Total Payable</th><th>Paid</th>
+          </tr></thead>
+          <tbody id="tbody-pos"></tbody>
+        </table></div>
+      </div>
+    </div>
+
+    <!-- MEMBERS -->
+    <div id="page-members" class="page">
+      <div class="page-header">
+        <div><div class="page-title">Members</div><div class="page-subtitle">Member master — points balance</div></div>
+      </div>
+      <div class="card">
+        <div class="table-wrap"><table>
+          <thead><tr>
+            <th>Member ID</th><th>Name</th><th>Email</th><th>Phone</th>
+            <th>Since</th><th>Tier</th><th class="text-right">Points Balance</th>
+          </tr></thead>
+          <tbody id="tbody-members"></tbody>
+        </table></div>
+      </div>
+    </div>
+
+    <!-- SPA OFFICERS -->
+    <div id="page-officers" class="page">
+      <div class="page-header">
+        <div><div class="page-title">Spa Officers</div><div class="page-subtitle">Therapist master — Model C employee+vendor</div></div>
+      </div>
+      <div class="card">
+        <div class="table-wrap"><table>
+          <thead><tr>
+            <th>Officer ID</th><th>Name</th><th>Gender</th><th>Specialty</th>
+            <th>Experience</th><th>Commission Rate</th><th>Vendor ID</th><th>Status</th>
+          </tr></thead>
+          <tbody id="tbody-officers"></tbody>
+        </table></div>
+      </div>
+    </div>
+
+    <!-- ITEMS -->
+    <div id="page-items" class="page">
+      <div class="page-header">
+        <div><div class="page-title">Items (Products)</div><div class="page-subtitle">Item master — services, F&B, accommodation</div></div>
+      </div>
+      <div class="card">
+        <div class="table-wrap"><table>
+          <thead><tr>
+            <th>Item Code</th><th>Item Name</th><th>Group</th>
+            <th class="text-right">Rate (฿)</th><th>UoM</th><th>Income Account</th>
+          </tr></thead>
+          <tbody id="tbody-items"></tbody>
+        </table></div>
+      </div>
+    </div>
+
+  </div><!-- /main -->
+</div><!-- /layout -->
+
+<!-- ════════════ MODALS ════════════ -->
+
+<!-- New Booking -->
+<div class="modal-overlay" id="modalNewBooking">
+  <div class="modal-box">
+    <div class="modal-header">
+      <div class="modal-title">New Booking</div>
+      <button class="modal-close" onclick="closeModal('modalNewBooking')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-group full">
+          <label>Guest Name</label>
+          <input id="nb-guest-name" placeholder="Full name of guest">
+        </div>
+        <div class="form-group">
+          <label>Member (optional)</label>
+          <select id="nb-member"><option value="">— Walk-in / Non-member —</option></select>
+        </div>
+        <div class="form-group">
+          <label>Room</label>
+          <select id="nb-room"></select>
+        </div>
+        <div class="form-group">
+          <label>Check-in Date</label>
+          <input type="date" id="nb-checkin" value="2026-03-16">
+        </div>
+        <div class="form-group">
+          <label>Check-out Date</label>
+          <input type="date" id="nb-checkout" value="2026-03-18">
+        </div>
+        <div class="form-group">
+          <label>Room Rate (฿/night) — Auto</label>
+          <input type="number" id="nb-rate" readonly>
+        </div>
+        <div class="form-group">
+          <label>Nights (computed)</label>
+          <input type="text" id="nb-nights" readonly>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('modalNewBooking')">Cancel</button>
+      <button class="btn btn-primary" onclick="submitNewBooking()">Create Booking & Folio</button>
+    </div>
+  </div>
+</div>
+
+<!-- New Spa Session -->
+<div class="modal-overlay" id="modalNewSpa">
+  <div class="modal-box">
+    <div class="modal-header">
+      <div class="modal-title">New Spa Session</div>
+      <button class="modal-close" onclick="closeModal('modalNewSpa')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Folio (In House Guest)</label>
+          <select id="ns-folio"></select>
+        </div>
+        <div class="form-group">
+          <label>Service</label>
+          <select id="ns-item"></select>
+        </div>
+        <div class="form-group">
+          <label>Officer (Therapist)</label>
+          <select id="ns-officer"></select>
+        </div>
+        <div class="form-group">
+          <label>Session Date</label>
+          <input type="date" id="ns-date" value="2026-03-16">
+        </div>
+        <div class="form-group">
+          <label>Service Rate (฿)</label>
+          <input type="number" id="ns-rate" readonly>
+        </div>
+        <div class="form-group">
+          <label>Tip (฿)</label>
+          <input type="number" id="ns-tip" value="0" min="0">
+        </div>
+      </div>
+      <div class="alert alert-info">A Purchase Order for the officer will be created automatically on save.</div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('modalNewSpa')">Cancel</button>
+      <button class="btn btn-primary" onclick="submitNewSpa()">Create Session + PO</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add Charge (Folio) -->
+<div class="modal-overlay" id="modalAddCharge">
+  <div class="modal-box">
+    <div class="modal-header">
+      <div class="modal-title">Add Charge to Folio</div>
+      <button class="modal-close" onclick="closeModal('modalAddCharge')">×</button>
+    </div>
+    <div class="modal-body">
+      <div id="ac-folio-info" class="alert alert-info mb8"></div>
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Item</label>
+          <select id="ac-item"></select>
+        </div>
+        <div class="form-group">
+          <label>Date</label>
+          <input type="date" id="ac-date" value="2026-03-16">
+        </div>
+        <div class="form-group">
+          <label>Qty</label>
+          <input type="number" id="ac-qty" value="1" min="1">
+        </div>
+        <div class="form-group">
+          <label>Unit Price (฿)</label>
+          <input type="number" id="ac-price">
+        </div>
+        <div class="form-group full">
+          <label>Description</label>
+          <input type="text" id="ac-desc">
+        </div>
+      </div>
+      <div class="flex-between" style="font-weight:600;font-size:13px;background:var(--bg);padding:10px;border-radius:3px">
+        <span>Line Amount:</span><span class="mono" id="ac-amount">฿0</span>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('modalAddCharge')">Cancel</button>
+      <button class="btn btn-primary" onclick="submitAddCharge()">Add to Folio</button>
+    </div>
+  </div>
+</div>
+
+<!-- Register Payment -->
+<div class="modal-overlay" id="modalRegPayment">
+  <div class="modal-box">
+    <div class="modal-header">
+      <div class="modal-title">Register Payment</div>
+      <button class="modal-close" onclick="closeModal('modalRegPayment')">×</button>
+    </div>
+    <div class="modal-body">
+      <div id="rp-inv-info" class="alert alert-info mb8"></div>
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Payment Method / Journal</label>
+          <select id="rp-method">
+            <option value="Cash">Cash (Petty Cash — 1002)</option>
+            <option value="Card">Card POS (Card Receivable — 1003)</option>
+            <option value="Member Points">Member Points (Liability — 2100)</option>
+            <option value="Bank">Bank Transfer (Current A/C — 1004)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Amount (฿)</label>
+          <input type="number" id="rp-amount">
+        </div>
+        <div class="form-group">
+          <label>Payment Date</label>
+          <input type="date" id="rp-date" value="2026-03-16">
+        </div>
+        <div class="form-group">
+          <label>Memo</label>
+          <input type="text" id="rp-memo">
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('modalRegPayment')">Cancel</button>
+      <button class="btn btn-success" onclick="submitPayment()">Confirm Payment</button>
+    </div>
+  </div>
+</div>
+
+<script src="api.js"></script>
+<script>
+// ═══════════════════════════════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════════════════════════════
+let API; // set after DOM ready
+let _currentFolio = null;
+let _currentInvoice = null;
+let _checkoutFolioName = null;
+let _checkoutSelectedLines = new Set();
+let _posRecentCharges = [];
+
+// ═══════════════════════════════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════════════════════════════
+window.addEventListener("DOMContentLoaded", () => {
+  API = window.MarchHotelAPI;
+  API.DB.init();
+  updateTopMeta();
+  renderDashboard();
+  prefillModals();
+});
+
+function updateTopMeta() {
+  const s = API.HotelSettings.get();
+  document.getElementById("topMeta").textContent =
+    `${s.hotel_name} · ${s.currency} · VAT ${s.vat_rate*100}% · 2026-03-16`;
+}
+
+function confirmReset() {
+  if (confirm("Reset all data to seed state? This cannot be undone.")) {
+    API.DB.reset();
+    _currentFolio = null;
+    _checkoutFolioName = null;
+    _checkoutSelectedLines = new Set();
+    _posRecentCharges = [];
+    nav("dashboard");
+    prefillModals();
+    alert("Data reset to initial seed state.");
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// NAVIGATION
+// ═══════════════════════════════════════════════════════════════════════════
+function nav(page) {
+  document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
+  document.querySelectorAll(".nav-item").forEach(n => n.classList.remove("active"));
+  const el = document.getElementById(`page-${page}`);
+  if (el) el.classList.add("active");
+  const ni = document.querySelector(`.nav-item[data-page="${page}"]`);
+  if (ni) ni.classList.add("active");
+  // Render appropriate page
+  const renderMap = {
+    dashboard: renderDashboard,
+    rooms: renderRooms,
+    bookings: renderBookings,
+    folios: () => renderFolios("all"),
+    spa: renderSpa,
+    restaurant: renderRestaurant,
+    checkout: renderCheckoutPage,
+    invoices: () => renderInvoices("all"),
+    payments: renderPayments,
+    purchase_orders: renderPurchaseOrders,
+    members: renderMembers,
+    officers: renderOfficers,
+    items: renderItems,
+  };
+  if (renderMap[page]) renderMap[page]();
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// HELPERS
+// ═══════════════════════════════════════════════════════════════════════════
+const fmt = n => n ? n.toLocaleString("th-TH") : "0";
+const fmtB = n => `฿${fmt(n||0)}`;
+
+function badge(text, color) {
+  return `<span class="badge badge-${color}">${text}</span>`;
+}
+
+function statusBadge(status) {
+  const map = {
+    "In House":"blue","Checked In":"blue","Checked Out":"gray","Confirmed":"yellow",
+    "Vacant":"green","Occupied":"blue","Maintenance":"orange",
+    "Paid":"green","Unpaid":"red","Partial":"yellow","Not Invoiced":"gray",
+    "Fully Invoiced":"green","Partially Invoiced":"yellow",
+    "Active":"green","Inactive":"gray",
+    "Gold":"yellow","Silver":"gray","Platinum":"purple",
+    "Completed":"green","Cancelled":"red",
+    "Submitted":"blue","Draft":"gray",
+  };
+  return badge(status, map[status] || "gray");
+}
+
+function openModal(id) { document.getElementById(id).classList.add("open"); }
+function closeModal(id) { document.getElementById(id).classList.remove("open"); }
+
+// ═══════════════════════════════════════════════════════════════════════════
+// PREFILL MODALS
+// ═══════════════════════════════════════════════════════════════════════════
+function prefillModals() {
+  // New Booking — member + vacant rooms
+  const memberSel = document.getElementById("nb-member");
+  memberSel.innerHTML = `<option value="">— Walk-in / Non-member —</option>`;
+  API.Member.list().forEach(m => {
+    memberSel.innerHTML += `<option value="${m.name}">${m.member_name} (${m.name})</option>`;
+  });
+  const roomSel = document.getElementById("nb-room");
+  roomSel.innerHTML = "";
+  API.Room.list({ status:"Vacant" }).forEach(r => {
+    roomSel.innerHTML += `<option value="${r.name}" data-rate="${r.rate}">${r.room_number} — ${r.room_type} (฿${r.rate}/night)</option>`;
+  });
+  roomSel.addEventListener("change", () => {
+    const opt = roomSel.options[roomSel.selectedIndex];
+    document.getElementById("nb-rate").value = opt.dataset.rate || "";
+    computeNights();
+  });
+  if (roomSel.options.length) {
+    document.getElementById("nb-rate").value = roomSel.options[0].dataset.rate;
+  }
+  document.getElementById("nb-checkin").addEventListener("change", computeNights);
+  document.getElementById("nb-checkout").addEventListener("change", computeNights);
+  computeNights();
+
+  // New Spa
+  const spaFolioSel = document.getElementById("ns-folio");
+  spaFolioSel.innerHTML = "";
+  API.Folio.list({ status:"In House" }).forEach(f => {
+    spaFolioSel.innerHTML += `<option value="${f.name}">${f.name} — ${f.guest_name} (${f.room})</option>`;
+  });
+  const itemSel = document.getElementById("ns-item");
+  itemSel.innerHTML = "";
+  API.Item.list({ item_group:"Spa Service" }).filter(i => i.name !== "SPA-TIP").forEach(i => {
+    itemSel.innerHTML += `<option value="${i.name}" data-rate="${i.rate}">${i.item_name}</option>`;
+  });
+  itemSel.addEventListener("change", () => {
+    const opt = itemSel.options[itemSel.selectedIndex];
+    document.getElementById("ns-rate").value = opt.dataset.rate || "0";
+  });
+  if (itemSel.options.length) document.getElementById("ns-rate").value = itemSel.options[0].dataset.rate;
+  const officerSel = document.getElementById("ns-officer");
+  officerSel.innerHTML = "";
+  API.SpaOfficer.list({ status:"Active" }).forEach(o => {
+    officerSel.innerHTML += `<option value="${o.name}">${o.officer_name} (${(o.commission_rate*100).toFixed(0)}%)</option>`;
+  });
+
+  // POS
+  const posFolioSel = document.getElementById("pos-folio");
+  posFolioSel.innerHTML = "";
+  API.Folio.list({ status:"In House" }).forEach(f => {
+    posFolioSel.innerHTML += `<option value="${f.name}">${f.name} — ${f.guest_name}</option>`;
+  });
+  const posItemSel = document.getElementById("pos-item");
+  posItemSel.innerHTML = "";
+  API.Item.list({ item_group:"F&B" }).forEach(i => {
+    posItemSel.innerHTML += `<option value="${i.name}" data-rate="${i.rate}">${i.item_name} (฿${i.rate})</option>`;
+  });
+  posItemSel.addEventListener("change", () => {
+    const opt = posItemSel.options[posItemSel.selectedIndex];
+    document.getElementById("pos-price").value = opt.dataset.rate || "0";
+  });
+  if (posItemSel.options.length) document.getElementById("pos-price").value = posItemSel.options[0].dataset.rate;
+
+  // Add Charge item list (non-spa, non-room-night)
+  const acItemSel = document.getElementById("ac-item");
+  acItemSel.innerHTML = "";
+  API.Item.list().filter(i => !["SPA-TIP","ROOM-NIGHT"].includes(i.name)).forEach(i => {
+    acItemSel.innerHTML += `<option value="${i.name}" data-rate="${i.rate}" data-group="${i.item_group}">${i.item_name} — ${i.item_group}</option>`;
+  });
+  acItemSel.addEventListener("change", () => {
+    const opt = acItemSel.options[acItemSel.selectedIndex];
+    document.getElementById("ac-price").value = opt.dataset.rate || "0";
+    document.getElementById("ac-desc").value = opt.text.split(" — ")[0];
+    computeACAmount();
+  });
+  document.getElementById("ac-qty").addEventListener("input", computeACAmount);
+  document.getElementById("ac-price").addEventListener("input", computeACAmount);
+  if (acItemSel.options.length) {
+    document.getElementById("ac-price").value = acItemSel.options[0].dataset.rate;
+    document.getElementById("ac-desc").value = acItemSel.options[0].text.split(" — ")[0];
+  }
+  computeACAmount();
+
+  // Checkout folio selector
+  const coFolioSel = document.getElementById("checkout-folio-select");
+  coFolioSel.innerHTML = "";
+  API.Folio.list({ status:"In House" }).forEach(f => {
+    coFolioSel.innerHTML += `<option value="${f.name}">${f.name} — ${f.guest_name} (฿${fmt(f.folio_total)})</option>`;
+  });
+}
+
+function computeNights() {
+  const ci = document.getElementById("nb-checkin").value;
+  const co = document.getElementById("nb-checkout").value;
+  if (!ci || !co) return;
+  const d = Math.round((new Date(co) - new Date(ci)) / 86400000);
+  document.getElementById("nb-nights").value = d > 0 ? `${d} night${d>1?"s":""}` : "—";
+}
+
+function computeACAmount() {
+  const qty = parseFloat(document.getElementById("ac-qty").value) || 0;
+  const price = parseFloat(document.getElementById("ac-price").value) || 0;
+  document.getElementById("ac-amount").textContent = fmtB(qty * price);
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// DASHBOARD
+// ═══════════════════════════════════════════════════════════════════════════
+function renderDashboard() {
+  const rooms    = API.Room.list();
+  const occupied = rooms.filter(r => r.status === "Occupied").length;
+  const vacant   = rooms.filter(r => r.status === "Vacant").length;
+  const folios   = API.Folio.list();
+  const inHouse  = folios.filter(f => f.status === "In House").length;
+  const dueToday = folios.filter(f => f.checkout_date === "2026-03-16").length;
+  const invoices = API.SalesInvoice.list();
+  const unpaid   = invoices.filter(i => i.payment_status !== "Paid").reduce((s,i) => s + i.outstanding_amount, 0);
+  const spaSessions = API.SpaSession.list();
+
+  document.getElementById("dash-stats").innerHTML = `
+    <div class="stat-card"><div class="stat-label">Occupied Rooms</div><div class="stat-value">${occupied}/${rooms.length}</div><div class="stat-sub">${vacant} vacant</div></div>
+    <div class="stat-card"><div class="stat-label">In-House Guests</div><div class="stat-value">${inHouse}</div><div class="stat-sub">${dueToday} due checkout today</div></div>
+    <div class="stat-card"><div class="stat-label">Spa Sessions</div><div class="stat-value">${spaSessions.length}</div><div class="stat-sub">Today</div></div>
+    <div class="stat-card"><div class="stat-label">Receivable Outstanding</div><div class="stat-value" style="font-size:18px">${fmtB(unpaid)}</div><div class="stat-sub">${invoices.filter(i=>i.payment_status!=="Paid").length} unpaid invoices</div></div>
+  `;
+
+  const dueRows = folios.filter(f => f.checkout_date === "2026-03-16" && f.status === "In House");
+  document.getElementById("dash-due-checkout").innerHTML = dueRows.length ? `
+    <table><thead><tr><th>Folio</th><th>Guest</th><th>Room</th><th class="text-right">Total</th></tr></thead>
+    <tbody>${dueRows.map(f=>`<tr class="row-warn"><td class="mono">${f.name}</td><td>${f.guest_name}</td><td>${f.room}</td><td class="text-right mono">${fmtB(f.folio_total)}</td></tr>`).join("")}</tbody></table>
+  ` : `<p class="text-muted" style="padding:8px">No checkouts due today.</p>`;
+
+  document.getElementById("dash-spa-today").innerHTML = spaSessions.length ? `
+    <table><thead><tr><th>Session</th><th>Guest</th><th>Service</th><th>Officer</th></tr></thead>
+    <tbody>${spaSessions.map(s=>`<tr><td class="mono">${s.name}</td><td>${s.guest_name}</td><td>${s.service_name}</td><td>${s.officer_name}</td></tr>`).join("")}</tbody></table>
+  ` : `<p class="text-muted" style="padding:8px">No sessions today.</p>`;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// ROOMS
+// ═══════════════════════════════════════════════════════════════════════════
+function renderRooms() {
+  const rooms = API.Room.list();
+  const bookings = API.Booking.list({ status:"Checked In" });
+  const grid = document.getElementById("room-grid");
+  grid.innerHTML = rooms.map(r => {
+    const bkg = bookings.find(b => b.room === r.name);
+    const cls = r.status === "Occupied" ? "occupied" : r.status === "Vacant" ? "vacant" : "maintenance";
+    return `<div class="room-card ${cls}">
+      <div class="room-number">${r.room_number}</div>
+      <div class="room-type">${r.room_type} · Floor ${r.floor}</div>
+      <div class="room-rate">${fmtB(r.rate)}/night</div>
+      ${bkg ? `<div class="room-guest">${bkg.guest_name}</div><div style="margin-top:4px">${statusBadge(r.status)}</div>` : `<div style="margin-top:4px">${statusBadge(r.status)}</div>`}
+    </div>`;
+  }).join("");
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// BOOKINGS
+// ═══════════════════════════════════════════════════════════════════════════
+function renderBookings() {
+  const bookings = API.Booking.list();
+  document.getElementById("tbody-bookings").innerHTML = bookings.map(b => `
+    <tr>
+      <td class="mono">${b.name}</td>
+      <td>${b.guest_name}${b.member ? `<br><span class="text-muted" style="font-size:10px">${b.member}</span>` : ""}</td>
+      <td>${b.room}</td>
+      <td>${b.checkin_date}</td>
+      <td class="${b.checkout_date==="2026-03-16"?"":"" }">${b.checkout_date}</td>
+      <td class="text-right mono">${b.nights}</td>
+      <td class="text-right mono">${fmtB(b.room_rate)}</td>
+      <td>${statusBadge(b.status)}</td>
+      <td>${b.folio ? `<button class="btn btn-xs btn-outline" onclick="openFolioDetail('${b.folio}')">${b.folio}</button>` : "—"}</td>
+    </tr>
+  `).join("");
+}
+
+function submitNewBooking() {
+  const guestName = document.getElementById("nb-guest-name").value.trim();
+  const member    = document.getElementById("nb-member").value || null;
+  const roomSel   = document.getElementById("nb-room");
+  const room      = roomSel.value;
+  const rate      = parseInt(document.getElementById("nb-rate").value) || 0;
+  const checkin   = document.getElementById("nb-checkin").value;
+  const checkout  = document.getElementById("nb-checkout").value;
+  if (!guestName || !room || !checkin || !checkout) { alert("Please fill all required fields."); return; }
+  const nights = Math.round((new Date(checkout) - new Date(checkin)) / 86400000);
+  if (nights <= 0) { alert("Checkout must be after check-in."); return; }
+  const bkg = API.Booking.create({
+    member, guest_name:guestName, room, room_type: API.Room.get(room)?.room_type || "",
+    checkin_date:checkin, checkout_date:checkout, nights, room_rate:rate,
+    booking_total: nights * rate, status:"Checked In",
+  });
+  closeModal("modalNewBooking");
+  prefillModals();
+  renderBookings();
+  alert(`Booking ${bkg.name} created. Folio ${bkg.folio} generated.`);
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// FOLIOS
+// ═══════════════════════════════════════════════════════════════════════════
+function renderFolios(filter) {
+  let folios = API.Folio.list();
+  if (filter === "due_today") folios = folios.filter(f => f.checkout_date === "2026-03-16" && f.status === "In House");
+  else if (filter === "In House") folios = folios.filter(f => f.status === "In House");
+  else if (filter === "Checked Out") folios = folios.filter(f => f.status === "Checked Out");
+  else folios = folios.filter(f => ["In House","Checked Out"].includes(f.status));
+
+  folios.sort((a,b) => a.checkout_date.localeCompare(b.checkout_date));
+  document.getElementById("tbody-folios").innerHTML = folios.map(f => {
+    const isDue = f.checkout_date === "2026-03-16" && f.status === "In House";
+    return `<tr class="${isDue?"row-warn":""}">
+      <td><button class="btn btn-xs btn-outline mono" onclick="openFolioDetail('${f.name}')">${f.name}</button></td>
+      <td>${f.guest_name}${f.member?`<br><span style="font-size:10px;color:var(--text2)">${f.member}</span>`:""}</td>
+      <td>${f.room}</td>
+      <td>${f.checkin_date}</td>
+      <td>${f.checkout_date}${isDue?` <span class="badge badge-yellow">TODAY</span>`:""}</td>
+      <td class="text-right mono" style="font-weight:600">${fmtB(f.folio_total)}</td>
+      <td>${statusBadge(f.invoice_status)}</td>
+      <td>${statusBadge(f.status)}</td>
+      <td>
+        <button class="btn btn-xs btn-outline" onclick="openFolioDetail('${f.name}')">Detail</button>
+        ${f.status==="In House" && !f.checkout_in_progress ? `<button class="btn btn-xs btn-primary" onclick="quickCheckout('${f.name}')">Checkout</button>` : ""}
+      </td>
+    </tr>`;
+  }).join("");
+}
+
+function openFolioDetail(folioName) {
+  _currentFolio = folioName;
+  const folio = API.Folio.get(folioName);
+  if (!folio) return;
+  document.getElementById("folio-detail-title").textContent = `${folio.name}`;
+  document.getElementById("folio-detail-subtitle").textContent = `${folio.guest_name} · ${folio.room} · ${folio.checkin_date} → ${folio.checkout_date}`;
+
+  // Summary bar
+  document.getElementById("folio-summary-bar").innerHTML = `
+    <div class="folio-summary-item"><div class="folio-summary-label">Guest</div><div class="folio-summary-value" style="font-size:13px;font-family:var(--sans)">${folio.guest_name}</div></div>
+    <div class="folio-summary-item"><div class="folio-summary-label">Room</div><div class="folio-summary-value">${folio.room}</div></div>
+    <div class="folio-summary-item"><div class="folio-summary-label">Checkout</div><div class="folio-summary-value" style="font-size:13px">${folio.checkout_date}</div></div>
+    <div class="folio-summary-item"><div class="folio-summary-label">Folio Total</div><div class="folio-summary-value">${fmtB(folio.folio_total)}</div></div>
+  `;
+
+  // Lines
+  const lines = API.FolioLine.list(folioName);
+  document.getElementById("tbody-folio-lines").innerHTML = lines.map(l => `
+    <tr>
+      <td>${l.date}</td>
+      <td class="mono" style="font-size:11px">${l.item}</td>
+      <td>${l.item_name}</td>
+      <td>${badge(l.line_type, l.line_type==="Spa"?"purple":l.line_type==="F&B"?"orange":l.line_type==="Accommodation"?"blue":"gray")}</td>
+      <td class="text-right mono">${l.qty}</td>
+      <td class="text-right mono">${fmtB(l.rate)}</td>
+      <td class="text-right mono" style="font-weight:600">${fmtB(l.amount)}</td>
+      <td>${l.invoiced ? badge("Invoiced","green") : badge("Pending","gray")}</td>
+      <td>${!l.invoiced ? `<button class="btn btn-xs btn-danger" onclick="removeFolioLine('${l.name}','${folioName}')">×</button>` : ""}</td>
+    </tr>
+  `).join("");
+  document.getElementById("folio-lines-total").textContent = fmtB(folio.folio_total);
+
+  // Spa sessions
+  const sessions = API.SpaSession.list({ folio:folioName });
+  document.getElementById("tbody-folio-spa").innerHTML = sessions.length ? sessions.map(s => `
+    <tr>
+      <td class="mono">${s.name}</td><td>${s.session_date}</td><td>${s.service_name}</td>
+      <td>${s.officer_name}</td><td class="mono">${fmtB(s.rate)}</td>
+      <td class="mono">${fmtB(s.tip)}</td>
+      <td class="mono">${s.purchase_order || "—"}</td>
+    </tr>
+  `).join("") : `<tr><td colspan="7" class="text-muted" style="text-align:center;padding:12px">No spa sessions linked.</td></tr>`;
+
+  // Checkout button state
+  const btnCo = document.getElementById("btn-proceed-checkout");
+  if (folio.status === "Checked Out") {
+    btnCo.textContent = "✓ Checked Out";
+    btnCo.disabled = true;
+  } else if (folio.checkout_in_progress) {
+    btnCo.textContent = "Checkout In Progress";
+    btnCo.disabled = false;
+  } else {
+    btnCo.textContent = "Proceed to Checkout →";
+    btnCo.disabled = false;
+  }
+
+  nav("folio-detail");
+}
+
+function removeFolioLine(lineName, folioName) {
+  if (!confirm("Remove this charge line?")) return;
+  const result = API.FolioLine.remove(lineName);
+  if (!result.ok) { alert(result.message); return; }
+  openFolioDetail(folioName);
+}
+
+function goToCheckout() {
+  if (!_currentFolio) return;
+  _checkoutFolioName = _currentFolio;
+  nav("checkout");
+  renderCheckoutPage();
+  document.getElementById("checkout-folio-select").value = _checkoutFolioName;
+  openCheckoutWizard();
+}
+
+function quickCheckout(folioName) {
+  _checkoutFolioName = folioName;
+  nav("checkout");
+  renderCheckoutPage();
+  setTimeout(() => {
+    document.getElementById("checkout-folio-select").value = folioName;
+    openCheckoutWizard();
+  }, 50);
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// SPA
+// ═══════════════════════════════════════════════════════════════════════════
+function renderSpa() {
+  const sessions = API.SpaSession.list();
+  document.getElementById("tbody-spa").innerHTML = sessions.map(s => `
+    <tr>
+      <td class="mono">${s.name}</td><td>${s.session_date}</td>
+      <td>${s.guest_name}</td>
+      <td><button class="btn btn-xs btn-outline" onclick="openFolioDetail('${s.folio}')">${s.folio}</button></td>
+      <td>${s.service_name}</td><td>${s.officer_name}</td>
+      <td class="text-right mono">${fmtB(s.rate)}</td>
+      <td class="text-right mono">${fmtB(s.tip)}</td>
+      <td class="mono">${s.purchase_order||"—"}</td>
+      <td>${statusBadge(s.status)}</td>
+    </tr>
+  `).join("");
+}
+
+function submitNewSpa() {
+  const folio    = document.getElementById("ns-folio").value;
+  const item     = document.getElementById("ns-item").value;
+  const officer  = document.getElementById("ns-officer").value;
+  const date     = document.getElementById("ns-date").value;
+  const tip      = parseFloat(document.getElementById("ns-tip").value) || 0;
+  if (!folio || !item || !officer) { alert("Please fill all fields."); return; }
+  const f = API.Folio.get(folio);
+  const bkg = f ? API.Booking.get(f.booking) : null;
+  const s = API.SpaSession.create({
+    folio, booking: f?.booking, member: f?.member,
+    guest_name: f?.guest_name || "",
+    officer, item, session_date:date, tip,
+  });
+  if (!s) { alert("Failed to create session."); return; }
+  closeModal("modalNewSpa");
+  prefillModals();
+  renderSpa();
+  alert(`Session ${s.name} created. PO ${s.purchase_order} generated for officer.`);
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// RESTAURANT / F&B POS
+// ═══════════════════════════════════════════════════════════════════════════
+function renderRestaurant() {
+  prefillModals();
+  renderPOSRecent();
+}
+
+function postFBCharge() {
+  const folioId = document.getElementById("pos-folio").value;
+  const itemSel = document.getElementById("pos-item");
+  const itemName= itemSel.options[itemSel.selectedIndex].text.split(" (")[0];
+  const itemCode= itemSel.value;
+  const qty     = parseInt(document.getElementById("pos-qty").value) || 1;
+  const price   = parseFloat(document.getElementById("pos-price").value) || 0;
+  if (!folioId || !itemCode) { alert("Select folio and item."); return; }
+  const folio = API.Folio.get(folioId);
+  if (!folio) return;
+  const line = API.FolioLine.add({
+    folio:folioId, item:itemCode, item_name:itemName,
+    qty, rate:price, date:"2026-03-16", line_type:"F&B",
+  });
+  _posRecentCharges.unshift({ time:"Now", folio:folioId, item:itemName, amount:line.amount });
+  document.getElementById("pos-result").innerHTML = `<div class="alert alert-success">✓ Charged ${fmtB(line.amount)} to ${folioId}</div>`;
+  renderPOSRecent();
+}
+
+function renderPOSRecent() {
+  document.getElementById("tbody-pos-recent").innerHTML = _posRecentCharges.slice(0,10).map(c =>
+    `<tr><td>${c.time}</td><td class="mono">${c.folio}</td><td>${c.item}</td><td class="text-right mono">${fmtB(c.amount)}</td></tr>`
+  ).join("") || `<tr><td colspan="4" class="text-muted" style="text-align:center;padding:10px">No charges posted this session.</td></tr>`;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// ADD CHARGE (from folio detail)
+// ═══════════════════════════════════════════════════════════════════════════
+function openAddCharge() {
+  if (!_currentFolio) return;
+  const folio = API.Folio.get(_currentFolio);
+  document.getElementById("ac-folio-info").textContent = `Adding charge to ${_currentFolio} — ${folio?.guest_name}`;
+  openModal("modalAddCharge");
+}
+
+function submitAddCharge() {
+  if (!_currentFolio) return;
+  const itemSel  = document.getElementById("ac-item");
+  const itemCode = itemSel.value;
+  const itemGroup= itemSel.options[itemSel.selectedIndex].dataset.group || "Other";
+  const desc     = document.getElementById("ac-desc").value || itemSel.options[itemSel.selectedIndex].text.split(" — ")[0];
+  const qty      = parseFloat(document.getElementById("ac-qty").value) || 1;
+  const price    = parseFloat(document.getElementById("ac-price").value) || 0;
+  const date     = document.getElementById("ac-date").value;
+  const lineTypeMap = { "F&B":"F&B","Spa Service":"Spa","Accommodation":"Accommodation","Housekeeping":"Housekeeping","Transport":"Transport" };
+  API.FolioLine.add({
+    folio:_currentFolio, item:itemCode, item_name:desc,
+    qty, rate:price, date, line_type:lineTypeMap[itemGroup] || "Other",
+  });
+  closeModal("modalAddCharge");
+  openFolioDetail(_currentFolio);
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// CHECKOUT WIZARD (E09)
+// ═══════════════════════════════════════════════════════════════════════════
+function renderCheckoutPage() {
+  const sel = document.getElementById("checkout-folio-select");
+  sel.innerHTML = "";
+  API.Folio.list({ status:"In House" }).forEach(f => {
+    sel.innerHTML += `<option value="${f.name}">${f.name} — ${f.guest_name} (฿${fmt(f.folio_total)})</option>`;
+  });
+  if (_checkoutFolioName) sel.value = _checkoutFolioName;
+}
+
+function openCheckoutWizard() {
+  const folioName = document.getElementById("checkout-folio-select").value;
+  if (!folioName) return;
+  _checkoutFolioName = folioName;
+  _checkoutSelectedLines = new Set();
+  const result = API.Checkout.openWizard(folioName);
+  const area = document.getElementById("checkout-wizard-area");
+  if (!result.ok) {
+    area.innerHTML = `<div class="alert alert-warn">${result.message}</div>`;
+    return;
+  }
+  const { folio, lines } = result;
+  if (!lines.length) {
+    area.innerHTML = `<div class="alert alert-info">All lines on this folio are already invoiced. ${folio.invoice_status === "Fully Invoiced" ? "Folio is fully invoiced." : ""}</div>`;
+    API.Checkout.cancelWizard(folioName);
+    return;
+  }
+  // Group lines by type
+  const groups = {};
+  lines.forEach(l => { if (!groups[l.line_type]) groups[l.line_type] = []; groups[l.line_type].push(l); });
+  let html = `<div class="alert alert-info">Select lines to include in this invoice bucket. All charges must be added on the folio before checkout — the wizard is line-assignment only.</div>`;
+  html += `<div class="card">
+    <div class="flex-between mb8">
+      <div class="card-title">Uninvoiced Folio Lines</div>
+      <div class="flex-row">
+        <button class="btn btn-sm btn-outline" onclick="selectAllLines()">Select All</button>
+        <button class="btn btn-sm btn-outline" onclick="deselectAllLines()">Deselect All</button>
+      </div>
+    </div>
+    <table>
+      <thead><tr><th style="width:30px"><input type="checkbox" id="chk-all" onchange="toggleAllLines(this)"></th>
+        <th>Item</th><th>Description</th><th>Type</th>
+        <th class="text-right">Qty</th><th class="text-right">Rate</th><th class="text-right">Amount</th>
+      </tr></thead>
+      <tbody id="tbody-checkout-lines">`;
+  lines.forEach(l => {
+    html += `<tr>
+      <td><input type="checkbox" class="co-line-chk" value="${l.name}" onchange="toggleCoLine('${l.name}')"></td>
+      <td class="mono" style="font-size:11px">${l.item}</td>
+      <td>${l.item_name}</td>
+      <td>${badge(l.line_type, l.line_type==="Spa"?"purple":l.line_type==="F&B"?"orange":l.line_type==="Accommodation"?"blue":"gray")}</td>
+      <td class="text-right mono">${l.qty}</td>
+      <td class="text-right mono">${fmtB(l.rate)}</td>
+      <td class="text-right mono" style="font-weight:600">${fmtB(l.amount)}</td>
+    </tr>`;
+  });
+  html += `</tbody></table>
+    <div style="padding:10px 0;display:flex;gap:12px;align-items:center;justify-content:flex-end;border-top:1px solid var(--border2);margin-top:8px">
+      <span style="font-size:12px;color:var(--text2)">Bucket Total: <strong class="mono" id="bucket-total">฿0</strong></span>
+      <select id="bucket-payment-method" style="width:200px">
+        <option value="Cash">Cash (Petty Cash)</option>
+        <option value="Card">Card POS</option>
+        <option value="Member Points">Member Points</option>
+        <option value="Bank">Bank Transfer</option>
+      </select>
+      <button class="btn btn-success" onclick="postInvoiceBucket()">Post Invoice Bucket</button>
+      <button class="btn btn-outline" onclick="cancelCheckout()">Cancel Wizard</button>
+    </div>
+  </div>`;
+  // Posted invoices for this folio
+  const posted = API.SalesInvoice.list({ folio:folioName });
+  if (posted.length) {
+    html += `<div class="card"><div class="card-title">Posted Invoice Buckets for ${folioName}</div>
+    <table><thead><tr><th>Invoice</th><th class="text-right">Net</th><th class="text-right">VAT</th><th class="text-right">Total</th><th>Payment</th><th>Status</th><th></th></tr></thead>
+    <tbody>${posted.map(i=>`<tr>
+      <td class="mono">${i.name}</td>
+      <td class="text-right mono">${fmtB(i.net_total)}</td>
+      <td class="text-right mono">${fmtB(i.vat_amount)}</td>
+      <td class="text-right mono" style="font-weight:600">${fmtB(i.grand_total)}</td>
+      <td>${i.payment_method}</td>
+      <td>${statusBadge(i.payment_status)}</td>
+      <td>${i.payment_status !== "Paid" ? `<button class="btn btn-xs btn-success" onclick="openRegPayment('${i.name}')">Register Payment</button>` : "✓ Paid"}</td>
+    </tr>`).join("")}</tbody></table></div>`;
+  }
+  area.innerHTML = html;
+}
+
+function toggleCoLine(name) {
+  if (_checkoutSelectedLines.has(name)) _checkoutSelectedLines.delete(name);
+  else _checkoutSelectedLines.add(name);
+  updateBucketTotal();
+}
+
+function selectAllLines() {
+  document.querySelectorAll(".co-line-chk").forEach(chk => { chk.checked=true; _checkoutSelectedLines.add(chk.value); });
+  updateBucketTotal();
+}
+
+function deselectAllLines() {
+  document.querySelectorAll(".co-line-chk").forEach(chk => { chk.checked=false; });
+  _checkoutSelectedLines.clear();
+  updateBucketTotal();
+}
+
+function toggleAllLines(master) {
+  document.querySelectorAll(".co-line-chk").forEach(chk => {
+    chk.checked = master.checked;
+    if (master.checked) _checkoutSelectedLines.add(chk.value);
+    else _checkoutSelectedLines.delete(chk.value);
+  });
+  updateBucketTotal();
+}
+
+function updateBucketTotal() {
+  const lines = Array.from(_checkoutSelectedLines).map(n => API.FolioLine.list(_checkoutFolioName).find(l => l.name === n)).filter(Boolean);
+  const total = lines.reduce((s,l) => s + l.amount, 0);
+  const el = document.getElementById("bucket-total");
+  if (el) el.textContent = fmtB(total);
+}
+
+function postInvoiceBucket() {
+  const lineNames = Array.from(_checkoutSelectedLines);
+  if (!lineNames.length) { alert("Select at least one line to invoice."); return; }
+  const method = document.getElementById("bucket-payment-method").value;
+  const result = API.Checkout.postInvoiceBucket(_checkoutFolioName, lineNames, method);
+  if (!result.ok) { alert(result.message); return; }
+  _checkoutSelectedLines.clear();
+  openCheckoutWizard();
+  // Prompt to register payment immediately
+  openRegPayment(result.invoice.name);
+}
+
+function cancelCheckout() {
+  API.Checkout.cancelWizard(_checkoutFolioName);
+  document.getElementById("checkout-wizard-area").innerHTML = `<div class="alert alert-info">Checkout wizard cancelled. Folio unlocked.</div>`;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// INVOICES
+// ═══════════════════════════════════════════════════════════════════════════
+function renderInvoices(filter) {
+  let invs = API.SalesInvoice.list();
+  if (filter === "Unpaid") invs = invs.filter(i => i.payment_status === "Unpaid");
+  else if (filter === "Partial") invs = invs.filter(i => i.payment_status === "Partial");
+  else if (filter === "Paid") invs = invs.filter(i => i.payment_status === "Paid");
+  document.getElementById("tbody-invoices").innerHTML = invs.length ? invs.map(i => `
+    <tr>
+      <td class="mono">${i.name}</td>
+      <td>${i.guest_name}</td>
+      <td><button class="btn btn-xs btn-outline" onclick="openFolioDetail('${i.folio}')">${i.folio}</button></td>
+      <td>${i.posting_date}</td>
+      <td class="text-right mono">${fmtB(i.net_total)}</td>
+      <td class="text-right mono">${fmtB(i.vat_amount)}</td>
+      <td class="text-right mono" style="font-weight:600">${fmtB(i.grand_total)}</td>
+      <td class="text-right mono ${i.outstanding_amount>0?"":"text-muted"}">${fmtB(i.outstanding_amount)}</td>
+      <td>${i.payment_method}</td>
+      <td>${statusBadge(i.payment_status)}</td>
+      <td>
+        ${i.payment_status!=="Paid"?`<button class="btn btn-xs btn-success" onclick="openRegPayment('${i.name}')">Register Payment</button>`:""}
+        <button class="btn btn-xs btn-outline" onclick="resetInvoiceToDraft('${i.name}')">Reset Draft</button>
+      </td>
+    </tr>
+  `).join("") : `<tr><td colspan="11" class="text-muted" style="text-align:center;padding:16px">No invoices found.</td></tr>`;
+}
+
+function openRegPayment(invoiceName) {
+  _currentInvoice = invoiceName;
+  const inv = API.SalesInvoice.get(invoiceName);
+  document.getElementById("rp-inv-info").innerHTML =
+    `Invoice <strong>${invoiceName}</strong> · ${inv.guest_name} · Total: ${fmtB(inv.grand_total)} · Outstanding: <strong>${fmtB(inv.outstanding_amount)}</strong>`;
+  document.getElementById("rp-amount").value = inv.outstanding_amount;
+  document.getElementById("rp-memo").value = `Payment for ${invoiceName}`;
+  // Pre-select method from invoice
+  const methodMap = { "Cash":"Cash","Card":"Card","Member Points":"Member Points","Bank":"Bank" };
+  const methodSel = document.getElementById("rp-method");
+  for (let i=0; i<methodSel.options.length; i++) {
+    if (methodSel.options[i].value === inv.payment_method) { methodSel.selectedIndex = i; break; }
+  }
+  openModal("modalRegPayment");
+}
+
+function submitPayment() {
+  const amount = parseFloat(document.getElementById("rp-amount").value) || 0;
+  const method = document.getElementById("rp-method").value;
+  if (!amount || amount <= 0) { alert("Enter a valid amount."); return; }
+  const pe = API.PaymentEntry.create(_currentInvoice, amount, method);
+  if (!pe) { alert("Payment registration failed."); return; }
+  closeModal("modalRegPayment");
+  renderInvoices("all");
+  // Refresh checkout wizard if open
+  if (_checkoutFolioName) openCheckoutWizard();
+  alert(`Payment ${pe.name} registered. Amount: ${fmtB(pe.amount)} via ${method}.`);
+}
+
+function resetInvoiceToDraft(invoiceName) {
+  if (!confirm(`Reset ${invoiceName} to draft? This will unmark folio lines and allow editing.`)) return;
+  const inv = API.SalesInvoice.resetToDraft(invoiceName);
+  if (inv) { renderInvoices("all"); alert(`${invoiceName} reset to draft.`); }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// PAYMENTS
+// ═══════════════════════════════════════════════════════════════════════════
+function renderPayments() {
+  const payments = API.PaymentEntry.list();
+  document.getElementById("tbody-payments").innerHTML = payments.length ? payments.map(p => `
+    <tr>
+      <td class="mono">${p.name}</td><td>${p.payment_date}</td>
+      <td class="mono">${p.invoice}</td><td>${p.guest_name}</td>
+      <td class="text-right mono" style="font-weight:600">${fmtB(p.amount)}</td>
+      <td>${p.payment_method}</td>
+      <td style="font-size:11px;color:var(--text2)">${p.journal_account}</td>
+      <td>${statusBadge(p.status)}</td>
+    </tr>
+  `).join("") : `<tr><td colspan="8" class="text-muted" style="text-align:center;padding:16px">No payments recorded yet.</td></tr>`;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// PURCHASE ORDERS
+// ═══════════════════════════════════════════════════════════════════════════
+function renderPurchaseOrders() {
+  const pos = API.PurchaseOrder.list();
+  document.getElementById("tbody-pos").innerHTML = pos.map(p => `
+    <tr>
+      <td class="mono">${p.name}</td><td>${p.po_date}</td>
+      <td>${p.vendor_name}</td>
+      <td class="mono">${p.spa_session}</td>
+      <td>${p.service_name}</td>
+      <td class="text-right mono">${fmtB(p.service_amount)}</td>
+      <td class="text-right">${(p.commission_rate*100).toFixed(0)}%</td>
+      <td class="text-right mono">${fmtB(p.commission_amount)}</td>
+      <td class="text-right mono">${fmtB(p.tip_amount)}</td>
+      <td class="text-right mono" style="font-weight:600">${fmtB(p.total_payable)}</td>
+      <td>${p.paid ? badge("Paid","green") : `<button class="btn btn-xs btn-success" onclick="markPOPaid('${p.name}')">Mark Paid</button>`}</td>
+    </tr>
+  `).join("");
+}
+
+function markPOPaid(poName) {
+  API.PurchaseOrder.markPaid(poName);
+  renderPurchaseOrders();
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// MASTER DATA
+// ═══════════════════════════════════════════════════════════════════════════
+function renderMembers() {
+  const tierColor = { Gold:"yellow", Silver:"gray", Platinum:"purple" };
+  document.getElementById("tbody-members").innerHTML = API.Member.list().map(m => `
+    <tr>
+      <td class="mono">${m.name}</td><td>${m.member_name}</td>
+      <td style="font-size:11px">${m.email}</td><td>${m.phone}</td>
+      <td>${m.member_since}</td>
+      <td>${badge(m.status, tierColor[m.status]||"gray")}</td>
+      <td class="text-right mono" style="font-weight:600">${fmt(m.points_balance)} pts</td>
+    </tr>
+  `).join("");
+}
+
+function renderOfficers() {
+  document.getElementById("tbody-officers").innerHTML = API.SpaOfficer.list().map(o => `
+    <tr>
+      <td class="mono">${o.name}</td><td>${o.officer_name}</td>
+      <td>${o.gender}</td><td style="font-size:11px">${o.specialty}</td>
+      <td class="text-right">${o.experience_years} yr</td>
+      <td class="text-right">${(o.commission_rate*100).toFixed(0)}%</td>
+      <td class="mono" style="font-size:11px">${o.vendor_id}</td>
+      <td>${statusBadge(o.status)}</td>
+    </tr>
+  `).join("");
+}
+
+function renderItems() {
+  const groupColor = { "Spa Service":"purple","F&B":"orange","Accommodation":"blue","Housekeeping":"gray","Transport":"green" };
+  document.getElementById("tbody-items").innerHTML = API.Item.list().map(i => `
+    <tr>
+      <td class="mono">${i.name}</td><td>${i.item_name}</td>
+      <td>${badge(i.item_group, groupColor[i.item_group]||"gray")}</td>
+      <td class="text-right mono">${i.rate ? fmtB(i.rate) : "—"}</td>
+      <td>${i.uom}</td>
+      <td class="mono" style="font-size:11px">${i.income_account}</td>
+    </tr>
+  `).join("");
+}
+</script>
+</body>
+</html>
