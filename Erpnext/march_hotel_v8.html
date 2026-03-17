@@ -1,0 +1,2324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>March Hotel — ERPNext v8</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+/* ═══ ERPNext Theme ═══════════════════════════════════════════════════ */
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Helvetica Neue',Arial,sans-serif;font-size:13px;background:#f4f5f7;color:#333;overflow:hidden}
+a{color:#5c7cfa;text-decoration:none;cursor:pointer}
+
+/* Navbar */
+#navbar{height:48px;background:#fff;border-bottom:1px solid #e0e0e0;display:flex;align-items:center;padding:0 14px;gap:10px;position:fixed;top:0;left:0;right:0;z-index:300;box-shadow:0 1px 3px rgba(0,0,0,.07)}
+.n-logo{font-weight:700;font-size:14px;color:#1f272e;display:flex;align-items:center;gap:6px}
+.n-logo span{background:#1f4e79;color:#fff;padding:2px 7px;border-radius:3px;font-size:11px;font-weight:700}
+.n-app{font-size:12px;color:#8d99a6;border-left:1px solid #e0e0e0;padding-left:10px;display:none}
+@media(min-width:600px){.n-app{display:block}}
+.n-right{margin-left:auto;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.n-date{font-size:11px;color:#8d99a6;background:#f4f5f7;padding:3px 7px;border-radius:3px;display:none}
+@media(min-width:500px){.n-date{display:block}}
+.btn-reset{background:#d44235;color:#fff;border:none;padding:5px 10px;border-radius:4px;cursor:pointer;font-size:11px;font-weight:600}
+.btn-reset:hover{background:#b5352a}
+#hamburger{display:block;background:none;border:none;cursor:pointer;font-size:20px;color:#555;line-height:1;padding:2px 6px}
+@media(min-width:900px){#hamburger{display:none}}
+
+/* Sidebar */
+#sidebar{width:210px;background:#fff;border-right:1px solid #e0e0e0;position:fixed;top:48px;bottom:0;left:0;overflow-y:auto;z-index:200;transform:translateX(-100%);transition:transform .2s}
+#sidebar.open{transform:translateX(0)}
+@media(min-width:900px){#sidebar{transform:translateX(0)}}
+#sb-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.3);z-index:199;top:48px}
+#sb-overlay.open{display:block}
+@media(min-width:900px){#sb-overlay{display:none!important}}
+.sb-section{padding:12px 12px 3px;font-size:10px;color:#8d99a6;text-transform:uppercase;letter-spacing:.08em;font-weight:700}
+.sb-item{display:flex;align-items:center;gap:8px;padding:7px 14px 7px 14px;color:#444;cursor:pointer;font-size:12px;border-left:3px solid transparent;transition:background .1s;user-select:none}
+.sb-item:hover{background:#f4f5f7}
+.sb-item.active{background:#ebf2ff;border-left-color:#5c7cfa;color:#1a3a6e;font-weight:600}
+.sb-icon{font-size:13px;width:16px;text-align:center;flex-shrink:0}
+
+/* Main */
+#main{margin-top:48px;height:calc(100vh - 48px);overflow-y:auto;padding:14px;transition:margin-left .2s}
+@media(min-width:900px){#main{margin-left:210px}}
+.page{display:none}
+.page.active{display:block}
+
+/* Page header */
+.ph{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px}
+.ph-left .pt{font-size:16px;font-weight:700;color:#1f272e}
+.ph-left .ps{font-size:11px;color:#8d99a6;margin-top:2px}
+.ph-right{display:flex;gap:6px;flex-wrap:wrap}
+
+/* Cards */
+.card{background:#fff;border:1px solid #e0e0e0;border-radius:6px;padding:12px;margin-bottom:12px}
+.ch{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;flex-wrap:wrap;gap:6px}
+.ct{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#8d99a6}
+
+/* Stats */
+.stat-row{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:12px}
+@media(min-width:500px){.stat-row{grid-template-columns:repeat(4,1fr)}}
+.stat{background:#fff;border:1px solid #e0e0e0;border-radius:6px;padding:11px}
+.sl{font-size:10px;color:#8d99a6;text-transform:uppercase;letter-spacing:.05em}
+.sv{font-size:20px;font-weight:700;color:#1f272e;margin:3px 0 1px;line-height:1.1}
+.ss{font-size:11px;color:#8d99a6}
+
+/* Dashboard 2-col grid */
+.dash-grid{display:grid;grid-template-columns:1fr;gap:12px}
+@media(min-width:700px){.dash-grid{grid-template-columns:1fr 1fr}}
+
+/* Tables */
+.tw{overflow-x:auto;-webkit-overflow-scrolling:touch}
+table{width:100%;border-collapse:collapse}
+th{background:#f8f9fa;padding:7px 9px;text-align:left;font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:#8d99a6;border-bottom:1px solid #e0e0e0;white-space:nowrap;font-weight:700}
+td{padding:7px 9px;border-bottom:1px solid #f0f0f0;font-size:12px;vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tbody tr:hover td{background:#f8f9fa}
+.tr-warn td{background:#fffbeb!important}
+.tr-warn:hover td{background:#fff3cd!important}
+.tr-ok td{background:#f0fff4!important}
+
+/* Badges */
+.badge{display:inline-block;padding:2px 7px;border-radius:10px;font-size:10px;font-weight:700;white-space:nowrap}
+.b-green{background:#d3f9d8;color:#2b8a3e}.b-blue{background:#d0ebff;color:#1864ab}
+.b-yellow{background:#fff3bf;color:#e67700}.b-red{background:#ffe3e3;color:#c92a2a}
+.b-gray{background:#f1f3f5;color:#495057}.b-purple{background:#f3d9fa;color:#6741d9}
+.b-orange{background:#ffe8cc;color:#d9480f}.b-teal{background:#c3fae8;color:#0b7285}
+.b-cyan{background:#e3fafc;color:#0c7a91}
+
+/* Buttons */
+.btn{display:inline-flex;align-items:center;gap:4px;padding:6px 11px;border-radius:4px;border:1px solid transparent;cursor:pointer;font-size:12px;font-weight:500;font-family:inherit;transition:all .1s;white-space:nowrap;line-height:1.2}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn-primary{background:#5c7cfa;color:#fff;border-color:#5c7cfa}.btn-primary:hover:not(:disabled){background:#4c6ef5}
+.btn-secondary{background:#fff;color:#333;border-color:#ccc}.btn-secondary:hover{background:#f4f5f7}
+.btn-success{background:#37b24d;color:#fff;border-color:#37b24d}.btn-success:hover{background:#2f9e44}
+.btn-danger{background:#f03e3e;color:#fff;border-color:#f03e3e}.btn-danger:hover{background:#e03131}
+.btn-warning{background:#f59f00;color:#fff;border-color:#f59f00}.btn-warning:hover{background:#e08c00}
+.btn-info{background:#1098ad;color:#fff;border-color:#1098ad}.btn-info:hover{background:#0c8599}
+.btn-xs{padding:2px 6px;font-size:10px}.btn-sm{padding:4px 8px;font-size:11px}
+
+/* Forms */
+.fr{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px}
+.fr.c1{grid-template-columns:1fr}.fr.c3{grid-template-columns:1fr 1fr 1fr}.fr.c4{grid-template-columns:1fr 1fr 1fr 1fr}
+@media(max-width:550px){.fr,.fr.c3,.fr.c4{grid-template-columns:1fr}}
+.fg{display:flex;flex-direction:column;gap:3px}
+.fg.s2{grid-column:span 2}.fg.s3{grid-column:span 3}.fg.s4{grid-column:span 4}
+@media(max-width:550px){.fg.s2,.fg.s3,.fg.s4{grid-column:span 1}}
+.fg label{font-size:10px;font-weight:700;color:#8d99a6;text-transform:uppercase;letter-spacing:.05em}
+.fg input,.fg select,.fg textarea{padding:6px 8px;border:1px solid #d0d0d0;border-radius:4px;font-size:12px;font-family:inherit;background:#fff;color:#333;width:100%}
+.fg input:focus,.fg select:focus{outline:none;border-color:#5c7cfa;box-shadow:0 0 0 2px rgba(92,124,250,.12)}
+.fg input[readonly],.fg textarea[readonly]{background:#f8f9fa;color:#888}
+
+/* Alerts */
+.alert{padding:8px 12px;border-radius:4px;font-size:12px;margin-bottom:10px}
+.a-info{background:#e7f5ff;border:1px solid #a5d8ff;color:#1864ab}
+.a-warn{background:#fffbeb;border:1px solid #ffe066;color:#7c5c00}
+.a-ok{background:#ebfbee;border:1px solid #8ce99a;color:#1e6f2a}
+.a-err{background:#fff5f5;border:1px solid #ffa8a8;color:#c92a2a}
+
+/* Modal */
+.mb{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;align-items:flex-start;justify-content:center;z-index:400;padding:16px;overflow-y:auto}
+.mb.open{display:flex}
+.modal{background:#fff;border-radius:8px;width:560px;max-width:100%;box-shadow:0 8px 40px rgba(0,0,0,.22);margin:auto}
+.modal-lg{width:720px}
+.mh{display:flex;align-items:center;justify-content:space-between;padding:13px 16px;border-bottom:1px solid #e0e0e0;position:sticky;top:0;background:#fff;border-radius:8px 8px 0 0;z-index:1}
+.mt{font-size:14px;font-weight:700}
+.mx{background:none;border:none;cursor:pointer;font-size:22px;color:#8d99a6;line-height:1}
+.mbody{padding:16px}
+.mfoot{padding:11px 16px;border-top:1px solid #e0e0e0;display:flex;justify-content:flex-end;gap:8px}
+
+/* Pills */
+.pills{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px}
+.pill{padding:3px 10px;border-radius:12px;border:1px solid #d0d0d0;background:#fff;cursor:pointer;font-size:11px;color:#555;font-weight:500;white-space:nowrap}
+.pill:hover{background:#f4f5f7}
+.pill.active{background:#5c7cfa;border-color:#5c7cfa;color:#fff}
+
+/* Room cards */
+.room-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:9px}
+.room-card{background:#fff;border:1px solid #e0e0e0;border-radius:6px;padding:11px;cursor:pointer;transition:box-shadow .15s}
+.room-card:hover{box-shadow:0 2px 10px rgba(0,0,0,.1)}
+.room-card.occupied{border-top:3px solid #5c7cfa}
+.room-card.vacant{border-top:3px solid #37b24d}
+.room-card.maintenance{border-top:3px solid #f59f00}
+.rn{font-size:20px;font-weight:700;color:#1f272e}
+.rt{font-size:11px;color:#8d99a6}
+.rg{font-size:11px;color:#333;margin-top:4px;font-weight:500}
+.rr{font-size:11px;color:#8d99a6;margin-top:1px}
+
+/* Folio bar */
+.fbar{display:grid;grid-template-columns:1fr 1fr;border:1px solid #e0e0e0;border-radius:6px;overflow:hidden;margin-bottom:12px}
+@media(min-width:600px){.fbar{grid-template-columns:repeat(4,1fr)}}
+.fbi{padding:11px 13px;border-right:1px solid #e0e0e0;border-bottom:1px solid #e0e0e0}
+.fbi:last-child{border-right:none}
+@media(min-width:600px){.fbi{border-bottom:none}}
+.fbl{font-size:10px;text-transform:uppercase;letter-spacing:.07em;color:#8d99a6;font-weight:700}
+.fbv{font-size:14px;font-weight:700;color:#1f272e;margin-top:3px}
+
+/* Spa timer */
+.spa-timer{font-size:16px;font-weight:700;font-variant-numeric:tabular-nums;color:#1f272e}
+.spa-timer.warn{color:#e67700}
+.spa-timer.done{color:#c92a2a}
+
+/* Commission panel */
+.comm-panel{background:#f8f9fa;border:1px solid #e0e0e0;border-radius:4px;padding:10px;font-size:12px}
+.comm-row{display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid #f0f0f0}
+.comm-row:last-child{border-bottom:none;font-weight:700}
+
+/* FnB layout */
+.fnb-layout{display:grid;grid-template-columns:1fr;gap:12px}
+@media(min-width:700px){.fnb-layout{grid-template-columns:320px 1fr}}
+
+/* Officer portal */
+.officer-card{background:#fff;border:1px solid #e0e0e0;border-radius:6px;padding:12px}
+
+/* Report styles */
+.rpt-filters{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:8px;margin-bottom:12px;align-items:end}
+.rpt-total-box{background:#f8f9fa;border:1px solid #e0e0e0;border-radius:6px;padding:12px;margin-top:12px}
+.rpt-total-row{display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #f0f0f0;font-size:12px}
+.rpt-total-row:last-child{border-bottom:none;font-weight:700;font-size:13px;padding-top:8px;margin-top:4px}
+.rpt-section-hdr{background:#1f4e79;color:#fff;padding:8px 12px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;border-radius:4px 4px 0 0;margin-top:14px}
+
+/* PO Payment advice - print */
+@media print{
+  #navbar,#sidebar,#sb-overlay,.no-print{display:none!important}
+  #main{margin:0!important;padding:0!important;height:auto!important;overflow:visible!important}
+  .page{display:none!important}
+  #print-area{display:block!important}
+  body{overflow:auto!important;font-size:12px}
+}
+#print-area{display:none}
+.pay-advice{max-width:680px;margin:20px auto;padding:20px;font-family:'Helvetica Neue',Arial,sans-serif}
+.pay-advice-logo{font-size:20px;font-weight:700;color:#1f4e79;margin-bottom:2px}
+.pay-advice-sub{color:#8d99a6;font-size:12px;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid #e0e0e0}
+.pay-advice table{width:100%;border-collapse:collapse;margin-bottom:14px}
+.pay-advice th{background:#f8f9fa;padding:6px 10px;text-align:left;font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:#8d99a6;border:1px solid #e0e0e0;font-weight:700}
+.pay-advice td{padding:7px 10px;border:1px solid #e0e0e0;font-size:12px}
+.pay-advice .tot-row{background:#ebfbee;font-weight:700}
+.pay-advice .sig{margin-top:30px;display:flex;gap:60px}
+.pay-advice .sig-line{width:180px;border-bottom:1px solid #333;padding-bottom:2px;font-size:10px;color:#8d99a6;margin-top:30px}
+.pay-advice-footer{margin-top:20px;font-size:10px;color:#8d99a6;border-top:1px solid #e0e0e0;padding-top:10px}
+
+/* Commission applicable badge inline */
+.comm-yes{color:#2b8a3e;font-size:10px;font-weight:700}
+.comm-no{color:#adb5bd;font-size:10px}
+</style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<div id="navbar">
+  <button id="hamburger" onclick="toggleSb()">☰</button>
+  <div class="n-logo"><span>M</span>March Hotel</div>
+  <div class="n-app">ERPNext Hotel Module · v8</div>
+  <div class="n-right">
+    <span class="n-date">📅 2026-03-17</span>
+    <button class="btn-reset" onclick="confirmReset()">↺ Reset</button>
+  </div>
+</div>
+
+<!-- SIDEBAR OVERLAY -->
+<div id="sb-overlay" onclick="closeSb()"></div>
+
+<!-- SIDEBAR -->
+<div id="sidebar">
+  <div class="sb-section">Front Desk</div>
+  <div class="sb-item active" data-p="dashboard" onclick="nav('dashboard')"><span class="sb-icon">🏠</span>Dashboard</div>
+  <div class="sb-item" data-p="rooms" onclick="nav('rooms')"><span class="sb-icon">🛏</span>Room Dashboard</div>
+  <div class="sb-item" data-p="bookings" onclick="nav('bookings')"><span class="sb-icon">📋</span>Bookings</div>
+  <div class="sb-item" data-p="folios" onclick="nav('folios')"><span class="sb-icon">📂</span>Guest Folios</div>
+  <div class="sb-section">Services</div>
+  <div class="sb-item" data-p="spa" onclick="nav('spa')"><span class="sb-icon">✨</span>Spa Sessions</div>
+  <div class="sb-item" data-p="fnb" onclick="nav('fnb')"><span class="sb-icon">🍜</span>F&amp;B / POS</div>
+  <div class="sb-section">Billing</div>
+  <div class="sb-item" data-p="checkout" onclick="nav('checkout')"><span class="sb-icon">🧾</span>Checkout (E09)</div>
+  <div class="sb-item" data-p="invoices" onclick="nav('invoices')"><span class="sb-icon">🗃</span>Sales Invoices</div>
+  <div class="sb-item" data-p="payments" onclick="nav('payments')"><span class="sb-icon">💳</span>Payments</div>
+  <div class="sb-section">Procurement</div>
+  <div class="sb-item" data-p="pos" onclick="nav('pos')"><span class="sb-icon">📦</span>Officer POs</div>
+  <div class="sb-item" data-p="officer_portal" onclick="nav('officer_portal')"><span class="sb-icon">💰</span>Officer Commission</div>
+  <div class="sb-section">Reports</div>
+  <div class="sb-item" data-p="rpt_income" onclick="nav('rpt_income')"><span class="sb-icon">📈</span>Income Report</div>
+  <div class="sb-item" data-p="rpt_expense" onclick="nav('rpt_expense')"><span class="sb-icon">📉</span>Expense Report</div>
+  <div class="sb-item" data-p="rpt_recon" onclick="nav('rpt_recon')"><span class="sb-icon">⚖️</span>Reconciliation</div>
+  <div class="sb-section">Master Data</div>
+  <div class="sb-item" data-p="members" onclick="nav('members')"><span class="sb-icon">👤</span>Members</div>
+  <div class="sb-item" data-p="officers" onclick="nav('officers')"><span class="sb-icon">💆</span>Spa Officers (HR)</div>
+  <div class="sb-item" data-p="items" onclick="nav('items')"><span class="sb-icon">📦</span>Items</div>
+</div>
+
+<!-- MAIN -->
+<div id="main">
+
+<!-- DASHBOARD -->
+<div id="p-dashboard" class="page active">
+  <div class="ph"><div class="ph-left"><div class="pt">Dashboard</div><div class="ps">Hotel operations — 2026-03-17</div></div></div>
+  <div id="ds-stats" class="stat-row"></div>
+  <div class="dash-grid">
+    <div class="card"><div class="ch"><div class="ct">Due Checkout</div><a onclick="nav('folios')">View All →</a></div><div id="ds-due"></div></div>
+    <div class="card"><div class="ch"><div class="ct">Unpaid Invoices</div><a onclick="nav('invoices')">View All →</a></div><div id="ds-inv"></div></div>
+  </div>
+  <div class="card"><div class="ch"><div class="ct">Active Spa Sessions</div><a onclick="nav('spa')">View All →</a></div><div id="ds-spa"></div></div>
+</div>
+
+<!-- ROOMS -->
+<div id="p-rooms" class="page">
+  <div class="ph"><div class="ph-left"><div class="pt">Room Dashboard</div><div class="ps">Click a room to book or view folio</div></div>
+  <div class="ph-right"><button class="btn btn-primary" onclick="openModal('m-booking')">+ New Booking</button></div></div>
+  <div class="card"><div id="room-grid" class="room-grid"></div></div>
+</div>
+
+<!-- BOOKINGS -->
+<div id="p-bookings" class="page">
+  <div class="ph"><div class="ph-left"><div class="pt">Bookings</div><div class="ps">Hotel booking register</div></div>
+  <div class="ph-right"><button class="btn btn-primary" onclick="openModal('m-booking')">+ New Booking</button></div></div>
+  <div class="card">
+    <div class="pills" id="bkg-pills">
+      <span class="pill active" onclick="filterBkg('all',this)">All</span>
+      <span class="pill" onclick="filterBkg('Checked In',this)">Checked In</span>
+      <span class="pill" onclick="filterBkg('Confirmed',this)">Confirmed</span>
+      <span class="pill" onclick="filterBkg('Checked Out',this)">Checked Out</span>
+    </div>
+    <div class="tw"><table><thead><tr>
+      <th>Booking</th><th>Guest</th><th>Member</th><th>Room</th>
+      <th>Check-in</th><th>Check-out</th><th>Nts</th><th>Rate</th><th>Status</th><th>Folio</th>
+    </tr></thead><tbody id="tb-bkg"></tbody></table></div>
+  </div>
+</div>
+
+<!-- FOLIOS -->
+<div id="p-folios" class="page">
+  <div class="ph"><div class="ph-left"><div class="pt">Guest Folios</div><div class="ps">Cashier workspace — E01</div></div></div>
+  <div class="card">
+    <div class="pills" id="folio-pills">
+      <span class="pill active" onclick="filterFolios('all',this)">All</span>
+      <span class="pill" onclick="filterFolios('due',this)">Due Checkout</span>
+      <span class="pill" onclick="filterFolios('In House',this)">In House</span>
+      <span class="pill" onclick="filterFolios('Checked Out',this)">Checked Out</span>
+    </div>
+    <div class="tw"><table><thead><tr>
+      <th>Folio</th><th>Guest</th><th>Room</th><th>Check-in</th><th>Checkout</th>
+      <th>Total (฿)</th><th>Paid (฿)</th><th>Balance (฿)</th><th>Invoice</th><th>Status</th><th>Actions</th>
+    </tr></thead><tbody id="tb-folios"></tbody></table></div>
+  </div>
+</div>
+
+<!-- FOLIO DETAIL -->
+<div id="p-folio-detail" class="page">
+  <div class="ph">
+    <div class="ph-left">
+      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+        <button class="btn btn-secondary btn-sm" onclick="nav('folios')">← Folios</button>
+        <div class="pt" id="fd-title">Folio</div>
+      </div>
+      <div class="ps" id="fd-sub"></div>
+    </div>
+    <div class="ph-right">
+      <button class="btn btn-secondary" onclick="openAddCharge()">+ Add Charge (E04)</button>
+      <button class="btn btn-primary" id="btn-co" onclick="gotoCheckout()">Proceed to Checkout →</button>
+    </div>
+  </div>
+  <div id="fd-bar" class="fbar"></div>
+  <div class="card">
+    <div class="ch"><div class="ct">Folio Charge Lines</div></div>
+    <div class="tw"><table><thead><tr>
+      <th>Date</th><th>Item</th><th>Description</th><th>Type</th>
+      <th>Qty</th><th>Rate (฿)</th><th>Amount (฿)</th><th>Tip (฿)</th><th>Invoiced</th><th></th>
+    </tr></thead><tbody id="tb-fd-lines"></tbody>
+    <tfoot><tr>
+      <td colspan="6" style="text-align:right;font-weight:700;padding:8px 9px">Folio Total</td>
+      <td style="font-weight:700;padding:8px 9px;font-size:13px" id="fd-total"></td>
+      <td colspan="3"></td>
+    </tr></tfoot>
+    </table></div>
+  </div>
+  <div class="card">
+    <div class="ch"><div class="ct">Invoices &amp; Payments</div></div>
+    <div class="tw"><table><thead><tr>
+      <th>Invoice</th><th>Total (฿)</th><th>Paid (฿)</th><th>Balance (฿)</th><th>Method</th><th>Status</th><th></th>
+    </tr></thead><tbody id="tb-fd-inv"></tbody></table></div>
+  </div>
+  <div class="card">
+    <div class="ch"><div class="ct">Linked Spa Sessions</div></div>
+    <div class="tw"><table><thead><tr>
+      <th>Session</th><th>Date</th><th>Service</th><th>Officer</th><th>Start</th><th>End</th><th>Duration</th><th>Rate (฿)</th><th>Tip (฿)</th><th>Status</th><th></th>
+    </tr></thead><tbody id="tb-fd-spa"></tbody></table></div>
+  </div>
+</div>
+
+<!-- SPA -->
+<div id="p-spa" class="page">
+  <div class="ph"><div class="ph-left"><div class="pt">Spa Sessions</div><div class="ps">Procurement-based — PO per session</div></div>
+  <div class="ph-right"><button class="btn btn-primary" onclick="openModal('m-spa')">+ New Session</button></div></div>
+  <div class="card">
+    <div class="pills" id="spa-pills">
+      <span class="pill active" onclick="filterSpa('all',this)">All</span>
+      <span class="pill" onclick="filterSpa('In Progress',this)">In Progress</span>
+      <span class="pill" onclick="filterSpa('Completed',this)">Completed</span>
+    </div>
+    <div class="tw"><table><thead><tr>
+      <th>Session ID</th><th>Date</th><th>Guest</th><th>Folio</th><th>Service</th>
+      <th>Officer</th><th>Start</th><th>End</th><th>Timer</th><th>Rate (฿)</th><th>Tip (฿)</th><th>Status</th><th>Actions</th>
+    </tr></thead><tbody id="tb-spa"></tbody></table></div>
+  </div>
+</div>
+
+<!-- F&B POS -->
+<div id="p-fnb" class="page">
+  <div class="ph"><div class="ph-left"><div class="pt">F&B / Room Charge POS</div><div class="ps">Post charges to guest folio</div></div></div>
+  <div class="fnb-layout">
+    <div class="card">
+      <div class="ch"><div class="ct">Post Charge</div></div>
+      <div class="fg" style="margin-bottom:8px"><label>Guest Folio *</label><select id="pos-folio"></select></div>
+      <div class="fg" style="margin-bottom:8px"><label>F&amp;B Item *</label><select id="pos-item" onchange="posItemChange()"></select></div>
+      <div class="fr" style="margin-bottom:8px">
+        <div class="fg"><label>Qty</label><input type="number" id="pos-qty" value="1" min="1" oninput="posCalc()"></div>
+        <div class="fg"><label>Unit Price (฿)</label><input type="number" id="pos-price" oninput="posCalc()"></div>
+      </div>
+      <div style="background:#f8f9fa;border-radius:4px;padding:9px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center">
+        <span style="font-weight:600">Line Amount:</span><span id="pos-amt" style="font-weight:700;font-size:14px">฿0</span>
+      </div>
+      <button class="btn btn-primary" style="width:100%" onclick="postFnb()">Post to Folio</button>
+      <div id="pos-msg" style="margin-top:8px"></div>
+    </div>
+    <div class="card">
+      <div class="ch"><div class="ct">Today's F&B Charges</div></div>
+      <div class="tw"><table><thead><tr>
+        <th>Folio</th><th>Guest</th><th>Item</th><th>Qty</th><th>Amount (฿)</th>
+      </tr></thead><tbody id="tb-fnb-log"></tbody></table></div>
+    </div>
+  </div>
+</div>
+
+<!-- CHECKOUT -->
+<div id="p-checkout" class="page">
+  <div class="ph"><div class="ph-left"><div class="pt">Checkout Wizard (E09)</div><div class="ps">Line-assignment only — add charges on the folio first</div></div></div>
+  <div class="card">
+    <div class="ct" style="margin-bottom:8px">Select Folio</div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+      <select id="co-sel" style="flex:1;min-width:200px;padding:6px 8px;border:1px solid #d0d0d0;border-radius:4px;font-size:12px"></select>
+      <button class="btn btn-primary" onclick="openCoWizard()">Open Wizard</button>
+    </div>
+  </div>
+  <div id="co-area"></div>
+</div>
+
+<!-- INVOICES -->
+<div id="p-invoices" class="page">
+  <div class="ph"><div class="ph-left"><div class="pt">Sales Invoices</div><div class="ps">Accounting › Invoices — Route B payment (E06)</div></div></div>
+  <div class="card">
+    <div class="pills" id="inv-pills">
+      <span class="pill active" onclick="filterInv('all',this)">All</span>
+      <span class="pill" onclick="filterInv('Unpaid',this)">Unpaid</span>
+      <span class="pill" onclick="filterInv('Partial',this)">Partial</span>
+      <span class="pill" onclick="filterInv('Paid',this)">Paid</span>
+    </div>
+    <div class="tw"><table><thead><tr>
+      <th>Invoice #</th><th>Guest</th><th>Folio</th><th>Date</th>
+      <th>Net (฿)</th><th>VAT (฿)</th><th>Total (฿)</th><th>Paid (฿)</th><th>Balance (฿)</th>
+      <th>Method</th><th>Status</th><th>Actions</th>
+    </tr></thead><tbody id="tb-inv"></tbody></table></div>
+  </div>
+</div>
+
+<!-- PAYMENTS -->
+<div id="p-payments" class="page">
+  <div class="ph"><div class="ph-left"><div class="pt">Payment Entries</div><div class="ps">All registered payments</div></div></div>
+  <div class="card">
+    <div class="tw"><table><thead><tr>
+      <th>Payment #</th><th>Date</th><th>Invoice</th><th>Guest</th>
+      <th>Amount (฿)</th><th>Method</th><th>Journal Account</th><th>Status</th>
+    </tr></thead><tbody id="tb-pay"></tbody></table></div>
+  </div>
+</div>
+
+<!-- OFFICER POs -->
+<div id="p-pos" class="page">
+  <div class="ph"><div class="ph-left"><div class="pt">Officer Purchase Orders</div><div class="ps">Spa procurement — commission + tip payables per session</div></div></div>
+  <div class="card">
+    <div class="tw"><table><thead><tr>
+      <th>PO #</th><th>Date</th><th>Officer</th><th>Session</th><th>Service</th>
+      <th>Svc Amt (฿)</th><th>Comm %</th><th>Comm (฿)</th><th>Tip (฿)</th><th>Deductions (฿)</th><th>Net Payable (฿)</th><th>Status</th>
+    </tr></thead><tbody id="tb-pos"></tbody></table></div>
+  </div>
+</div>
+
+<!-- OFFICER COMMISSION PORTAL -->
+<div id="p-officer_portal" class="page">
+  <div class="ph"><div class="ph-left"><div class="pt">Officer Commission Portal</div><div class="ps">Commission lines &amp; payment by officer</div></div></div>
+  <div class="card" style="margin-bottom:12px">
+    <div class="fg" style="max-width:280px"><label>View Officer</label><select id="portal-officer-sel" onchange="renderOfficerPortal()"></select></div>
+  </div>
+  <div id="portal-content"></div>
+</div>
+
+<!-- MEMBERS -->
+<div id="p-members" class="page">
+  <div class="ph"><div class="ph-left"><div class="pt">Members</div><div class="ps">Member master — points &amp; tier</div></div>
+  <div class="ph-right"><button class="btn btn-primary" onclick="openModal('m-new-member')">+ New Member</button></div></div>
+  <div class="card">
+    <div class="tw"><table><thead><tr>
+      <th>Member ID</th><th>Name</th><th>Email</th><th>Phone</th><th>Since</th><th>Tier</th><th>Points</th><th>Actions</th>
+    </tr></thead><tbody id="tb-members"></tbody></table></div>
+  </div>
+</div>
+
+<!-- SPA OFFICERS (HR) -->
+<div id="p-officers" class="page">
+  <div class="ph"><div class="ph-left"><div class="pt">Spa Officers — HR</div><div class="ps">Employee + Supplier + Salesperson — Model C</div></div>
+  <div class="ph-right"><button class="btn btn-primary" onclick="openOfficerModal(null)">+ New Officer</button></div></div>
+  <div class="card">
+    <div class="tw"><table><thead><tr>
+      <th>ID</th><th>Name</th><th>Emp ID</th><th>Supplier ID</th><th>Gender</th><th>Specialty</th>
+      <th>Exp (yr)</th><th>Sell Rate</th><th>Cost Rate</th><th>Comm %</th><th>Status</th><th>Actions</th>
+    </tr></thead><tbody id="tb-officers"></tbody></table></div>
+  </div>
+</div>
+
+<!-- ITEMS -->
+<div id="p-items" class="page">
+  <div class="ph"><div class="ph-left"><div class="pt">Item Master</div><div class="ps">Sell rate, cost rate, commission-applicable flag</div></div>
+  <div class="ph-right"><button class="btn btn-primary" onclick="openItemModal(null)">+ New Item</button></div></div>
+  <div class="card">
+    <div class="tw"><table><thead><tr>
+      <th>Item Code</th><th>Name</th><th>Group</th><th>Sell Rate (฿)</th><th>Cost Rate (฿)</th>
+      <th>Commission?</th><th>Sellable</th><th>UoM</th><th>Account</th><th>Actions</th>
+    </tr></thead><tbody id="tb-items"></tbody></table></div>
+  </div>
+</div>
+
+<!-- INCOME REPORT -->
+<div id="p-rpt_income" class="page">
+  <div class="ph"><div class="ph-left"><div class="pt">Income Report</div><div class="ps">Revenue summary — dynamic from localStorage, no hardcode</div></div></div>
+  <div class="card">
+    <div class="rpt-filters">
+      <div class="fg"><label>From Date</label><input type="date" id="ri-from" value="2026-03-01"></div>
+      <div class="fg"><label>To Date</label><input type="date" id="ri-to" value="2026-03-17"></div>
+      <div class="fg"><label>Group By</label>
+        <select id="ri-grp"><option value="all" selected>Summary</option><option value="day">Daily</option><option value="booking">By Booking</option></select>
+      </div>
+      <div class="fg"><label>Category</label>
+        <select id="ri-cat"><option value="">All Categories</option><option value="Accommodation">Accommodation</option><option value="Spa">Spa</option><option value="F&B">F&B</option><option value="Other">Other Services</option></select>
+      </div>
+      <div class="fg"><label>&nbsp;</label><button class="btn btn-primary" style="width:100%" onclick="runIncomeReport()">▶ Run</button></div>
+    </div>
+  </div>
+  <div id="rpt-income-out"></div>
+</div>
+
+<!-- EXPENSE REPORT -->
+<div id="p-rpt_expense" class="page">
+  <div class="ph"><div class="ph-left"><div class="pt">Expense / Payout Report</div><div class="ps">Officer commissions &amp; tips — dynamic from localStorage</div></div></div>
+  <div class="card">
+    <div class="rpt-filters">
+      <div class="fg"><label>From Date</label><input type="date" id="re-from" value="2026-03-01"></div>
+      <div class="fg"><label>To Date</label><input type="date" id="re-to" value="2026-03-17"></div>
+      <div class="fg"><label>Officer</label><select id="re-officer"><option value="">All Officers</option></select></div>
+      <div class="fg"><label>Paid Status</label>
+        <select id="re-paid"><option value="">All</option><option value="unpaid">Unpaid Only</option><option value="paid">Paid Only</option></select>
+      </div>
+      <div class="fg"><label>&nbsp;</label><button class="btn btn-primary" style="width:100%" onclick="runExpenseReport()">▶ Run</button></div>
+    </div>
+  </div>
+  <div id="rpt-expense-out"></div>
+</div>
+
+<!-- RECONCILIATION REPORT -->
+<div id="p-rpt_recon" class="page">
+  <div class="ph"><div class="ph-left"><div class="pt">Reconciliation Report</div><div class="ps">3-way: bookings ↔ invoices ↔ officer payouts — dynamic</div></div></div>
+  <div class="card">
+    <div class="rpt-filters">
+      <div class="fg"><label>From Date</label><input type="date" id="rr-from" value="2026-03-01"></div>
+      <div class="fg"><label>To Date</label><input type="date" id="rr-to" value="2026-03-17"></div>
+      <div class="fg"><label>Status</label>
+        <select id="rr-status"><option value="">All</option><option value="In House">In House</option><option value="Checked Out">Checked Out</option></select>
+      </div>
+      <div class="fg"><label>&nbsp;</label><button class="btn btn-primary" style="width:100%" onclick="runReconReport()">▶ Run</button></div>
+    </div>
+  </div>
+  <div id="rpt-recon-out"></div>
+</div>
+
+</div><!-- /main -->
+
+<!-- PRINT AREA — officer payment advice, hidden until window.print() -->
+<div id="print-area"></div>
+
+
+<!-- ══════════════════════ MODALS ══════════════════════ -->
+
+<!-- New / Book Room -->
+<div class="mb" id="m-booking"><div class="modal">
+  <div class="mh"><div class="mt">New Booking</div><button class="mx" onclick="closeModal('m-booking')">×</button></div>
+  <div class="mbody">
+    <div class="fr c1"><div class="fg"><label>Guest Name *</label><input id="nb-name" placeholder="Full name"></div></div>
+    <div class="fr">
+      <div class="fg"><label>Member</label><select id="nb-member"></select></div>
+      <div class="fg"><label>Room *</label><select id="nb-room" onchange="nbRoomChange()"></select></div>
+    </div>
+    <div class="fr c3">
+      <div class="fg"><label>Check-in *</label><input type="date" id="nb-ci" value="2026-03-17" onchange="nbCalc()"></div>
+      <div class="fg"><label>Check-out *</label><input type="date" id="nb-co" value="2026-03-19" onchange="nbCalc()"></div>
+      <div class="fg"><label>Nights</label><input id="nb-nights" readonly></div>
+    </div>
+    <div class="fr">
+      <div class="fg"><label>Rate/Night (฿)</label><input type="number" id="nb-rate" readonly></div>
+      <div class="fg"><label>Booking Total (฿)</label><input id="nb-total" readonly></div>
+    </div>
+  </div>
+  <div class="mfoot"><button class="btn btn-secondary" onclick="closeModal('m-booking')">Cancel</button><button class="btn btn-primary" onclick="submitBooking()">Create Booking + Folio</button></div>
+</div></div>
+
+<!-- New Spa Session -->
+<div class="mb" id="m-spa"><div class="modal">
+  <div class="mh"><div class="mt">New Spa Session</div><button class="mx" onclick="closeModal('m-spa')">×</button></div>
+  <div class="mbody">
+    <div class="alert a-info">PO for officer (commission+tip) will be created automatically.</div>
+    <div class="fr">
+      <div class="fg"><label>Folio *</label><select id="ns-folio"></select></div>
+      <div class="fg"><label>Session Date</label><input type="date" id="ns-date" value="2026-03-17"></div>
+    </div>
+    <div class="fr">
+      <div class="fg"><label>Start Time *</label><input type="time" id="ns-start" value="10:00"></div>
+      <div class="fg"><label>Duration (min)</label><select id="ns-dur"><option value="60">60 min</option><option value="90">90 min</option><option value="120">120 min</option></select></div>
+    </div>
+    <div class="fr">
+      <div class="fg"><label>Service Item *</label><select id="ns-item" onchange="nsItemChange()"></select></div>
+      <div class="fg"><label>Officer *</label><select id="ns-officer"></select></div>
+    </div>
+    <div class="fr">
+      <div class="fg"><label>Service Rate (฿)</label><input type="number" id="ns-rate" readonly></div>
+      <div class="fg"><label>Tip (฿)</label><input type="number" id="ns-tip" value="0" min="0"></div>
+    </div>
+    <div class="fr c1"><div class="fg"><label>Notes for Cashier</label><textarea id="ns-notes" rows="2" placeholder="Special requests, allergies, notes..."></textarea></div></div>
+  </div>
+  <div class="mfoot"><button class="btn btn-secondary" onclick="closeModal('m-spa')">Cancel</button><button class="btn btn-primary" onclick="submitSpa()">Create Session + PO</button></div>
+</div></div>
+
+<!-- Add Charge (E04) -->
+<div class="mb" id="m-add-charge"><div class="modal">
+  <div class="mh"><div class="mt">Add Charge to Folio (E04)</div><button class="mx" onclick="closeModal('m-add-charge')">×</button></div>
+  <div class="mbody">
+    <div id="ac-info" class="alert a-info"></div>
+    <div class="fr">
+      <div class="fg"><label>Item *</label><select id="ac-item" onchange="acItemChange()"></select></div>
+      <div class="fg"><label>Date</label><input type="date" id="ac-date" value="2026-03-17"></div>
+    </div>
+    <div class="fr">
+      <div class="fg"><label>Description</label><input id="ac-desc"></div>
+      <div class="fg"><label>Qty</label><input type="number" id="ac-qty" value="1" min="1" oninput="acCalc()"></div>
+    </div>
+    <div class="fr">
+      <div class="fg"><label>Unit Price (฿)</label><input type="number" id="ac-price" oninput="acCalc()"></div>
+      <div class="fg"><label>Amount (฿)</label><input id="ac-amt" readonly></div>
+    </div>
+  </div>
+  <div class="mfoot"><button class="btn btn-secondary" onclick="closeModal('m-add-charge')">Cancel</button><button class="btn btn-primary" onclick="submitAddCharge()">Add to Folio</button></div>
+</div></div>
+
+<!-- Edit Tip -->
+<div class="mb" id="m-edit-tip"><div class="modal">
+  <div class="mh"><div class="mt">Edit Tip / Spa Charge</div><button class="mx" onclick="closeModal('m-edit-tip')">×</button></div>
+  <div class="mbody">
+    <div id="et-info" class="alert a-info"></div>
+    <div class="fr">
+      <div class="fg"><label>New Rate / Tip Amount (฿)</label><input type="number" id="et-rate" min="0"></div>
+      <div class="fg"><label>Qty</label><input type="number" id="et-qty" min="1" value="1"></div>
+    </div>
+    <input type="hidden" id="et-line">
+  </div>
+  <div class="mfoot"><button class="btn btn-secondary" onclick="closeModal('m-edit-tip')">Cancel</button><button class="btn btn-primary" onclick="submitEditTip()">Save</button></div>
+</div></div>
+
+<!-- Extend Spa Session -->
+<div class="mb" id="m-extend"><div class="modal">
+  <div class="mh"><div class="mt">Extend Spa Session</div><button class="mx" onclick="closeModal('m-extend')">×</button></div>
+  <div class="mbody">
+    <div id="ext-info" class="alert a-info"></div>
+    <div class="fr">
+      <div class="fg"><label>Extend by (min)</label><select id="ext-min"><option value="30">30 min</option><option value="60">60 min</option><option value="90">90 min</option></select></div>
+      <div class="fg"><label>Additional Charge (฿)</label><input type="number" id="ext-charge" value="0" min="0"></div>
+    </div>
+    <input type="hidden" id="ext-session">
+  </div>
+  <div class="mfoot"><button class="btn btn-secondary" onclick="closeModal('m-extend')">Cancel</button><button class="btn btn-warning" onclick="submitExtend()">Extend Session</button></div>
+</div></div>
+
+<!-- Notify Cashier -->
+<div class="mb" id="m-notify"><div class="modal">
+  <div class="mh"><div class="mt">Notify Cashier</div><button class="mx" onclick="closeModal('m-notify')">×</button></div>
+  <div class="mbody">
+    <div id="notif-info" class="alert a-info"></div>
+    <div class="fr c1"><div class="fg"><label>Message to Cashier</label><textarea id="notif-msg" rows="3" placeholder="e.g. Guest requested extra towels, allergic to nut oil..."></textarea></div></div>
+    <input type="hidden" id="notif-session">
+  </div>
+  <div class="mfoot"><button class="btn btn-secondary" onclick="closeModal('m-notify')">Cancel</button><button class="btn btn-info" onclick="submitNotify()">Send Notification</button></div>
+</div></div>
+
+<!-- Register Payment -->
+<div class="mb" id="m-payment"><div class="modal">
+  <div class="mh"><div class="mt">Register Payment</div><button class="mx" onclick="closeModal('m-payment')">×</button></div>
+  <div class="mbody">
+    <div id="pay-info" class="alert a-info"></div>
+    <div class="fr">
+      <div class="fg"><label>Method *</label>
+        <select id="pay-method">
+          <option value="Cash">Cash — Petty Cash (1002)</option>
+          <option value="Card">Card POS — Card Receivable (1003)</option>
+          <option value="Member Points">Member Points — Liability (2100)</option>
+          <option value="Bank">Bank Transfer — Current A/C (1004)</option>
+        </select>
+      </div>
+      <div class="fg"><label>Amount (฿) *</label><input type="number" id="pay-amt"></div>
+    </div>
+    <div class="fr">
+      <div class="fg"><label>Payment Date</label><input type="date" id="pay-date" value="2026-03-17"></div>
+      <div class="fg"><label>Memo</label><input id="pay-memo"></div>
+    </div>
+  </div>
+  <div class="mfoot"><button class="btn btn-secondary" onclick="closeModal('m-payment')">Cancel</button><button class="btn btn-success" onclick="submitPayment()">Confirm Payment</button></div>
+</div></div>
+
+<!-- Officer PO Payment Confirmation -->
+<div class="mb" id="m-po-pay"><div class="modal">
+  <div class="mh"><div class="mt">Officer Payout Confirmation</div><button class="mx" onclick="closeModal('m-po-pay')">×</button></div>
+  <div class="mbody">
+    <div id="pp-info" class="alert a-info"></div>
+    <div class="fr">
+      <div class="fg"><label>Payment Method</label>
+        <select id="pp-method">
+          <option value="Cash">Cash — Petty Cash (1002)</option>
+          <option value="Bank">Bank Transfer (1004)</option>
+        </select>
+      </div>
+      <div class="fg"><label>Payment Date</label><input type="date" id="pp-date" value="2026-03-17"></div>
+    </div>
+    <div class="fr c1">
+      <div class="fg"><label>Deductions (฿) — advances, uniform, etc.</label><input type="number" id="pp-ded" value="0" min="0" oninput="ppCalc()"></div>
+    </div>
+    <div id="pp-summary" class="alert a-ok" style="margin-top:8px"></div>
+    <input type="hidden" id="pp-po">
+  </div>
+  <div class="mfoot">
+    <button class="btn btn-secondary" onclick="closeModal('m-po-pay')">Cancel</button>
+    <button class="btn btn-info" onclick="printPOAdvice()">🖨 Print Advice</button>
+    <button class="btn btn-success" onclick="submitPOPayment()">Confirm &amp; Pay</button>
+  </div>
+</div></div>
+
+<!-- New Member -->
+<div class="mb" id="m-new-member"><div class="modal">
+  <div class="mh"><div class="mt">New Member</div><button class="mx" onclick="closeModal('m-new-member')">×</button></div>
+  <div class="mbody">
+    <div class="fr c1"><div class="fg"><label>Full Name *</label><input id="nm-name"></div></div>
+    <div class="fr">
+      <div class="fg"><label>Email</label><input type="email" id="nm-email"></div>
+      <div class="fg"><label>Phone</label><input id="nm-phone"></div>
+    </div>
+    <div class="fr">
+      <div class="fg"><label>Tier</label><select id="nm-tier"><option>Silver</option><option>Gold</option><option>Platinum</option></select></div>
+      <div class="fg"><label>Initial Points</label><input type="number" id="nm-points" value="0" min="0"></div>
+    </div>
+  </div>
+  <div class="mfoot"><button class="btn btn-secondary" onclick="closeModal('m-new-member')">Cancel</button><button class="btn btn-primary" onclick="submitNewMember()">Create Member</button></div>
+</div></div>
+
+<!-- Points Top-Up -->
+<div class="mb" id="m-topup"><div class="modal">
+  <div class="mh"><div class="mt">Points Top-Up (G02)</div><button class="mx" onclick="closeModal('m-topup')">×</button></div>
+  <div class="mbody">
+    <div id="topup-info" class="alert a-info"></div>
+    <div class="fr">
+      <div class="fg"><label>Amount (฿ = Points)</label><input type="number" id="topup-amt" value="500" min="1"></div>
+      <div class="fg"><label>Reason</label><input id="topup-reason" value="Top-up by guest"></div>
+    </div>
+  </div>
+  <div class="mfoot"><button class="btn btn-secondary" onclick="closeModal('m-topup')">Cancel</button><button class="btn btn-success" onclick="submitTopup()">Confirm Top-Up</button></div>
+</div></div>
+
+<!-- Officer Edit/Create (HR: Employee + Supplier) -->
+<div class="mb" id="m-officer"><div class="modal">
+  <div class="mh"><div class="mt" id="m-officer-title">Spa Officer (HR)</div><button class="mx" onclick="closeModal('m-officer')">×</button></div>
+  <div class="mbody">
+    <div class="alert a-info" style="font-size:11px">ERPNext: Officer is linked to an Employee record (HR) + Supplier record (AP payable) — Model C.</div>
+    <div class="fr">
+      <div class="fg"><label>Name *</label><input id="oe-name"></div>
+      <div class="fg"><label>Gender</label><select id="oe-gender"><option>Female</option><option>Male</option></select></div>
+    </div>
+    <div class="fr c1"><div class="fg"><label>Specialty</label><input id="oe-specialty" placeholder="Thai Massage, Hot Stone..."></div></div>
+    <div class="fr c3">
+      <div class="fg"><label>Exp (years)</label><input type="number" id="oe-exp" value="1" min="0"></div>
+      <div class="fg"><label>Sell Rate (฿)</label><input type="number" id="oe-sell-rate" value="1200" min="0"></div>
+      <div class="fg"><label>Cost Rate (฿)</label><input type="number" id="oe-cost-rate" value="0" min="0"></div>
+    </div>
+    <div class="fr">
+      <div class="fg"><label>Commission %</label><input type="number" id="oe-comm" value="30" min="0" max="100" step="1"></div>
+      <div class="fg"><label>Status</label><select id="oe-status"><option>Active</option><option>Inactive</option></select></div>
+    </div>
+    <div id="oe-ids" style="font-size:11px;color:#8d99a6;margin-top:6px;background:#f8f9fa;padding:8px;border-radius:4px;display:none"></div>
+    <input type="hidden" id="oe-id">
+  </div>
+  <div class="mfoot"><button class="btn btn-secondary" onclick="closeModal('m-officer')">Cancel</button><button class="btn btn-primary" onclick="submitOfficer()">Save Officer</button></div>
+</div></div>
+
+<!-- Item Edit/Create (with commission flag) -->
+<div class="mb" id="m-item"><div class="modal">
+  <div class="mh"><div class="mt" id="m-item-title">Item</div><button class="mx" onclick="closeModal('m-item')">×</button></div>
+  <div class="mbody">
+    <div class="fr">
+      <div class="fg"><label>Item Code *</label><input id="ie-code" placeholder="SPA-NEW"></div>
+      <div class="fg"><label>Item Group *</label>
+        <select id="ie-group">
+          <option>Spa Service</option><option>F&amp;B</option><option>Accommodation</option><option>Housekeeping</option><option>Transport</option>
+        </select>
+      </div>
+    </div>
+    <div class="fr c1"><div class="fg"><label>Item Name *</label><input id="ie-name"></div></div>
+    <div class="fr c3">
+      <div class="fg"><label>Sell Rate (฿)</label><input type="number" id="ie-rate" value="0" min="0"></div>
+      <div class="fg"><label>Cost Rate (฿)</label><input type="number" id="ie-cost" value="0" min="0"></div>
+      <div class="fg"><label>UoM</label><input id="ie-uom" value="Nos"></div>
+    </div>
+    <div class="fr c3">
+      <div class="fg"><label>Income Account</label><input id="ie-account" value="4300"></div>
+      <div class="fg"><label>Commission Applicable</label>
+        <select id="ie-comm-app">
+          <option value="0">No (F&B, Accommodation, etc.)</option>
+          <option value="1">Yes (Spa Service only)</option>
+        </select>
+      </div>
+      <div class="fg"><label>Sellable</label><select id="ie-sell"><option value="1">Yes</option><option value="0">No</option></select></div>
+    </div>
+    <input type="hidden" id="ie-id">
+  </div>
+  <div class="mfoot"><button class="btn btn-secondary" onclick="closeModal('m-item')">Cancel</button><button class="btn btn-primary" onclick="submitItem()">Save Item</button></div>
+</div></div>
+
+
+<!-- Room Detail -->
+<div class="mb" id="m-room"><div class="modal">
+  <div class="mh"><div class="mt" id="m-room-title">Room Detail</div><button class="mx" onclick="closeModal('m-room')">×</button></div>
+  <div class="mbody" id="m-room-body"></div>
+  <div class="mfoot" id="m-room-foot"></div>
+</div></div>
+
+<script>
+// ════════════════════════════════════════════════════════════════════════════
+// ██  BACKEND API — localStorage persistence
+// ════════════════════════════════════════════════════════════════════════════
+const VER="mh_v8";
+const DT={
+  CFG:"hotel_settings",ROOM:"hotel_room",MEMBER:"hotel_member",OFFICER:"spa_officer",
+  ITEM:"item",BKG:"hotel_booking",FOLIO:"hotel_folio",LINE:"hotel_folio_line",
+  SPA:"spa_session",PO:"purchase_order",INV:"sales_invoice",INV_LINE:"sinv_item",
+  PAY:"payment_entry",LEDGER:"member_ledger",FNB:"fnb_log",NOTIF:"spa_notification",
+  PO_PAY:"po_payment",
+};
+const sk=t=>`${VER}__${t}`;
+const seqk=t=>`${VER}__sq__${t}`;
+function ga(t){try{return JSON.parse(localStorage.getItem(sk(t))||"[]")}catch{return[]}}
+function sa(t,d){localStorage.setItem(sk(t),JSON.stringify(d))}
+function go(t){try{return JSON.parse(localStorage.getItem(sk(t))||"null")}catch{return null}}
+function so(t,d){localStorage.setItem(sk(t),JSON.stringify(d))}
+function nseq(t){const k=seqk(t);const n=parseInt(localStorage.getItem(k)||"0")+1;localStorage.setItem(k,String(n));return n}
+function pad(n,d=3){return String(n).padStart(d,"0")}
+
+// ─── Seed ───────────────────────────────────────────────────────────────────
+const SEED={
+  hotel_settings:{hotel_name:"March Hotel",currency:"THB",vat_rate:0.07},
+  hotel_room:[
+    {name:"RM-101",room_number:"101",room_type:"Standard", floor:1,rate:2500,status:"Occupied",amenities:"AC, WiFi, TV"},
+    {name:"RM-102",room_number:"102",room_type:"Standard", floor:1,rate:2500,status:"Vacant",  amenities:"AC, WiFi, TV"},
+    {name:"RM-103",room_number:"103",room_type:"Deluxe",   floor:1,rate:3500,status:"Occupied",amenities:"AC, WiFi, TV, Bathtub"},
+    {name:"RM-201",room_number:"201",room_type:"Deluxe",   floor:2,rate:3500,status:"Occupied",amenities:"AC, WiFi, TV, Bathtub"},
+    {name:"RM-202",room_number:"202",room_type:"Suite",    floor:2,rate:5500,status:"Vacant",  amenities:"AC, WiFi, TV, Bathtub, Kitchenette"},
+    {name:"RM-203",room_number:"203",room_type:"Suite",    floor:2,rate:5500,status:"Occupied",amenities:"AC, WiFi, TV, Bathtub, Kitchenette"},
+    {name:"RM-301",room_number:"301",room_type:"Standard", floor:3,rate:2500,status:"Vacant",  amenities:"AC, WiFi, TV"},
+    {name:"RM-302",room_number:"302",room_type:"Deluxe",   floor:3,rate:3500,status:"Occupied",amenities:"AC, WiFi, TV, Bathtub"},
+    {name:"RM-303",room_number:"303",room_type:"Penthouse",floor:3,rate:8500,status:"Vacant",  amenities:"AC, WiFi, TV, Private Pool, Butler"},
+    {name:"RM-304",room_number:"304",room_type:"Standard", floor:3,rate:2500,status:"Occupied",amenities:"AC, WiFi, TV"},
+  ],
+  hotel_member:[
+    {name:"MEM-001",member_name:"Khun Ariya Sombat",   email:"ariya@email.com", phone:"081-111-0001",member_since:"2024-01-15",points_balance:4500,status:"Gold"},
+    {name:"MEM-002",member_name:"Khun Natcha Wongsiri",email:"natcha@email.com",phone:"082-222-0002",member_since:"2024-06-01",points_balance:1200,status:"Silver"},
+    {name:"MEM-003",member_name:"Mr. James Whitfield", email:"james@email.com", phone:"083-333-0003",member_since:"2023-11-20",points_balance:8800,status:"Platinum"},
+  ],
+  spa_officer:[
+    {name:"SPO-001",officer_name:"Khun Linda Panya",    employee_id:"EMP-001",vendor_id:"SUPP-SPO-001",gender:"Female",specialty:"Thai Massage, Aromatherapy",experience_years:5,sell_rate:1200,cost_rate:360,commission_rate:0.30,status:"Active"},
+    {name:"SPO-002",officer_name:"Khun May Charoenwong",employee_id:"EMP-002",vendor_id:"SUPP-SPO-002",gender:"Female",specialty:"Hot Stone, Herbal Compress",experience_years:7,sell_rate:1800,cost_rate:540,commission_rate:0.30,status:"Active"},
+    {name:"SPO-003",officer_name:"Khun Som Ratanaporn", employee_id:"EMP-003",vendor_id:"SUPP-SPO-003",gender:"Female",specialty:"Aromatherapy, Facial",     experience_years:3,sell_rate:1500,cost_rate:375,commission_rate:0.25,status:"Active"},
+    {name:"SPO-004",officer_name:"Khun Lek Jaidee",    employee_id:"EMP-004",vendor_id:"SUPP-SPO-004",gender:"Male",  specialty:"Deep Tissue, Sports",      experience_years:6,sell_rate:2200,cost_rate:660,commission_rate:0.30,status:"Active"},
+    {name:"SPO-005",officer_name:"Khun Pim Suksawat",  employee_id:"EMP-005",vendor_id:"SUPP-SPO-005",gender:"Female",specialty:"Reflexology, Thai Massage", experience_years:4,sell_rate:1200,cost_rate:300,commission_rate:0.25,status:"Active"},
+  ],
+  item:[
+    // commission_applicable=1 for spa services only (NOT SPA-TIP, NOT ROOM-NIGHT, NOT F&B)
+    {name:"SPA-THAI",  item_name:"Thai Traditional Massage (60 min)",item_group:"Spa Service", rate:1200,cost_rate:360, uom:"Session",income_account:"4100",sellable:1,commission_applicable:1},
+    {name:"SPA-AROMA", item_name:"Aromatherapy Oil Massage (90 min)",item_group:"Spa Service", rate:1800,cost_rate:540, uom:"Session",income_account:"4100",sellable:1,commission_applicable:1},
+    {name:"SPA-STONE", item_name:"Hot Stone Therapy (90 min)",       item_group:"Spa Service", rate:2200,cost_rate:660, uom:"Session",income_account:"4100",sellable:1,commission_applicable:1},
+    {name:"SPA-HERBAL",item_name:"Herbal Compress (60 min)",         item_group:"Spa Service", rate:1500,cost_rate:375, uom:"Session",income_account:"4100",sellable:1,commission_applicable:1},
+    {name:"SPA-FACIAL",item_name:"Signature Facial (60 min)",        item_group:"Spa Service", rate:1600,cost_rate:400, uom:"Session",income_account:"4100",sellable:1,commission_applicable:1},
+    {name:"SPA-TIP",   item_name:"Spa Gratuity / Tip",               item_group:"Spa Service", rate:0,   cost_rate:0,   uom:"Session",income_account:"4150",sellable:0,commission_applicable:0},
+    {name:"FB-PADTHAI",item_name:"Pad Thai",                         item_group:"F&B",         rate:220, cost_rate:80,  uom:"Nos",    income_account:"4300",sellable:1,commission_applicable:0},
+    {name:"FB-TOMYUM", item_name:"Tom Yum Soup",                     item_group:"F&B",         rate:280, cost_rate:90,  uom:"Nos",    income_account:"4300",sellable:1,commission_applicable:0},
+    {name:"FB-FRICE",  item_name:"Thai Fried Rice",                  item_group:"F&B",         rate:200, cost_rate:70,  uom:"Nos",    income_account:"4300",sellable:1,commission_applicable:0},
+    {name:"FB-BEER",   item_name:"Singha Beer",                      item_group:"F&B",         rate:140, cost_rate:50,  uom:"Nos",    income_account:"4300",sellable:1,commission_applicable:0},
+    {name:"FB-WATER",  item_name:"Mineral Water",                    item_group:"F&B",         rate:60,  cost_rate:10,  uom:"Nos",    income_account:"4300",sellable:1,commission_applicable:0},
+    {name:"FB-COFFEE", item_name:"Thai Iced Coffee",                 item_group:"F&B",         rate:120, cost_rate:30,  uom:"Nos",    income_account:"4300",sellable:1,commission_applicable:0},
+    {name:"ROOM-NIGHT",item_name:"Room Night",                       item_group:"Accommodation",rate:0,  cost_rate:0,   uom:"Night",  income_account:"4200",sellable:0,commission_applicable:0},
+    {name:"ROOM-LATE", item_name:"Late Checkout Fee",                item_group:"Accommodation",rate:500,cost_rate:0,   uom:"Nos",    income_account:"4200",sellable:1,commission_applicable:0},
+    {name:"SVC-LAUNDRY",item_name:"Laundry Service",                 item_group:"Housekeeping",rate:350, cost_rate:80,  uom:"Set",    income_account:"4500",sellable:1,commission_applicable:0},
+    {name:"SVC-MINIBAR",item_name:"Minibar Consumption",             item_group:"Housekeeping",rate:0,   cost_rate:0,   uom:"Nos",    income_account:"4500",sellable:1,commission_applicable:0},
+    {name:"SVC-TRANSFER",item_name:"Airport Transfer",               item_group:"Transport",   rate:1200,cost_rate:400, uom:"Trip",   income_account:"4500",sellable:1,commission_applicable:0},
+  ],
+  hotel_booking:[
+    {name:"BKG-2026-001",booking_date:"2026-03-14",member:"MEM-001",guest_name:"Khun Ariya Sombat",    room:"RM-101",room_type:"Standard",checkin_date:"2026-03-15",checkout_date:"2026-03-18",nights:3,room_rate:2500,booking_total:7500, status:"Checked In",folio:"FOL-2026-001",payment_status:"Unpaid"},
+    {name:"BKG-2026-002",booking_date:"2026-03-15",member:"MEM-002",guest_name:"Khun Natcha Wongsiri", room:"RM-103",room_type:"Deluxe",  checkin_date:"2026-03-16",checkout_date:"2026-03-17",nights:1,room_rate:3500,booking_total:3500, status:"Checked In",folio:"FOL-2026-002",payment_status:"Unpaid"},
+    {name:"BKG-2026-003",booking_date:"2026-03-13",member:"MEM-003",guest_name:"Mr. James Whitfield",  room:"RM-201",room_type:"Deluxe",  checkin_date:"2026-03-14",checkout_date:"2026-03-17",nights:3,room_rate:3500,booking_total:10500,status:"Checked In",folio:"FOL-2026-003",payment_status:"Unpaid"},
+    {name:"BKG-2026-004",booking_date:"2026-03-15",member:null,     guest_name:"Ms. Elena Petrova",    room:"RM-203",room_type:"Suite",   checkin_date:"2026-03-15",checkout_date:"2026-03-19",nights:4,room_rate:5500,booking_total:22000,status:"Checked In",folio:"FOL-2026-004",payment_status:"Unpaid"},
+    {name:"BKG-2026-005",booking_date:"2026-03-16",member:null,     guest_name:"Mr. Thanawat Poonpipat",room:"RM-302",room_type:"Deluxe",checkin_date:"2026-03-16",checkout_date:"2026-03-18",nights:2,room_rate:3500,booking_total:7000, status:"Checked In",folio:"FOL-2026-005",payment_status:"Unpaid"},
+  ],
+  hotel_folio:[
+    {name:"FOL-2026-001",booking:"BKG-2026-001",member:"MEM-001",guest_name:"Khun Ariya Sombat",    room:"RM-101",checkin_date:"2026-03-15",checkout_date:"2026-03-18",folio_total:0,invoice_status:"Not Invoiced",status:"In House",checkout_in_progress:false},
+    {name:"FOL-2026-002",booking:"BKG-2026-002",member:"MEM-002",guest_name:"Khun Natcha Wongsiri", room:"RM-103",checkin_date:"2026-03-16",checkout_date:"2026-03-17",folio_total:0,invoice_status:"Not Invoiced",status:"In House",checkout_in_progress:false},
+    {name:"FOL-2026-003",booking:"BKG-2026-003",member:"MEM-003",guest_name:"Mr. James Whitfield",  room:"RM-201",checkin_date:"2026-03-14",checkout_date:"2026-03-17",folio_total:0,invoice_status:"Not Invoiced",status:"In House",checkout_in_progress:false},
+    {name:"FOL-2026-004",booking:"BKG-2026-004",member:null,     guest_name:"Ms. Elena Petrova",    room:"RM-203",checkin_date:"2026-03-15",checkout_date:"2026-03-19",folio_total:0,invoice_status:"Not Invoiced",status:"In House",checkout_in_progress:false},
+    {name:"FOL-2026-005",booking:"BKG-2026-005",member:null,     guest_name:"Mr. Thanawat Poonpipat",room:"RM-302",checkin_date:"2026-03-16",checkout_date:"2026-03-18",folio_total:0,invoice_status:"Not Invoiced",status:"In House",checkout_in_progress:false},
+  ],
+  hotel_folio_line:[
+    {name:"FL-001-01",folio:"FOL-2026-001",item:"ROOM-NIGHT",item_name:"Room Night (101)",          qty:3,rate:2500,amount:7500, date:"2026-03-15",line_type:"Accommodation",invoiced:false,spa_session:null,editable:false,commission_applicable:0},
+    {name:"FL-001-02",folio:"FOL-2026-001",item:"SPA-THAI",  item_name:"Thai Traditional Massage",  qty:1,rate:1200,amount:1200, date:"2026-03-16",line_type:"Spa",invoiced:false,spa_session:"SPA-2026-001",editable:true, commission_applicable:1},
+    {name:"FL-001-03",folio:"FOL-2026-001",item:"SPA-TIP",   item_name:"Spa Gratuity / Tip",        qty:1,rate:200, amount:200,  date:"2026-03-16",line_type:"Spa",invoiced:false,spa_session:"SPA-2026-001",editable:true, commission_applicable:0},
+    {name:"FL-001-04",folio:"FOL-2026-001",item:"FB-PADTHAI",item_name:"Pad Thai",                  qty:2,rate:220, amount:440,  date:"2026-03-16",line_type:"F&B",invoiced:false,spa_session:null,editable:false,commission_applicable:0},
+    {name:"FL-001-05",folio:"FOL-2026-001",item:"FB-BEER",   item_name:"Singha Beer",               qty:3,rate:140, amount:420,  date:"2026-03-16",line_type:"F&B",invoiced:false,spa_session:null,editable:false,commission_applicable:0},
+    {name:"FL-002-01",folio:"FOL-2026-002",item:"ROOM-NIGHT",item_name:"Room Night (103)",          qty:1,rate:3500,amount:3500, date:"2026-03-16",line_type:"Accommodation",invoiced:false,spa_session:null,editable:false,commission_applicable:0},
+    {name:"FL-002-02",folio:"FOL-2026-002",item:"SPA-AROMA", item_name:"Aromatherapy Oil Massage",  qty:1,rate:1800,amount:1800, date:"2026-03-16",line_type:"Spa",invoiced:false,spa_session:"SPA-2026-002",editable:true, commission_applicable:1},
+    {name:"FL-002-03",folio:"FOL-2026-002",item:"SPA-TIP",   item_name:"Spa Gratuity / Tip",        qty:1,rate:0,   amount:0,    date:"2026-03-16",line_type:"Spa",invoiced:false,spa_session:"SPA-2026-002",editable:true, commission_applicable:0},
+    {name:"FL-002-04",folio:"FOL-2026-002",item:"FB-TOMYUM", item_name:"Tom Yum Soup",              qty:1,rate:280, amount:280,  date:"2026-03-16",line_type:"F&B",invoiced:false,spa_session:null,editable:false,commission_applicable:0},
+    {name:"FL-003-01",folio:"FOL-2026-003",item:"ROOM-NIGHT",item_name:"Room Night (201)",          qty:3,rate:3500,amount:10500,date:"2026-03-14",line_type:"Accommodation",invoiced:false,spa_session:null,editable:false,commission_applicable:0},
+    {name:"FL-003-02",folio:"FOL-2026-003",item:"SPA-STONE", item_name:"Hot Stone Therapy",         qty:1,rate:2200,amount:2200, date:"2026-03-15",line_type:"Spa",invoiced:false,spa_session:"SPA-2026-003",editable:true, commission_applicable:1},
+    {name:"FL-003-03",folio:"FOL-2026-003",item:"SPA-TIP",   item_name:"Spa Gratuity / Tip",        qty:1,rate:300, amount:300,  date:"2026-03-15",line_type:"Spa",invoiced:false,spa_session:"SPA-2026-003",editable:true, commission_applicable:0},
+    {name:"FL-003-04",folio:"FOL-2026-003",item:"SPA-FACIAL",item_name:"Signature Facial",          qty:1,rate:1600,amount:1600, date:"2026-03-16",line_type:"Spa",invoiced:false,spa_session:"SPA-2026-004",editable:true, commission_applicable:1},
+    {name:"FL-003-05",folio:"FOL-2026-003",item:"SPA-TIP",   item_name:"Spa Gratuity / Tip",        qty:1,rate:500, amount:500,  date:"2026-03-16",line_type:"Spa",invoiced:false,spa_session:"SPA-2026-004",editable:true, commission_applicable:0},
+    {name:"FL-003-06",folio:"FOL-2026-003",item:"SVC-LAUNDRY",item_name:"Laundry Service",          qty:1,rate:350, amount:350,  date:"2026-03-15",line_type:"Housekeeping",invoiced:false,spa_session:null,editable:false,commission_applicable:0},
+    {name:"FL-003-07",folio:"FOL-2026-003",item:"FB-COFFEE", item_name:"Thai Iced Coffee",          qty:2,rate:120, amount:240,  date:"2026-03-16",line_type:"F&B",invoiced:false,spa_session:null,editable:false,commission_applicable:0},
+    {name:"FL-004-01",folio:"FOL-2026-004",item:"ROOM-NIGHT",  item_name:"Room Night (203)",        qty:4,rate:5500,amount:22000,date:"2026-03-15",line_type:"Accommodation",invoiced:false,spa_session:null,editable:false,commission_applicable:0},
+    {name:"FL-004-02",folio:"FOL-2026-004",item:"SPA-HERBAL",  item_name:"Herbal Compress",         qty:1,rate:1500,amount:1500, date:"2026-03-16",line_type:"Spa",invoiced:false,spa_session:"SPA-2026-005",editable:true, commission_applicable:1},
+    {name:"FL-004-03",folio:"FOL-2026-004",item:"SPA-TIP",     item_name:"Spa Gratuity / Tip",      qty:1,rate:0,   amount:0,    date:"2026-03-16",line_type:"Spa",invoiced:false,spa_session:"SPA-2026-005",editable:true, commission_applicable:0},
+    {name:"FL-004-04",folio:"FOL-2026-004",item:"SVC-TRANSFER",item_name:"Airport Transfer",        qty:1,rate:1200,amount:1200, date:"2026-03-15",line_type:"Transport",invoiced:false,spa_session:null,editable:false,commission_applicable:0},
+    {name:"FL-005-01",folio:"FOL-2026-005",item:"ROOM-NIGHT", item_name:"Room Night (302)",         qty:2,rate:3500,amount:7000, date:"2026-03-16",line_type:"Accommodation",invoiced:false,spa_session:null,editable:false,commission_applicable:0},
+    {name:"FL-005-02",folio:"FOL-2026-005",item:"FB-FRICE",   item_name:"Thai Fried Rice",          qty:1,rate:200, amount:200,  date:"2026-03-16",line_type:"F&B",invoiced:false,spa_session:null,editable:false,commission_applicable:0},
+  ],
+  spa_session:[
+    {name:"SPA-2026-001",session_date:"2026-03-16",folio:"FOL-2026-001",booking:"BKG-2026-001",member:"MEM-001",guest_name:"Khun Ariya Sombat",   officer:"SPO-001",officer_name:"Khun Linda Panya",    item:"SPA-THAI",  service_name:"Thai Traditional Massage",duration_min:60, start_time:"10:00",end_time:"11:00",rate:1200,tip:200, total:1400,status:"Completed",purchase_order:"PO-2026-001",notes:"",notifications:[]},
+    {name:"SPA-2026-002",session_date:"2026-03-16",folio:"FOL-2026-002",booking:"BKG-2026-002",member:"MEM-002",guest_name:"Khun Natcha Wongsiri",officer:"SPO-002",officer_name:"Khun May Charoenwong",item:"SPA-AROMA", service_name:"Aromatherapy Oil Massage",duration_min:90, start_time:"11:00",end_time:"12:30",rate:1800,tip:0,   total:1800,status:"Completed",purchase_order:"PO-2026-002",notes:"Prefers light pressure",notifications:[]},
+    {name:"SPA-2026-003",session_date:"2026-03-15",folio:"FOL-2026-003",booking:"BKG-2026-003",member:"MEM-003",guest_name:"Mr. James Whitfield", officer:"SPO-003",officer_name:"Khun Som Ratanaporn",item:"SPA-STONE", service_name:"Hot Stone Therapy",       duration_min:90, start_time:"14:00",end_time:"15:30",rate:2200,tip:300, total:2500,status:"Completed",purchase_order:"PO-2026-003",notes:"",notifications:[]},
+    {name:"SPA-2026-004",session_date:"2026-03-16",folio:"FOL-2026-003",booking:"BKG-2026-003",member:"MEM-003",guest_name:"Mr. James Whitfield", officer:"SPO-001",officer_name:"Khun Linda Panya",    item:"SPA-FACIAL",service_name:"Signature Facial",         duration_min:60, start_time:"10:00",end_time:"11:00",rate:1600,tip:500, total:2100,status:"Completed",purchase_order:"PO-2026-004",notes:"",notifications:[]},
+    {name:"SPA-2026-005",session_date:"2026-03-16",folio:"FOL-2026-004",booking:"BKG-2026-004",member:null,     guest_name:"Ms. Elena Petrova",   officer:"SPO-004",officer_name:"Khun Lek Jaidee",    item:"SPA-HERBAL",service_name:"Herbal Compress",          duration_min:60, start_time:"15:00",end_time:"16:00",rate:1500,tip:0,   total:1500,status:"In Progress",purchase_order:"PO-2026-005",notes:"Guest has nut allergy",notifications:[]},
+  ],
+  purchase_order:[
+    {name:"PO-2026-001",po_date:"2026-03-16",vendor:"SUPP-SPO-001",vendor_name:"Khun Linda Panya",   spa_session:"SPA-2026-001",folio:"FOL-2026-001",officer:"SPO-001",item:"SPA-THAI",  service_name:"Thai Traditional Massage", service_amount:1200,commission_rate:0.30,commission_amount:360,tip_amount:200,deductions:0,total_payable:560, status:"Received",paid:false,payment_ref:null},
+    {name:"PO-2026-002",po_date:"2026-03-16",vendor:"SUPP-SPO-002",vendor_name:"Khun May Charoenwong",spa_session:"SPA-2026-002",folio:"FOL-2026-002",officer:"SPO-002",item:"SPA-AROMA", service_name:"Aromatherapy Oil Massage", service_amount:1800,commission_rate:0.30,commission_amount:540,tip_amount:0,  deductions:0,total_payable:540, status:"Received",paid:false,payment_ref:null},
+    {name:"PO-2026-003",po_date:"2026-03-15",vendor:"SUPP-SPO-003",vendor_name:"Khun Som Ratanaporn", spa_session:"SPA-2026-003",folio:"FOL-2026-003",officer:"SPO-003",item:"SPA-STONE", service_name:"Hot Stone Therapy",        service_amount:2200,commission_rate:0.25,commission_amount:550,tip_amount:300,deductions:0,total_payable:850, status:"Received",paid:false,payment_ref:null},
+    {name:"PO-2026-004",po_date:"2026-03-16",vendor:"SUPP-SPO-001",vendor_name:"Khun Linda Panya",   spa_session:"SPA-2026-004",folio:"FOL-2026-003",officer:"SPO-001",item:"SPA-FACIAL",service_name:"Signature Facial",          service_amount:1600,commission_rate:0.30,commission_amount:480,tip_amount:500,deductions:0,total_payable:980, status:"Received",paid:false,payment_ref:null},
+    {name:"PO-2026-005",po_date:"2026-03-16",vendor:"SUPP-SPO-004",vendor_name:"Khun Lek Jaidee",    spa_session:"SPA-2026-005",folio:"FOL-2026-004",officer:"SPO-004",item:"SPA-HERBAL",service_name:"Herbal Compress",           service_amount:1500,commission_rate:0.30,commission_amount:450,tip_amount:0,  deductions:0,total_payable:450, status:"Received",paid:false,payment_ref:null},
+  ],
+  sales_invoice:[],sinv_item:[],payment_entry:[],member_ledger:[],fnb_log:[],spa_notification:[],po_payment:[],
+};
+
+// ─── DB init / reset ────────────────────────────────────────────────────────
+function dbInit(){
+  if(!localStorage.getItem(`${VER}__ok`)) dbReset();
+  else _recomputeAllTotals();
+}
+function dbReset(){
+  Object.keys(localStorage).filter(k=>k.startsWith(VER)).forEach(k=>localStorage.removeItem(k));
+  so(DT.CFG,SEED.hotel_settings);
+  Object.entries(SEED).forEach(([k,v])=>{if(Array.isArray(v))sa(k,v)});
+  _recomputeAllTotals();
+  const seqs={hotel_booking:5,hotel_folio:5,hotel_folio_line:22,spa_session:5,purchase_order:5,
+    sales_invoice:0,sinv_item:0,payment_entry:0,member_ledger:0,hotel_member:3,fnb_log:0,spa_officer:5,po_payment:0};
+  Object.entries(seqs).forEach(([k,v])=>localStorage.setItem(seqk(k),String(v)));
+  localStorage.setItem(`${VER}__ok`,"1");
+}
+function _recomputeAllTotals(){
+  const folios=ga(DT.FOLIO);const lines=ga(DT.LINE);const items=ga(DT.ITEM);
+  // Backfill commission_applicable from item master on any line missing it
+  let dirty=false;
+  lines.forEach(l=>{
+    if(l.commission_applicable===undefined){
+      const itm=items.find(i=>i.name===l.item);
+      l.commission_applicable=itm?.commission_applicable||0;
+      dirty=true;
+    }
+  });
+  if(dirty)sa(DT.LINE,lines);
+  folios.forEach(f=>{f.folio_total=lines.filter(l=>l.folio===f.name).reduce((s,l)=>s+(l.amount||0),0)});
+  sa(DT.FOLIO,folios);
+}
+function _recompute(folioName){
+  const lines=ga(DT.LINE).filter(l=>l.folio===folioName);
+  const total=lines.reduce((s,l)=>s+(l.amount||0),0);
+  const folios=ga(DT.FOLIO);const i=folios.findIndex(f=>f.name===folioName);
+  if(i>=0){folios[i].folio_total=total;sa(DT.FOLIO,folios);return folios[i]}
+}
+
+// ─── API ────────────────────────────────────────────────────────────────────
+const API={
+  cfg:{get(){return go(DT.CFG)||SEED.hotel_settings}},
+
+  room:{
+    list(f={}){let r=ga(DT.ROOM);if(f.status)r=r.filter(x=>x.status===f.status);return r},
+    get(n){return ga(DT.ROOM).find(x=>x.name===n)||null},
+    update(n,p){const a=ga(DT.ROOM),i=a.findIndex(x=>x.name===n);if(i<0)return null;a[i]={...a[i],...p};sa(DT.ROOM,a);return a[i]},
+  },
+
+  member:{
+    list(){return ga(DT.MEMBER)},
+    get(n){return ga(DT.MEMBER).find(x=>x.name===n)||null},
+    create(d){const seq=nseq("hotel_member");const name=`MEM-${pad(seq)}`;const m={name,member_since:"2026-03-17",points_balance:0,...d};const a=ga(DT.MEMBER);a.push(m);sa(DT.MEMBER,a);return m},
+    adjustPoints(mn,delta,reason){
+      const a=ga(DT.MEMBER);const i=a.findIndex(x=>x.name===mn);if(i<0)return null;
+      a[i].points_balance=(a[i].points_balance||0)+delta;sa(DT.MEMBER,a);
+      const l=ga(DT.LEDGER);const seq=nseq("member_ledger");
+      l.push({name:`MEL-${pad(seq)}`,member:mn,date:"2026-03-17",delta,balance_after:a[i].points_balance,reason:reason||""});
+      sa(DT.LEDGER,l);return a[i];
+    },
+  },
+
+  officer:{
+    list(f={}){let r=ga(DT.OFFICER);if(f.status)r=r.filter(x=>x.status===f.status);return r},
+    get(n){return ga(DT.OFFICER).find(x=>x.name===n)||null},
+    create(d){const seq=nseq("spa_officer");const name=`SPO-${pad(seq)}`;const o={name,employee_id:`EMP-${pad(seq)}`,vendor_id:`SUPP-${name}`,status:"Active",...d};const a=ga(DT.OFFICER);a.push(o);sa(DT.OFFICER,a);return o},
+    update(n,p){const a=ga(DT.OFFICER),i=a.findIndex(x=>x.name===n);if(i<0)return null;a[i]={...a[i],...p};sa(DT.OFFICER,a);return a[i]},
+  },
+
+  item:{
+    list(f={}){let r=ga(DT.ITEM);if(f.item_group)r=r.filter(x=>x.item_group===f.item_group);if(f.sellable)r=r.filter(x=>x.sellable);if(f.commission_applicable)r=r.filter(x=>x.commission_applicable);return r},
+    get(n){return ga(DT.ITEM).find(x=>x.name===n)||null},
+    create(d){const a=ga(DT.ITEM);a.push(d);sa(DT.ITEM,a);return d},
+    update(n,p){const a=ga(DT.ITEM),i=a.findIndex(x=>x.name===n);if(i<0)return null;a[i]={...a[i],...p};sa(DT.ITEM,a);return a[i]},
+  },
+
+  booking:{
+    list(f={}){let r=ga(DT.BKG);if(f.status)r=r.filter(x=>x.status===f.status);return r},
+    get(n){return ga(DT.BKG).find(x=>x.name===n)||null},
+    create(d){
+      const seq=nseq("hotel_booking");const name=`BKG-2026-${pad(seq)}`;
+      const bkg={name,booking_date:"2026-03-17",payment_status:"Unpaid",folio:null,...d};
+      const folio=API.folio.createForBooking(bkg);bkg.folio=folio.name;
+      const a=ga(DT.BKG);a.push(bkg);sa(DT.BKG,a);
+      API.room.update(d.room,{status:"Occupied"});return bkg;
+    },
+    update(n,p){const a=ga(DT.BKG),i=a.findIndex(x=>x.name===n);if(i<0)return null;a[i]={...a[i],...p};sa(DT.BKG,a);return a[i]},
+  },
+
+  folio:{
+    list(f={}){let r=ga(DT.FOLIO);if(f.status)r=r.filter(x=>x.status===f.status);return r},
+    get(n){return ga(DT.FOLIO).find(x=>x.name===n)||null},
+    createForBooking(bkg){
+      const seq=nseq("hotel_folio");const name=`FOL-2026-${pad(seq)}`;
+      const f={name,booking:bkg.name,member:bkg.member||null,guest_name:bkg.guest_name,
+        room:bkg.room,checkin_date:bkg.checkin_date,checkout_date:bkg.checkout_date,
+        folio_total:0,invoice_status:"Not Invoiced",status:"In House",checkout_in_progress:false};
+      const a=ga(DT.FOLIO);a.push(f);sa(DT.FOLIO,a);
+      API.line.add({folio:name,item:"ROOM-NIGHT",item_name:`Room Night (${bkg.room.replace("RM-","")})`,
+        qty:bkg.nights,rate:bkg.room_rate,date:bkg.checkin_date,line_type:"Accommodation",editable:false});
+      return API.folio.get(name);
+    },
+    update(n,p){const a=ga(DT.FOLIO),i=a.findIndex(x=>x.name===n);if(i<0)return null;a[i]={...a[i],...p};sa(DT.FOLIO,a);return a[i]},
+    // Paid amount across all invoices
+    paidAmount(n){return ga(DT.PAY).filter(p=>p.folio===n).reduce((s,p)=>s+p.amount,0)},
+    // Outstanding across all invoices
+    outstanding(n){return ga(DT.INV).filter(i=>i.folio===n).reduce((s,i)=>s+i.outstanding_amount,0)},
+  },
+
+  line:{
+    list(folio){return ga(DT.LINE).filter(l=>l.folio===folio)},
+    add(d){
+      const seq=nseq("hotel_folio_line");const name=`FL-${pad(seq,5)}`;
+      const itm=API.item.get(d.item);
+      const line={name,invoiced:false,spa_session:null,editable:false,
+        commission_applicable:itm?.commission_applicable||0,...d,amount:(d.qty||1)*(d.rate||0)};
+      const a=ga(DT.LINE);a.push(line);sa(DT.LINE,a);_recompute(d.folio);return line;
+    },
+    update(n,p){
+      const a=ga(DT.LINE),i=a.findIndex(x=>x.name===n);if(i<0)return null;
+      a[i]={...a[i],...p};
+      if(p.qty!==undefined||p.rate!==undefined)a[i].amount=a[i].qty*a[i].rate;
+      sa(DT.LINE,a);_recompute(a[i].folio);return a[i];
+    },
+    remove(n){
+      const a=ga(DT.LINE);const l=a.find(x=>x.name===n);
+      if(!l)return{ok:false,msg:"Not found"};
+      if(l.invoiced)return{ok:false,msg:"Cannot remove invoiced line"};
+      sa(DT.LINE,a.filter(x=>x.name!==n));_recompute(l.folio);return{ok:true};
+    },
+  },
+
+  spa:{
+    list(f={}){
+      let r=ga(DT.SPA);
+      if(f.folio)r=r.filter(x=>x.folio===f.folio);
+      if(f.officer)r=r.filter(x=>x.officer===f.officer);
+      if(f.status)r=r.filter(x=>x.status===f.status);
+      return r;
+    },
+    get(n){return ga(DT.SPA).find(x=>x.name===n)||null},
+    create(d){
+      const officer=API.officer.get(d.officer);const item=API.item.get(d.item);
+      if(!officer||!item)return null;
+      const seq=nseq("spa_session");const name=`SPA-2026-${pad(seq)}`;
+      const dur=parseInt(d.duration_min)||60;
+      // compute end time
+      const [sh,sm]=d.start_time.split(":").map(Number);
+      const endMin=sh*60+sm+dur;
+      const end_time=`${pad(Math.floor(endMin/60),2)}:${pad(endMin%60,2)}`;
+      const tip=d.tip||0;
+      const session={name,session_date:d.session_date||"2026-03-17",
+        folio:d.folio,booking:d.booking||null,member:d.member||null,guest_name:d.guest_name,
+        officer:d.officer,officer_name:officer.officer_name,
+        item:d.item,service_name:item.item_name,duration_min:dur,
+        start_time:d.start_time,end_time,
+        rate:item.rate,tip,total:item.rate+tip,
+        status:"In Progress",purchase_order:null,notes:d.notes||"",notifications:[]};
+      // Create PO immediately
+      const po=API.po.createForSession(session,officer);
+      session.purchase_order=po.name;
+      const a=ga(DT.SPA);a.push(session);sa(DT.SPA,a);
+      // Post folio lines
+      if(d.folio){
+        API.line.add({folio:d.folio,item:d.item,item_name:item.item_name,qty:1,rate:item.rate,date:session.session_date,line_type:"Spa",spa_session:name,editable:true});
+        API.line.add({folio:d.folio,item:"SPA-TIP",item_name:"Spa Gratuity / Tip",qty:1,rate:tip,date:session.session_date,line_type:"Spa",spa_session:name,editable:true});
+      }
+      return session;
+    },
+    update(n,p){const a=ga(DT.SPA),i=a.findIndex(x=>x.name===n);if(i<0)return null;a[i]={...a[i],...p};sa(DT.SPA,a);return a[i]},
+    complete(n){
+      const a=ga(DT.SPA),i=a.findIndex(x=>x.name===n);if(i<0)return null;
+      a[i].status="Completed";sa(DT.SPA,a);return a[i];
+    },
+    extend(n,extraMin,extraCharge){
+      const s=API.spa.get(n);if(!s)return null;
+      const newDur=s.duration_min+extraMin;
+      const [sh,sm]=s.start_time.split(":").map(Number);
+      const endMin=sh*60+sm+newDur;
+      const end_time=`${pad(Math.floor(endMin/60),2)}:${pad(endMin%60,2)}`;
+      API.spa.update(n,{duration_min:newDur,end_time});
+      if(extraCharge>0&&s.folio){
+        // find service folio line and add charge
+        const lines=ga(DT.LINE);const sl=lines.find(l=>l.spa_session===n&&l.item!=="SPA-TIP");
+        if(sl){API.line.update(sl.name,{rate:sl.rate+extraCharge,qty:1})}
+      }
+      return API.spa.get(n);
+    },
+    notify(n,msg){
+      const a=ga(DT.SPA);const i=a.findIndex(x=>x.name===n);if(i<0)return;
+      if(!a[i].notifications)a[i].notifications=[];
+      a[i].notifications.push({msg,time:new Date().toLocaleTimeString()});
+      sa(DT.SPA,a);
+      // also save in notification log
+      const nl=ga(DT.NOTIF);nl.unshift({session:n,msg,time:new Date().toLocaleTimeString()});sa(DT.NOTIF,nl);
+    },
+  },
+
+  po:{
+    list(f={}){let r=ga(DT.PO);if(f.officer)r=r.filter(x=>x.officer===f.officer);if(f.paid!==undefined)r=r.filter(x=>x.paid===f.paid);return r},
+    get(n){return ga(DT.PO).find(x=>x.name===n)||null},
+    createForSession(session,officer){
+      const seq=nseq("purchase_order");const name=`PO-2026-${pad(seq)}`;
+      const comm=Math.round(session.rate*officer.commission_rate);const tip=session.tip||0;
+      const po={name,po_date:session.session_date,vendor:officer.vendor_id,vendor_name:officer.officer_name,
+        spa_session:session.name,folio:session.folio,officer:officer.name,item:session.item,
+        service_name:session.service_name,service_amount:session.rate,
+        commission_rate:officer.commission_rate,commission_amount:comm,
+        tip_amount:tip,deductions:0,total_payable:comm+tip,status:"Received",paid:false,payment_ref:null};
+      const a=ga(DT.PO);a.push(po);sa(DT.PO,a);return po;
+    },
+    pay(n,method,deductions){
+      const a=ga(DT.PO),i=a.findIndex(x=>x.name===n);if(i<0)return null;
+      const ded=Math.max(0,deductions||0);
+      a[i].deductions=ded;
+      a[i].total_payable=Math.max(0,a[i].commission_amount+a[i].tip_amount-ded);
+      a[i].paid=true;
+      const seq=nseq("po_payment");const ref=`POPAY-${pad(seq,4)}`;
+      a[i].payment_ref=ref;sa(DT.PO,a);
+      // Write po_payment record
+      const ppr=ga(DT.PO_PAY);
+      ppr.push({name:ref,po:n,officer:a[i].officer,vendor_name:a[i].vendor_name,
+        spa_session:a[i].spa_session,service_name:a[i].service_name,
+        commission_amount:a[i].commission_amount,tip_amount:a[i].tip_amount,
+        deductions:ded,net_paid:a[i].total_payable,payment_method:method,payment_date:"2026-03-17"});
+      sa(DT.PO_PAY,ppr);return a[i];
+    },
+    markPaid(n){const a=ga(DT.PO),i=a.findIndex(x=>x.name===n);if(i<0)return null;a[i].paid=true;sa(DT.PO,a);return a[i]},
+  },
+
+  invoice:{
+    list(f={}){let r=ga(DT.INV);if(f.folio)r=r.filter(x=>x.folio===f.folio);if(f.payment_status)r=r.filter(x=>x.payment_status===f.payment_status);return r},
+    get(n){return ga(DT.INV).find(x=>x.name===n)||null},
+    getItems(n){return ga(DT.INV_LINE).filter(x=>x.parent===n)},
+    paidAmount(n){return ga(DT.PAY).filter(p=>p.invoice===n).reduce((s,p)=>s+p.amount,0)},
+    create(folioName,lineNames,payMethod){
+      const folio=API.folio.get(folioName);if(!folio)return null;
+      const allLines=ga(DT.LINE);
+      const sel=allLines.filter(l=>lineNames.includes(l.name)&&!l.invoiced);
+      if(!sel.length)return null;
+      const cfg=API.cfg.get();const net=sel.reduce((s,l)=>s+l.amount,0);
+      const vat=Math.round(net*cfg.vat_rate);const total=net+vat;
+      const seq=nseq("sales_invoice");const name=`SINV-2026-${pad(seq,4)}`;
+      const inv={name,posting_date:"2026-03-17",folio:folioName,booking:folio.booking,
+        member:folio.member,guest_name:folio.guest_name,room:folio.room,
+        payment_method:payMethod||"Cash",net_total:net,vat_amount:vat,grand_total:total,
+        outstanding_amount:total,payment_status:"Unpaid",status:"Submitted"};
+      const invLines=[];
+      sel.forEach(l=>{const iseq=nseq("sinv_item");invLines.push({name:`SINVI-${pad(iseq,5)}`,parent:name,folio_line:l.name,item:l.item,item_name:l.item_name,qty:l.qty,rate:l.rate,amount:l.amount,line_type:l.line_type})});
+      const invA=ga(DT.INV);invA.push(inv);sa(DT.INV,invA);
+      sa(DT.INV_LINE,[...ga(DT.INV_LINE),...invLines]);
+      const upd=allLines.map(l=>lineNames.includes(l.name)?{...l,invoiced:true}:l);sa(DT.LINE,upd);
+      const rem=upd.filter(l=>l.folio===folioName&&!l.invoiced);
+      API.folio.update(folioName,{invoice_status:rem.length===0?"Fully Invoiced":"Partially Invoiced"});
+      return inv;
+    },
+    resetToDraft(n){
+      const a=ga(DT.INV),i=a.findIndex(x=>x.name===n);if(i<0)return null;
+      a[i].status="Draft";a[i].payment_status="Unpaid";a[i].outstanding_amount=a[i].grand_total;sa(DT.INV,a);
+      const ilNames=ga(DT.INV_LINE).filter(x=>x.parent===n).map(x=>x.folio_line);
+      sa(DT.LINE,ga(DT.LINE).map(l=>ilNames.includes(l.name)?{...l,invoiced:false}:l));
+      API.folio.update(a[i].folio,{invoice_status:"Not Invoiced"});return a[i];
+    },
+  },
+
+  payment:{
+    list(f={}){let r=ga(DT.PAY);if(f.invoice)r=r.filter(x=>x.invoice===f.invoice);if(f.folio)r=r.filter(x=>x.folio===f.folio);return r},
+    create(invName,amount,method){
+      const a=ga(DT.INV),i=a.findIndex(x=>x.name===invName);if(i<0)return null;
+      const inv=a[i];const paid=Math.min(amount,inv.outstanding_amount);
+      const jmap={Cash:"1002 — Petty Cash",Card:"1003 — Card Receivable","Member Points":"2100 — Member Liability",Bank:"1004 — Bank Current A/C"};
+      const seq=nseq("payment_entry");const name=`PE-2026-${pad(seq,4)}`;
+      const pe={name,payment_date:"2026-03-17",invoice:invName,folio:inv.folio,guest_name:inv.guest_name,amount:paid,payment_method:method,journal_account:jmap[method]||"1002 — Petty Cash",status:"Submitted"};
+      const pA=ga(DT.PAY);pA.push(pe);sa(DT.PAY,pA);
+      a[i].outstanding_amount=Math.max(0,inv.outstanding_amount-paid);
+      a[i].payment_status=a[i].outstanding_amount===0?"Paid":"Partial";
+      sa(DT.INV,a);
+      if(method==="Member Points"&&inv.member)API.member.adjustPoints(inv.member,-paid,`Payment for ${invName}`);
+      _checkFullyPaid(inv.folio);return pe;
+    },
+  },
+
+  fnb:{list(){return ga(DT.FNB)},add(d){const a=ga(DT.FNB);a.unshift(d);if(a.length>100)a.pop();sa(DT.FNB,a)}},
+  notif:{list(){return ga(DT.NOTIF)}},
+
+  checkout:{
+    open(folioName){
+      const f=API.folio.get(folioName);
+      if(!f)return{ok:false,msg:"Folio not found"};
+      if(f.status==="Checked Out")return{ok:false,msg:"Already checked out"};
+      // allow re-open if partially paid (has uninvoiced lines or partial invoices)
+      API.folio.update(folioName,{checkout_in_progress:true});
+      return{ok:true,folio:API.folio.get(folioName),lines:API.line.list(folioName).filter(l=>!l.invoiced)};
+    },
+    cancel(fn){API.folio.update(fn,{checkout_in_progress:false})},
+    postBucket(fn,lns,method){
+      if(!lns.length)return{ok:false,msg:"No lines selected"};
+      const inv=API.invoice.create(fn,lns,method);
+      return inv?{ok:true,invoice:inv}:{ok:false,msg:"Invoice creation failed"};
+    },
+  },
+};
+
+function _checkFullyPaid(folioName){
+  const invs=API.invoice.list({folio:folioName});
+  // Only close out if ALL invoices are paid AND no uninvoiced lines remain
+  const allInvPaid=invs.length>0&&invs.every(i=>i.payment_status==="Paid");
+  const uninvoiced=API.line.list(folioName).filter(l=>!l.invoiced);
+  if(allInvPaid&&uninvoiced.length===0){
+    const f=API.folio.get(folioName);
+    if(f){API.folio.update(folioName,{status:"Checked Out",checkout_in_progress:false})}
+    if(f){API.room.update(f.room,{status:"Vacant"})}
+    if(f&&f.booking){API.booking.update(f.booking,{status:"Checked Out",payment_status:"Paid"})}
+  }
+  // If partial payment — keep In House, keep checkout available
+}
+
+// ════════════════════════════════════════════════════════════════════════════
+// ██  FRONTEND LAYER
+// ════════════════════════════════════════════════════════════════════════════
+const b=(t,c)=>`<span class="badge b-${c}">${t}</span>`;
+const fmt=n=>(+n||0).toLocaleString("th-TH");
+const fmtB=n=>`฿${fmt(n)}`;
+const SC={
+  "In House":"blue","Checked In":"blue","Checked Out":"gray","Confirmed":"yellow",
+  "Occupied":"blue","Vacant":"green","Maintenance":"orange",
+  "Paid":"green","Unpaid":"red","Partial":"yellow","Not Invoiced":"gray",
+  "Partially Invoiced":"yellow","Fully Invoiced":"green",
+  "Active":"green","Inactive":"gray","Completed":"green","Cancelled":"red",
+  "In Progress":"yellow","Submitted":"blue","Draft":"gray","Received":"blue",
+  "Gold":"yellow","Silver":"gray","Platinum":"purple",
+};
+const sb=s=>b(s,SC[s]||"gray");
+const GC={"Spa Service":"purple","F&B":"orange","Accommodation":"blue","Housekeeping":"gray","Transport":"teal"};
+
+let _cFolio=null,_cInv=null,_coFolio=null,_coSel=new Set(),_topupMember=null,_cOfficer=null;
+let _timerInterval=null;
+
+// ── Navigation ───────────────────────────────────────────────────────────────
+function nav(p){
+  document.querySelectorAll(".page").forEach(x=>x.classList.remove("active"));
+  document.querySelectorAll(".sb-item").forEach(x=>x.classList.remove("active"));
+  const pg=document.getElementById(`p-${p}`);if(pg)pg.classList.add("active");
+  const si=document.querySelector(`.sb-item[data-p="${p}"]`);if(si)si.classList.add("active");
+  if(_timerInterval){clearInterval(_timerInterval);_timerInterval=null}
+  ({dashboard:renderDash,rooms:renderRooms,bookings:renderBkg,
+    folios:()=>renderFolios("all"),spa:()=>renderSpa("all"),fnb:renderFnb,
+    checkout:renderCoPage,invoices:()=>renderInv("all"),payments:renderPay,
+    pos:renderPos,officer_portal:renderOfficerPortal,
+    rpt_income:runIncomeReport,rpt_expense:()=>{popExpenseOfficer();runExpenseReport()},
+    rpt_recon:runReconReport,
+    members:renderMembers,officers:renderOfficers,items:renderItems})[p]?.();
+  closeSb();
+}
+function toggleSb(){document.getElementById("sidebar").classList.toggle("open");document.getElementById("sb-overlay").classList.toggle("open")}
+function closeSb(){document.getElementById("sidebar").classList.remove("open");document.getElementById("sb-overlay").classList.remove("open")}
+
+function openModal(id){
+  if(id==="m-booking")popBooking();
+  if(id==="m-spa")popSpa();
+  document.getElementById(id).classList.add("open");
+}
+function closeModal(id){document.getElementById(id).classList.remove("open")}
+
+// ── Dashboard ────────────────────────────────────────────────────────────────
+function renderDash(){
+  const rooms=API.room.list();const occ=rooms.filter(r=>r.status==="Occupied").length;
+  const folios=API.folio.list();const ih=folios.filter(f=>f.status==="In House").length;
+  const due=folios.filter(f=>f.checkout_date<="2026-03-17"&&f.status==="In House");
+  const invs=API.invoice.list();const outstanding=invs.filter(i=>i.payment_status!=="Paid").reduce((s,i)=>s+i.outstanding_amount,0);
+  const spaSess=API.spa.list();const inProg=spaSess.filter(s=>s.status==="In Progress");
+  document.getElementById("ds-stats").innerHTML=`
+    <div class="stat"><div class="sl">Occupied Rooms</div><div class="sv">${occ}/${rooms.length}</div><div class="ss">${rooms.length-occ} vacant</div></div>
+    <div class="stat"><div class="sl">In-House Guests</div><div class="sv">${ih}</div><div class="ss">${due.length} due checkout</div></div>
+    <div class="stat"><div class="sl">Spa Sessions</div><div class="sv">${inProg.length}</div><div class="ss">${spaSess.length} total</div></div>
+    <div class="stat"><div class="sl">Outstanding (฿)</div><div class="sv" style="font-size:16px">${fmt(outstanding)}</div><div class="ss">${invs.filter(i=>i.payment_status!=="Paid").length} invoices</div></div>`;
+  document.getElementById("ds-due").innerHTML=due.length
+    ?`<div class="tw"><table><thead><tr><th>Folio</th><th>Guest</th><th>Room</th><th>Balance (฿)</th><th></th></tr></thead><tbody>
+    ${due.map(f=>`<tr class="tr-warn"><td><a onclick="openFolioDetail('${f.name}')">${f.name}</a></td><td>${f.guest_name}</td><td>${f.room}</td>
+    <td>${fmtB(API.folio.outstanding(f.name)||f.folio_total)}</td>
+    <td><button class="btn btn-primary btn-xs" onclick="quickCo('${f.name}')">Checkout</button></td></tr>`).join("")}
+    </tbody></table></div>`:`<p style="color:#8d99a6;padding:8px 0;font-size:12px">No checkouts due.</p>`;
+  const upInv=invs.filter(i=>i.payment_status!=="Paid").slice(0,6);
+  document.getElementById("ds-inv").innerHTML=upInv.length
+    ?`<div class="tw"><table><thead><tr><th>Invoice</th><th>Guest</th><th>Total</th><th>Balance</th><th></th></tr></thead><tbody>
+    ${upInv.map(i=>`<tr><td>${i.name}</td><td>${i.guest_name}</td><td>${fmtB(i.grand_total)}</td><td style="color:#c92a2a;font-weight:600">${fmtB(i.outstanding_amount)}</td>
+    <td><button class="btn btn-success btn-xs" onclick="openPayModal('${i.name}')">Pay</button></td></tr>`).join("")}
+    </tbody></table></div>`:`<p style="color:#8d99a6;padding:8px 0;font-size:12px">All invoices paid.</p>`;
+  document.getElementById("ds-spa").innerHTML=spaSess.length
+    ?`<div class="tw"><table><thead><tr><th>Session</th><th>Guest</th><th>Service</th><th>Officer</th><th>Start</th><th>End</th><th>Status</th></tr></thead><tbody>
+    ${spaSess.slice(-6).reverse().map(s=>`<tr class="${s.status==="In Progress"?"tr-warn":""}"><td>${s.name}</td><td>${s.guest_name}</td><td>${s.service_name}</td><td>${s.officer_name}</td><td>${s.start_time||"—"}</td><td>${s.end_time||"—"}</td><td>${sb(s.status)}</td></tr>`).join("")}
+    </tbody></table></div>`:`<p style="color:#8d99a6;padding:8px 0;font-size:12px">No sessions yet.</p>`;
+}
+
+// ── Rooms ────────────────────────────────────────────────────────────────────
+function renderRooms(){
+  const rooms=API.room.list();const bkgs=API.booking.list({status:"Checked In"});
+  document.getElementById("room-grid").innerHTML=rooms.map(r=>{
+    const bk=bkgs.find(b=>b.room===r.name);
+    const cls=r.status==="Occupied"?"occupied":r.status==="Vacant"?"vacant":"maintenance";
+    return `<div class="room-card ${cls}" onclick="showRoom('${r.name}')">
+      <div class="rn">${r.room_number}</div>
+      <div class="rt">${r.room_type} · Fl ${r.floor}</div>
+      <div class="rr">${fmtB(r.rate)}/night</div>
+      ${bk?`<div class="rg" style="margin-top:5px">${bk.guest_name}</div>`:""}
+      <div style="margin-top:6px">${sb(r.status)}</div>
+    </div>`;
+  }).join("");
+}
+function showRoom(rn){
+  const r=API.room.get(rn);if(!r)return;
+  const bk=API.booking.list({status:"Checked In"}).find(b=>b.room===rn);
+  document.getElementById("m-room-title").textContent=`Room ${r.room_number} — ${r.room_type}`;
+  document.getElementById("m-room-body").innerHTML=`
+    <div class="fr"><div class="fg"><label>Room Number</label><input readonly value="${r.room_number}"></div><div class="fg"><label>Type</label><input readonly value="${r.room_type}"></div></div>
+    <div class="fr"><div class="fg"><label>Floor</label><input readonly value="${r.floor}"></div><div class="fg"><label>Rate / Night</label><input readonly value="${fmtB(r.rate)}"></div></div>
+    <div class="fg" style="margin-bottom:8px"><label>Amenities</label><input readonly value="${r.amenities}"></div>
+    ${bk?`<div class="alert a-info"><strong>Guest:</strong> ${bk.guest_name}<br>Check-in: ${bk.checkin_date} → Out: ${bk.checkout_date}<br>Folio: ${bk.folio}</div>`:`<div class="alert a-ok">Room is Vacant — ready to book</div>`}
+  `;
+  const foot=document.getElementById("m-room-foot");
+  if(r.status==="Vacant")
+    foot.innerHTML=`<button class="btn btn-secondary" onclick="closeModal('m-room')">Close</button><button class="btn btn-primary" onclick="closeModal('m-room');prepRoom('${rn}')">Book This Room</button>`;
+  else if(bk)
+    foot.innerHTML=`<button class="btn btn-secondary" onclick="closeModal('m-room')">Close</button><button class="btn btn-primary" onclick="closeModal('m-room');openFolioDetail('${bk.folio}')">Open Folio</button>`;
+  else foot.innerHTML=`<button class="btn btn-secondary" onclick="closeModal('m-room')">Close</button>`;
+  document.getElementById("m-room").classList.add("open");
+}
+function prepRoom(rn){const r=API.room.get(rn);popBooking();document.getElementById("nb-room").value=rn;document.getElementById("nb-rate").value=r?.rate||"";nbCalc();document.getElementById("m-booking").classList.add("open")}
+
+// ── Bookings ─────────────────────────────────────────────────────────────────
+let _bkgF="all";
+function filterBkg(f,el){_bkgF=f;document.querySelectorAll("#bkg-pills .pill").forEach(x=>x.classList.remove("active"));if(el)el.classList.add("active");renderBkg()}
+function renderBkg(){
+  let rows=API.booking.list();if(_bkgF!=="all")rows=rows.filter(r=>r.status===_bkgF);
+  rows.sort((a,b)=>b.checkin_date.localeCompare(a.checkin_date));
+  document.getElementById("tb-bkg").innerHTML=rows.map(bk=>`<tr>
+    <td><strong>${bk.name}</strong></td><td>${bk.guest_name}</td>
+    <td>${bk.member?b(bk.member,"teal"):"—"}</td><td>${bk.room}</td>
+    <td>${bk.checkin_date}</td><td>${bk.checkout_date}</td>
+    <td style="text-align:right">${bk.nights}</td><td style="text-align:right">${fmtB(bk.room_rate)}</td>
+    <td>${sb(bk.status)}</td>
+    <td>${bk.folio?`<a onclick="openFolioDetail('${bk.folio}')">${bk.folio}</a>`:"—"}</td>
+  </tr>`).join("")||noRows(10);
+}
+function popBooking(){
+  const ms=document.getElementById("nb-member");ms.innerHTML=`<option value="">— Walk-in —</option>`;
+  API.member.list().forEach(m=>ms.innerHTML+=`<option value="${m.name}">${m.member_name}</option>`);
+  const rs=document.getElementById("nb-room");rs.innerHTML="";
+  API.room.list({status:"Vacant"}).forEach(r=>rs.innerHTML+=`<option value="${r.name}" data-rate="${r.rate}">${r.room_number} — ${r.room_type} (${fmtB(r.rate)}/night)</option>`);
+  nbRoomChange();nbCalc();
+}
+function nbRoomChange(){const s=document.getElementById("nb-room");const o=s.options[s.selectedIndex];document.getElementById("nb-rate").value=o?.dataset.rate||"";nbCalc()}
+function nbCalc(){
+  const ci=document.getElementById("nb-ci").value,co=document.getElementById("nb-co").value,rate=parseFloat(document.getElementById("nb-rate").value)||0;
+  if(ci&&co){const n=Math.round((new Date(co)-new Date(ci))/86400000);document.getElementById("nb-nights").value=n>0?n:"";document.getElementById("nb-total").value=n>0?fmtB(n*rate):""}
+}
+function submitBooking(){
+  const name=document.getElementById("nb-name").value.trim();const member=document.getElementById("nb-member").value||null;
+  const rSel=document.getElementById("nb-room");const room=rSel.value;const rate=parseInt(document.getElementById("nb-rate").value)||0;
+  const ci=document.getElementById("nb-ci").value,co=document.getElementById("nb-co").value;
+  if(!name||!room||!ci||!co){alert("Fill all required fields");return}
+  const nights=Math.round((new Date(co)-new Date(ci))/86400000);if(nights<=0){alert("Checkout must be after check-in");return}
+  const r=API.room.get(room);
+  const bk=API.booking.create({guest_name:name,member,room,room_type:r?.room_type||"",checkin_date:ci,checkout_date:co,nights,room_rate:rate,booking_total:nights*rate,status:"Checked In"});
+  closeModal("m-booking");renderBkg();renderRooms();
+  alert(`✓ Booking ${bk.name} created. Folio ${bk.folio} generated.`);
+}
+
+// ── Folios ───────────────────────────────────────────────────────────────────
+let _folioF="all";
+function filterFolios(f,el){_folioF=f;document.querySelectorAll("#folio-pills .pill").forEach(x=>x.classList.remove("active"));if(el)el.classList.add("active");renderFolios(f)}
+function renderFolios(f){
+  _folioF=f||_folioF;let rows=API.folio.list();
+  if(_folioF==="due")rows=rows.filter(r=>r.checkout_date<="2026-03-17"&&r.status==="In House");
+  else if(_folioF==="In House")rows=rows.filter(r=>r.status==="In House");
+  else if(_folioF==="Checked Out")rows=rows.filter(r=>r.status==="Checked Out");
+  else rows=rows.filter(r=>["In House","Checked Out"].includes(r.status));
+  rows.sort((a,c)=>a.checkout_date.localeCompare(c.checkout_date));
+  document.getElementById("tb-folios").innerHTML=rows.map(f=>{
+    const due=f.checkout_date<="2026-03-17"&&f.status==="In House";
+    const paid=API.folio.paidAmount(f.name);
+    const bal=f.folio_total-paid;
+    return `<tr class="${due?"tr-warn":""}">
+      <td><a onclick="openFolioDetail('${f.name}')"><strong>${f.name}</strong></a></td>
+      <td>${f.guest_name}${f.member?` <span style="font-size:10px;color:#8d99a6">(${f.member})</span>`:""}</td>
+      <td>${f.room}</td><td>${f.checkin_date}</td>
+      <td>${f.checkout_date}${due?` ${b("DUE","red")}`:""}</td>
+      <td style="text-align:right;font-weight:600">${fmtB(f.folio_total)}</td>
+      <td style="text-align:right;color:#2b8a3e;font-weight:600">${fmtB(paid)}</td>
+      <td style="text-align:right;${bal>0?"color:#c92a2a":"color:#2b8a3e"};font-weight:700">${fmtB(bal)}</td>
+      <td>${sb(f.invoice_status)}</td><td>${sb(f.status)}</td>
+      <td style="white-space:nowrap">
+        <button class="btn btn-secondary btn-xs" onclick="openFolioDetail('${f.name}')">Detail</button>
+        ${f.status==="In House"?`<button class="btn btn-primary btn-xs" onclick="quickCo('${f.name}')">Checkout</button>`:""}
+      </td>
+    </tr>`;
+  }).join("")||noRows(11);
+}
+function quickCo(fn){_coFolio=fn;nav("checkout");setTimeout(()=>{document.getElementById("co-sel").value=fn;openCoWizard()},50)}
+
+function openFolioDetail(fn){
+  _cFolio=fn;const folio=API.folio.get(fn);if(!folio)return;
+  document.getElementById("fd-title").textContent=folio.name;
+  document.getElementById("fd-sub").textContent=`${folio.guest_name} · ${folio.room} · ${folio.checkin_date} → ${folio.checkout_date}`;
+  const paid=API.folio.paidAmount(fn);const bal=folio.folio_total-paid;
+  document.getElementById("fd-bar").innerHTML=`
+    <div class="fbi"><div class="fbl">Guest</div><div class="fbv" style="font-size:13px">${folio.guest_name}</div></div>
+    <div class="fbi"><div class="fbl">Room</div><div class="fbv">${folio.room}</div></div>
+    <div class="fbi"><div class="fbl">Folio Total</div><div class="fbv">${fmtB(folio.folio_total)}</div></div>
+    <div class="fbi"><div class="fbl">Balance</div><div class="fbv" style="${bal>0?"color:#c92a2a":"color:#2b8a3e"}">${fmtB(bal)}</div></div>`;
+  // Lines
+  const lines=API.line.list(fn);
+  document.getElementById("tb-fd-lines").innerHTML=lines.map(l=>`<tr>
+    <td>${l.date}</td><td style="font-size:10px;color:#8d99a6">${l.item}</td>
+    <td>${l.item_name}</td><td>${b(l.line_type,GC[l.line_type]||"gray")}</td>
+    <td style="text-align:right">${l.qty}</td>
+    <td style="text-align:right">${fmtB(l.rate)}</td>
+    <td style="text-align:right;font-weight:600">${fmtB(l.amount)}</td>
+    <td>${l.item==="SPA-TIP"?fmtB(l.rate):"—"}</td>
+    <td>${l.invoiced?sb("Invoiced"):sb("Not Invoiced")}</td>
+    <td style="white-space:nowrap">
+      ${!l.invoiced&&l.editable?`<button class="btn btn-info btn-xs" onclick="openEditTip('${l.name}')">Edit</button>`:""}
+      ${!l.invoiced&&!l.spa_session?`<button class="btn btn-danger btn-xs" onclick="removeLine('${l.name}')">Remove</button>`:""}
+    </td>
+  </tr>`).join("")||noRows(10);
+  document.getElementById("fd-total").textContent=fmtB(folio.folio_total);
+  // Invoices panel
+  const invs=API.invoice.list({folio:fn});
+  document.getElementById("tb-fd-inv").innerHTML=invs.length?invs.map(i=>
+    `<tr class="${i.payment_status==="Paid"?"tr-ok":""}">
+    <td><strong>${i.name}</strong></td><td>${fmtB(i.grand_total)}</td>
+    <td style="color:#2b8a3e;font-weight:600">${fmtB(API.invoice.paidAmount(i.name))}</td>
+    <td style="${i.outstanding_amount>0?"color:#c92a2a":"color:#2b8a3e"};font-weight:700">${fmtB(i.outstanding_amount)}</td>
+    <td>${i.payment_method}</td><td>${sb(i.payment_status)}</td>
+    <td>${i.payment_status!=="Paid"?`<button class="btn btn-success btn-xs" onclick="openPayModal('${i.name}')">Pay</button>`:b("✓ Paid","green")}</td>
+  </tr>`).join(""):noRows(7,"No invoices yet — proceed to checkout");
+  // Spa sessions
+  const sessions=API.spa.list({folio:fn});
+  document.getElementById("tb-fd-spa").innerHTML=sessions.map(s=>`<tr>
+    <td>${s.name}</td><td>${s.session_date}</td><td>${s.service_name}</td><td>${s.officer_name}</td>
+    <td>${s.start_time||"—"}</td><td>${s.end_time||"—"}</td><td>${s.duration_min} min</td>
+    <td>${fmtB(s.rate)}</td><td>${fmtB(s.tip)}</td><td>${sb(s.status)}</td>
+    <td>${s.status==="In Progress"?`<button class="btn btn-success btn-xs" onclick="completeSession('${s.name}')">Complete</button>`:"—"}</td>
+  </tr>`).join("")||noRows(11,"No spa sessions");
+  // Checkout button
+  const btn=document.getElementById("btn-co");
+  if(folio.status==="Checked Out"){btn.textContent="✓ Checked Out";btn.disabled=true}
+  else{btn.textContent=folio.checkout_in_progress?"Resume Checkout →":"Proceed to Checkout →";btn.disabled=false}
+  nav("folio-detail");
+}
+function removeLine(n){if(!confirm("Remove this charge line?"))return;const r=API.line.remove(n);if(!r.ok){alert(r.msg);return}openFolioDetail(_cFolio)}
+function openAddCharge(){
+  if(!_cFolio)return;const f=API.folio.get(_cFolio);
+  document.getElementById("ac-info").innerHTML=`Adding charge to <strong>${_cFolio}</strong> — ${f?.guest_name}`;
+  const s=document.getElementById("ac-item");s.innerHTML="";
+  API.item.list().filter(i=>!["SPA-TIP","ROOM-NIGHT"].includes(i.name)).forEach(i=>s.innerHTML+=`<option value="${i.name}" data-rate="${i.rate}" data-group="${i.item_group}">${i.item_name} (${i.item_group})</option>`);
+  acItemChange();document.getElementById("m-add-charge").classList.add("open");
+}
+function acItemChange(){const s=document.getElementById("ac-item");const o=s.options[s.selectedIndex];document.getElementById("ac-price").value=o?.dataset.rate||"0";document.getElementById("ac-desc").value=o?.text.split(" (")[0]||"";acCalc()}
+function acCalc(){const q=parseFloat(document.getElementById("ac-qty").value)||0,p=parseFloat(document.getElementById("ac-price").value)||0;document.getElementById("ac-amt").value=fmtB(q*p)}
+function submitAddCharge(){
+  if(!_cFolio)return;const s=document.getElementById("ac-item");const o=s.options[s.selectedIndex];
+  const gmap={"F&B":"F&B","Spa Service":"Spa","Accommodation":"Accommodation","Housekeeping":"Housekeeping","Transport":"Transport"};
+  API.line.add({folio:_cFolio,item:s.value,item_name:document.getElementById("ac-desc").value||"Charge",
+    qty:parseFloat(document.getElementById("ac-qty").value)||1,rate:parseFloat(document.getElementById("ac-price").value)||0,
+    date:document.getElementById("ac-date").value,line_type:gmap[o?.dataset.group]||"Other",editable:false});
+  closeModal("m-add-charge");openFolioDetail(_cFolio);
+}
+function openEditTip(lineName){
+  const lines=ga(DT.LINE);const l=lines.find(x=>x.name===lineName);if(!l)return;
+  document.getElementById("et-info").innerHTML=`Editing <strong>${l.item_name}</strong> on folio ${l.folio}`;
+  document.getElementById("et-rate").value=l.rate;
+  document.getElementById("et-qty").value=l.qty;
+  document.getElementById("et-line").value=lineName;
+  document.getElementById("m-edit-tip").classList.add("open");
+}
+function submitEditTip(){
+  const n=document.getElementById("et-line").value;
+  const rate=parseFloat(document.getElementById("et-rate").value)||0;
+  const qty=parseInt(document.getElementById("et-qty").value)||1;
+  API.line.update(n,{rate,qty});
+  // also update PO tip if this is SPA-TIP line
+  const l=ga(DT.LINE).find(x=>x.name===n);
+  if(l&&l.item==="SPA-TIP"&&l.spa_session){
+    const pos=ga(DT.PO);const pi=pos.findIndex(p=>p.spa_session===l.spa_session);
+    if(pi>=0){pos[pi].tip_amount=rate;pos[pi].total_payable=pos[pi].commission_amount+rate;sa(DT.PO,pos)}
+  }
+  closeModal("m-edit-tip");openFolioDetail(_cFolio);
+}
+function gotoCheckout(){if(!_cFolio)return;_coFolio=_cFolio;nav("checkout");setTimeout(()=>{document.getElementById("co-sel").value=_coFolio;openCoWizard()},50)}
+
+// ── Spa Sessions ──────────────────────────────────────────────────────────────
+let _spaF="all";
+function filterSpa(f,el){_spaF=f;document.querySelectorAll("#spa-pills .pill").forEach(x=>x.classList.remove("active"));if(el)el.classList.add("active");renderSpa(f)}
+function renderSpa(f){
+  _spaF=f||_spaF;let rows=API.spa.list();
+  if(_spaF==="In Progress")rows=rows.filter(x=>x.status==="In Progress");
+  else if(_spaF==="Completed")rows=rows.filter(x=>x.status==="Completed");
+  document.getElementById("tb-spa").innerHTML=rows.map(s=>
+    `<tr class="${s.status==="In Progress"?"tr-warn":""}">
+    <td><strong>${s.name}</strong></td><td>${s.session_date}</td><td>${s.guest_name}</td>
+    <td><a onclick="openFolioDetail('${s.folio}')">${s.folio}</a></td>
+    <td>${s.service_name}</td><td>${s.officer_name}</td>
+    <td>${s.start_time||"—"}</td><td>${s.end_time||"—"}</td>
+    <td>${s.status==="In Progress"?`<span class="spa-timer" id="timer-${s.name}" data-end="${s.session_date}T${s.end_time}">—</span>`:`<span class="badge b-green">Done</span>`}</td>
+    <td style="text-align:right">${fmtB(s.rate)}</td>
+    <td style="text-align:right">${fmtB(s.tip)}</td>
+    <td>${sb(s.status)}</td>
+    <td style="white-space:nowrap">
+      ${s.status==="In Progress"?`
+        <button class="btn btn-success btn-xs" onclick="completeSession('${s.name}')">Complete</button>
+        <button class="btn btn-warning btn-xs" onclick="openExtend('${s.name}')">Extend</button>
+        <button class="btn btn-info btn-xs" onclick="openNotify('${s.name}')">Notify</button>`:""}
+      ${s.notes?`<span title="${s.notes}" style="cursor:help">📝</span>`:""}
+    </td>
+  </tr>`).join("")||noRows(13);
+  if(_spaF==="all"||_spaF==="In Progress") startTimers();
+}
+function startTimers(){
+  if(_timerInterval)clearInterval(_timerInterval);
+  function tick(){
+    document.querySelectorAll(".spa-timer[data-end]").forEach(el=>{
+      const endStr=el.dataset.end;
+      // Use fixed reference date for prototype (treat as today)
+      const now=new Date("2026-03-17T"+new Date().toTimeString().slice(0,5));
+      const endParts=endStr.split("T");const endTime=endParts[1]||"00:00";
+      const endDate=new Date("2026-03-17T"+endTime);
+      const diff=Math.round((endDate-now)/1000);
+      if(diff>0){
+        const m=Math.floor(diff/60),s=diff%60;
+        el.textContent=`${m}m ${pad(s,2)}s`;el.className="spa-timer";
+      } else {
+        el.textContent="Time Up!";el.className="spa-timer done";
+      }
+    });
+  }
+  tick();_timerInterval=setInterval(tick,1000);
+}
+function completeSession(n){API.spa.complete(n);renderSpa(_spaF);if(_cFolio)openFolioDetail(_cFolio)}
+function openExtend(n){
+  const s=API.spa.get(n);if(!s)return;
+  document.getElementById("ext-info").innerHTML=`Session <strong>${n}</strong> — Current duration: <strong>${s.duration_min} min</strong>, ends: ${s.end_time}`;
+  document.getElementById("ext-session").value=n;document.getElementById("ext-charge").value="0";
+  document.getElementById("m-extend").classList.add("open");
+}
+function submitExtend(){
+  const n=document.getElementById("ext-session").value;
+  const min=parseInt(document.getElementById("ext-min").value)||30;
+  const charge=parseFloat(document.getElementById("ext-charge").value)||0;
+  API.spa.extend(n,min,charge);closeModal("m-extend");renderSpa(_spaF);
+}
+function openNotify(n){
+  const s=API.spa.get(n);if(!s)return;
+  document.getElementById("notif-info").innerHTML=`Notify cashier for session <strong>${n}</strong> — ${s.guest_name}`;
+  document.getElementById("notif-session").value=n;document.getElementById("notif-msg").value="";
+  document.getElementById("m-notify").classList.add("open");
+}
+function submitNotify(){
+  const n=document.getElementById("notif-session").value;const msg=document.getElementById("notif-msg").value.trim();
+  if(!msg){alert("Enter a message");return}
+  API.spa.notify(n,msg);closeModal("m-notify");
+  alert(`✓ Notification sent to cashier:\n"${msg}"`);
+}
+function popSpa(){
+  const fs=document.getElementById("ns-folio");fs.innerHTML="";
+  API.folio.list({status:"In House"}).forEach(f=>fs.innerHTML+=`<option value="${f.name}">${f.name} — ${f.guest_name} (${f.room})</option>`);
+  const is=document.getElementById("ns-item");is.innerHTML="";
+  API.item.list({item_group:"Spa Service"}).filter(i=>i.name!=="SPA-TIP").forEach(i=>is.innerHTML+=`<option value="${i.name}" data-rate="${i.rate}">${i.item_name}</option>`);
+  nsItemChange();
+  const os=document.getElementById("ns-officer");os.innerHTML="";
+  API.officer.list({status:"Active"}).forEach(o=>os.innerHTML+=`<option value="${o.name}">${o.officer_name} (${(o.commission_rate*100).toFixed(0)}% comm)</option>`);
+}
+function nsItemChange(){const s=document.getElementById("ns-item");document.getElementById("ns-rate").value=s.options[s.selectedIndex]?.dataset.rate||"0"}
+function submitSpa(){
+  const folio=document.getElementById("ns-folio").value,item=document.getElementById("ns-item").value,officer=document.getElementById("ns-officer").value;
+  const date=document.getElementById("ns-date").value,start=document.getElementById("ns-start").value;
+  const dur=document.getElementById("ns-dur").value,tip=parseFloat(document.getElementById("ns-tip").value)||0;
+  const notes=document.getElementById("ns-notes").value;
+  if(!folio||!item||!officer){alert("Fill all required fields");return}
+  const f=API.folio.get(folio);
+  const s=API.spa.create({folio,booking:f?.booking,member:f?.member,guest_name:f?.guest_name||"",
+    officer,item,session_date:date,start_time:start,duration_min:parseInt(dur),tip,notes});
+  if(!s){alert("Failed to create session");return}
+  closeModal("m-spa");renderSpa(_spaF);
+  if(_cFolio===folio)openFolioDetail(folio);
+  alert(`✓ Session ${s.name} created (${s.status})\nPO ${s.purchase_order} for officer.\nFolio lines posted.`);
+}
+
+// ── F&B POS ───────────────────────────────────────────────────────────────────
+function renderFnb(){
+  const fs=document.getElementById("pos-folio");fs.innerHTML="";
+  API.folio.list({status:"In House"}).forEach(f=>fs.innerHTML+=`<option value="${f.name}">${f.name} — ${f.guest_name}</option>`);
+  const is=document.getElementById("pos-item");is.innerHTML="";
+  API.item.list({item_group:"F&B"}).forEach(i=>is.innerHTML+=`<option value="${i.name}" data-rate="${i.rate}">${i.item_name} — ${fmtB(i.rate)}</option>`);
+  posItemChange();renderFnbLog();
+}
+function posItemChange(){const s=document.getElementById("pos-item");document.getElementById("pos-price").value=s.options[s.selectedIndex]?.dataset.rate||"0";posCalc()}
+function posCalc(){const q=parseFloat(document.getElementById("pos-qty").value)||0,p=parseFloat(document.getElementById("pos-price").value)||0;document.getElementById("pos-amt").textContent=fmtB(q*p)}
+function postFnb(){
+  const fi=document.getElementById("pos-folio").value;
+  const iSel=document.getElementById("pos-item");const ic=iSel.value,iname=iSel.options[iSel.selectedIndex]?.text.split(" — ")[0]||"";
+  const qty=parseInt(document.getElementById("pos-qty").value)||1;const price=parseFloat(document.getElementById("pos-price").value)||0;
+  if(!fi||!ic){alert("Select folio and item");return}
+  const line=API.line.add({folio:fi,item:ic,item_name:iname,qty,rate:price,date:"2026-03-17",line_type:"F&B",editable:false});
+  const f=API.folio.get(fi);API.fnb.add({folio:fi,guest:f?.guest_name||"",item:iname,qty,amount:line.amount});
+  const msg=document.getElementById("pos-msg");msg.innerHTML=`<div class="alert a-ok">✓ Charged ${fmtB(line.amount)} to ${fi}</div>`;
+  renderFnbLog();setTimeout(()=>{msg.innerHTML=""},3000);
+}
+function renderFnbLog(){
+  const logs=API.fnb.list();
+  document.getElementById("tb-fnb-log").innerHTML=logs.map(l=>`<tr><td>${l.folio}</td><td>${l.guest}</td><td>${l.item}</td><td style="text-align:right">${l.qty}</td><td style="text-align:right">${fmtB(l.amount)}</td></tr>`).join("")||noRows(5,"No charges yet");
+}
+
+// ── Checkout Wizard (E09) ─────────────────────────────────────────────────────
+function renderCoPage(){
+  const s=document.getElementById("co-sel");s.innerHTML="";
+  // include In House folios and also partially-paid ones
+  const folios=API.folio.list().filter(f=>f.status==="In House"||API.invoice.list({folio:f.name}).some(i=>i.payment_status!=="Paid"));
+  folios.forEach(f=>{
+    const bal=API.folio.outstanding(f.name);
+    s.innerHTML+=`<option value="${f.name}">${f.name} — ${f.guest_name} (Balance: ${fmtB(bal||f.folio_total)})</option>`;
+  });
+  if(_coFolio)s.value=_coFolio;
+}
+function openCoWizard(){
+  const fn=document.getElementById("co-sel").value;if(!fn)return;
+  _coFolio=fn;_coSel=new Set();
+  const res=API.checkout.open(fn);const area=document.getElementById("co-area");
+  if(!res.ok){area.innerHTML=`<div class="alert a-warn">${res.msg}</div>`;return}
+  const{folio,lines}=res;
+  const invs=API.invoice.list({folio:fn});
+  const hasUnpaid=invs.some(i=>i.payment_status!=="Paid");
+  const hasUnInvoiced=lines.length>0;
+  if(!hasUnInvoiced&&!hasUnpaid){
+    area.innerHTML=`<div class="alert a-ok">✓ Folio fully invoiced and paid. ${sb("Fully Invoiced")}</div>`;
+    API.checkout.cancel(fn);return;
+  }
+  const TC={Spa:"purple","F&B":"orange",Accommodation:"blue",Housekeeping:"gray",Transport:"teal"};
+  let html="";
+  // Uninvoiced lines section
+  if(hasUnInvoiced){
+    html+=`<div class="card"><div class="ch"><div class="ct">Uninvoiced Lines — Select to Post Invoice</div>
+    <button class="btn btn-secondary btn-sm" onclick="coSelAll()">Select All</button></div>
+    <div class="tw"><table><thead><tr><th style="width:30px"><input type="checkbox" id="chk-all" onchange="coToggleAll(this)"></th>
+    <th>Item</th><th>Description</th><th>Type</th><th>Qty</th><th>Rate</th><th>Amount</th></tr></thead><tbody>
+    ${lines.map(l=>`<tr>
+      <td><input type="checkbox" class="co-chk" value="${l.name}" onchange="coToggle('${l.name}')"></td>
+      <td style="font-size:10px;color:#8d99a6">${l.item}</td><td>${l.item_name}</td>
+      <td>${b(l.line_type,TC[l.line_type]||"gray")}</td>
+      <td style="text-align:right">${l.qty}</td><td style="text-align:right">${fmtB(l.rate)}</td>
+      <td style="text-align:right;font-weight:600">${fmtB(l.amount)}</td>
+    </tr>`).join("")}
+    </tbody></table></div>
+    <div style="margin-top:10px;display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:space-between">
+      <span style="font-size:12px">Bucket Total: <strong id="co-btotal">฿0</strong></span>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+        <select id="co-method" style="padding:6px 8px;border:1px solid #d0d0d0;border-radius:4px;font-size:12px">
+          <option value="Cash">Cash (Petty Cash)</option>
+          <option value="Card">Card POS</option>
+          <option value="Member Points">Member Points</option>
+          <option value="Bank">Bank Transfer</option>
+        </select>
+        <button class="btn btn-success" onclick="coPost()">Post Invoice Bucket</button>
+        <button class="btn btn-secondary" onclick="coCancel()">Cancel Wizard</button>
+      </div>
+    </div></div>`;
+  }
+  // Existing invoices with payment status
+  if(invs.length){
+    html+=`<div class="card"><div class="ch"><div class="ct">Posted Invoices — ${fn}</div></div>
+    <div class="tw"><table><thead><tr>
+    <th>Invoice</th><th>Total (฿)</th><th>Paid (฿)</th><th>Balance (฿)</th><th>Method</th><th>Status</th><th></th>
+    </tr></thead><tbody>
+    ${invs.map(i=>`<tr class="${i.payment_status==="Paid"?"tr-ok":"tr-warn"}">
+      <td><strong>${i.name}</strong></td><td>${fmtB(i.grand_total)}</td>
+      <td style="color:#2b8a3e;font-weight:600">${fmtB(API.invoice.paidAmount(i.name))}</td>
+      <td style="${i.outstanding_amount>0?"color:#c92a2a":"color:#2b8a3e"};font-weight:700">${fmtB(i.outstanding_amount)}</td>
+      <td>${i.payment_method}</td><td>${sb(i.payment_status)}</td>
+      <td>${i.payment_status!=="Paid"?`<button class="btn btn-success btn-xs" onclick="openPayModal('${i.name}')">Register Payment</button>`:b("✓ Paid","green")}</td>
+    </tr>`).join("")}
+    </tbody></table></div></div>`;
+  }
+  area.innerHTML=html;
+}
+function coToggle(n){if(_coSel.has(n))_coSel.delete(n);else _coSel.add(n);coTotal()}
+function coSelAll(){document.querySelectorAll(".co-chk").forEach(c=>{c.checked=true;_coSel.add(c.value)});coTotal()}
+function coToggleAll(el){document.querySelectorAll(".co-chk").forEach(c=>{c.checked=el.checked;el.checked?_coSel.add(c.value):_coSel.delete(c.value)});coTotal()}
+function coTotal(){const t=ga(DT.LINE).filter(l=>_coSel.has(l.name)).reduce((s,l)=>s+l.amount,0);const el=document.getElementById("co-btotal");if(el)el.textContent=fmtB(t)}
+function coPost(){
+  const lns=Array.from(_coSel);if(!lns.length){alert("Select at least one line");return}
+  const method=document.getElementById("co-method").value;
+  const r=API.checkout.postBucket(_coFolio,lns,method);
+  if(!r.ok){alert(r.msg);return}
+  _coSel=new Set();openCoWizard();openPayModal(r.invoice.name);
+}
+function coCancel(){API.checkout.cancel(_coFolio);document.getElementById("co-area").innerHTML=`<div class="alert a-info">Wizard cancelled. Folio unlocked.</div>`}
+
+// ── Invoices ──────────────────────────────────────────────────────────────────
+let _invF="all";
+function filterInv(f,el){_invF=f;document.querySelectorAll("#inv-pills .pill").forEach(x=>x.classList.remove("active"));if(el)el.classList.add("active");renderInv(f)}
+function renderInv(f){
+  _invF=f||_invF;let rows=ga(DT.INV);
+  if(_invF==="Unpaid")rows=rows.filter(i=>i.payment_status==="Unpaid");
+  else if(_invF==="Partial")rows=rows.filter(i=>i.payment_status==="Partial");
+  else if(_invF==="Paid")rows=rows.filter(i=>i.payment_status==="Paid");
+  document.getElementById("tb-inv").innerHTML=rows.map(i=>{
+    const paidAmt=API.invoice.paidAmount(i.name);
+    return `<tr class="${i.payment_status==="Paid"?"tr-ok":""}">
+      <td><strong>${i.name}</strong></td><td>${i.guest_name}</td>
+      <td><a onclick="openFolioDetail('${i.folio}')">${i.folio}</a></td>
+      <td>${i.posting_date}</td>
+      <td style="text-align:right">${fmtB(i.net_total)}</td>
+      <td style="text-align:right">${fmtB(i.vat_amount)}</td>
+      <td style="text-align:right;font-weight:700">${fmtB(i.grand_total)}</td>
+      <td style="text-align:right;color:#2b8a3e;font-weight:600">${fmtB(paidAmt)}</td>
+      <td style="text-align:right;${i.outstanding_amount>0?"color:#c92a2a":"color:#2b8a3e"};font-weight:700">${fmtB(i.outstanding_amount)}</td>
+      <td>${i.payment_method}</td><td>${sb(i.payment_status)}</td>
+      <td style="white-space:nowrap">
+        ${i.payment_status!=="Paid"?`<button class="btn btn-success btn-xs" onclick="openPayModal('${i.name}')">Pay</button>`:""}
+        <button class="btn btn-secondary btn-xs" onclick="resetDraft('${i.name}')">Draft</button>
+      </td>
+    </tr>`;
+  }).join("")||noRows(12,"No invoices. Run checkout wizard to create invoices.");
+}
+function openPayModal(n){
+  _cInv=n;const inv=API.invoice.get(n);if(!inv)return;
+  const paid=API.invoice.paidAmount(n);
+  document.getElementById("pay-info").innerHTML=`<strong>${n}</strong> · ${inv.guest_name} · Total: ${fmtB(inv.grand_total)} · Paid: ${fmtB(paid)} · <strong>Outstanding: ${fmtB(inv.outstanding_amount)}</strong>`;
+  document.getElementById("pay-amt").value=inv.outstanding_amount;
+  document.getElementById("pay-memo").value=`Payment for ${n}`;
+  const sel=document.getElementById("pay-method");for(const o of sel.options)if(o.value===inv.payment_method){sel.value=o.value;break}
+  document.getElementById("m-payment").classList.add("open");
+}
+function submitPayment(){
+  const amt=parseFloat(document.getElementById("pay-amt").value)||0;const method=document.getElementById("pay-method").value;
+  if(amt<=0){alert("Enter valid amount");return}
+  const pe=API.payment.create(_cInv,amt,method);if(!pe){alert("Payment failed");return}
+  closeModal("m-payment");renderInv(_invF);
+  if(_coFolio)openCoWizard();
+  if(_cFolio)openFolioDetail(_cFolio);
+  alert(`✓ Payment ${pe.name} — ${fmtB(pe.amount)} via ${method}`);
+}
+function resetDraft(n){if(!confirm(`Reset ${n} to Draft?`))return;API.invoice.resetToDraft(n);renderInv(_invF)}
+
+// ── Payments ──────────────────────────────────────────────────────────────────
+function renderPay(){
+  const rows=ga(DT.PAY);
+  document.getElementById("tb-pay").innerHTML=rows.map(p=>`<tr>
+    <td><strong>${p.name}</strong></td><td>${p.payment_date}</td>
+    <td>${p.invoice}</td><td>${p.guest_name}</td>
+    <td style="text-align:right;font-weight:600">${fmtB(p.amount)}</td>
+    <td>${p.payment_method}</td>
+    <td style="font-size:11px;color:#8d99a6">${p.journal_account}</td>
+    <td>${sb(p.status)}</td>
+  </tr>`).join("")||noRows(8,"No payments yet");
+}
+
+// ── Purchase Orders ───────────────────────────────────────────────────────────
+function renderPos(){
+  const rows=API.po.list();
+  document.getElementById("tb-pos").innerHTML=rows.map(p=>`<tr>
+    <td><strong>${p.name}</strong></td><td>${p.po_date}</td>
+    <td>${p.vendor_name}</td>
+    <td style="font-size:11px">${p.spa_session}</td>
+    <td>${p.service_name}</td>
+    <td style="text-align:right">${fmtB(p.service_amount)}</td>
+    <td style="text-align:right">${(p.commission_rate*100).toFixed(0)}%</td>
+    <td style="text-align:right">${fmtB(p.commission_amount)}</td>
+    <td style="text-align:right">${fmtB(p.tip_amount)}</td>
+    <td style="text-align:right;color:#c92a2a">${fmtB(p.deductions||0)}</td>
+    <td style="text-align:right;font-weight:700">${fmtB(p.total_payable)}</td>
+    <td style="white-space:nowrap">${p.paid
+      ?`${b("Paid","green")} <span style="font-size:10px;color:#8d99a6">${p.payment_ref||""}</span>`
+      :`<button class="btn btn-success btn-xs" onclick="openPOPayModal('${p.name}')">Pay Officer</button>`}
+    </td>
+  </tr>`).join("")||noRows(12,"No POs. Create a spa session.");
+}
+
+// ── PO Payment Confirmation & Print ──────────────────────────────────────────
+let _cPO=null;
+function openPOPayModal(n){
+  _cPO=n;const po=API.po.get(n);if(!po)return;
+  document.getElementById("pp-info").innerHTML=
+    `<strong>${po.name}</strong> — ${po.vendor_name}<br>
+     Session: ${po.spa_session} | Service: ${po.service_name} | Date: ${po.po_date}`;
+  document.getElementById("pp-ded").value="0";
+  document.getElementById("pp-po").value=n;
+  ppCalc();
+  document.getElementById("m-po-pay").classList.add("open");
+}
+function ppCalc(){
+  const n=document.getElementById("pp-po").value;const po=API.po.get(n);if(!po)return;
+  const ded=parseFloat(document.getElementById("pp-ded").value)||0;
+  const net=Math.max(0,po.commission_amount+po.tip_amount-ded);
+  document.getElementById("pp-summary").innerHTML=
+    `Commission: <strong>${fmtB(po.commission_amount)}</strong> + Tip: <strong>${fmtB(po.tip_amount)}</strong>`+
+    ` − Deductions: <strong>${fmtB(ded)}</strong> = Net Payable: <strong style="font-size:14px">${fmtB(net)}</strong>`;
+}
+function submitPOPayment(){
+  const n=document.getElementById("pp-po").value;
+  const method=document.getElementById("pp-method").value;
+  const ded=parseFloat(document.getElementById("pp-ded").value)||0;
+  const po=API.po.pay(n,method,ded);if(!po){alert("Payment failed");return}
+  closeModal("m-po-pay");
+  renderPos();
+  if(document.getElementById("p-officer_portal").classList.contains("active"))renderOfficerPortal();
+  alert(`✓ Officer payout confirmed.\nRef: ${po.payment_ref}\nNet Paid: ${fmtB(po.total_payable)}`);
+}
+function printPOAdvice(){
+  const n=document.getElementById("pp-po").value;const po=API.po.get(n);if(!po)return;
+  const ded=parseFloat(document.getElementById("pp-ded").value)||0;
+  const net=Math.max(0,po.commission_amount+po.tip_amount-ded);
+  const method=document.getElementById("pp-method").value;
+  const dt=document.getElementById("pp-date").value;
+  const officer=API.officer.get(po.officer);
+  document.getElementById("print-area").innerHTML=`
+    <div class="pay-advice">
+      <div class="pay-advice-logo">March Hotel</div>
+      <div class="pay-advice-sub">Officer Payment Advice — ${dt} | Method: ${method} | Ref: ${po.name}-ADVICE</div>
+      <table style="margin-bottom:14px">
+        <tr><th>Field</th><th>Detail</th></tr>
+        <tr><td>Officer Name</td><td><strong>${po.vendor_name}</strong></td></tr>
+        <tr><td>Employee ID</td><td>${officer?.employee_id||"—"}</td></tr>
+        <tr><td>Supplier ID</td><td>${po.vendor}</td></tr>
+        <tr><td>Spa Session</td><td>${po.spa_session}</td></tr>
+        <tr><td>Service</td><td>${po.service_name}</td></tr>
+        <tr><td>Session Date</td><td>${po.po_date}</td></tr>
+      </table>
+      <table>
+        <tr><th>Description</th><th style="text-align:right">Amount (฿)</th></tr>
+        <tr><td>Service Amount (Guest Invoice)</td><td style="text-align:right">${fmtB(po.service_amount)}</td></tr>
+        <tr><td>Commission Rate</td><td style="text-align:right">${(po.commission_rate*100).toFixed(0)}%</td></tr>
+        <tr><td>Commission Earned</td><td style="text-align:right">${fmtB(po.commission_amount)}</td></tr>
+        <tr><td>Tip / Gratuity (100% passthrough)</td><td style="text-align:right">${fmtB(po.tip_amount)}</td></tr>
+        <tr><td>Deductions</td><td style="text-align:right;color:#c92a2a">(${fmtB(ded)})</td></tr>
+        <tr class="tot-row"><td><strong>Net Payable to Officer</strong></td><td style="text-align:right"><strong>${fmtB(net)}</strong></td></tr>
+      </table>
+      <div class="sig">
+        <div><div class="sig-line">Officer Signature</div></div>
+        <div><div class="sig-line">Authorized By</div></div>
+        <div><div class="sig-line">Cashier / Accountant</div></div>
+      </div>
+      <div class="pay-advice-footer">
+        Note: Commission is paid by hotel to officer separately from guest billing. Guest invoice is not affected.<br>
+        Generated: ${new Date().toLocaleString()} | March Hotel ERP v8
+      </div>
+    </div>`;
+  window.print();
+}
+
+// ── Officer Commission Portal ─────────────────────────────────────────────────
+function renderOfficerPortal(){
+  const sel=document.getElementById("portal-officer-sel");
+  if(!sel.options.length){
+    sel.innerHTML="";
+    API.officer.list().forEach(o=>sel.innerHTML+=`<option value="${o.name}">${o.officer_name}</option>`);
+  }
+  const oid=sel.value||sel.options[0]?.value;
+  if(!oid)return;
+  _cOfficer=oid;
+  const officer=API.officer.get(oid);if(!officer)return;
+  const pos=API.po.list({officer:oid});
+  const totalComm=pos.reduce((s,p)=>s+p.commission_amount,0);
+  const totalTips=pos.reduce((s,p)=>s+p.tip_amount,0);
+  const totalDed=pos.reduce((s,p)=>s+(p.deductions||0),0);
+  const unpaid=pos.filter(p=>!p.paid);
+  const paid=pos.filter(p=>p.paid);
+  const unpaidNet=unpaid.reduce((s,p)=>s+p.total_payable,0);
+  document.getElementById("portal-content").innerHTML=`
+    <div class="stat-row">
+      <div class="stat"><div class="sl">Total Commission</div><div class="sv" style="font-size:16px">${fmtB(totalComm)}</div><div class="ss">${pos.length} sessions</div></div>
+      <div class="stat"><div class="sl">Total Tips</div><div class="sv" style="font-size:16px">${fmtB(totalTips)}</div></div>
+      <div class="stat"><div class="sl">Deductions</div><div class="sv" style="font-size:16px;color:#c92a2a">${fmtB(totalDed)}</div></div>
+      <div class="stat"><div class="sl">Unpaid Net</div><div class="sv" style="font-size:16px;color:#c92a2a">${fmtB(unpaidNet)}</div><div class="ss">${unpaid.length} pending</div></div>
+    </div>
+    <div class="card">
+      <div class="ch">
+        <div class="ct">Unpaid Commission Lines — ${officer.officer_name}</div>
+        <div style="display:flex;gap:6px">
+          ${unpaid.length?`<button class="btn btn-success btn-sm" onclick="payAllPOs('${oid}')">Pay All</button>`:""}
+        </div>
+      </div>
+      <div class="tw"><table><thead><tr>
+        <th>PO #</th><th>Date</th><th>Session</th><th>Service</th>
+        <th>Svc Amt</th><th>Comm%</th><th>Comm (฿)</th><th>Tip (฿)</th><th>Ded (฿)</th><th>Net (฿)</th><th></th>
+      </tr></thead><tbody>
+      ${unpaid.map(p=>`<tr>
+        <td><strong>${p.name}</strong></td><td>${p.po_date}</td>
+        <td style="font-size:10px">${p.spa_session}</td><td>${p.service_name}</td>
+        <td style="text-align:right">${fmtB(p.service_amount)}</td>
+        <td style="text-align:right">${(p.commission_rate*100).toFixed(0)}%</td>
+        <td style="text-align:right">${fmtB(p.commission_amount)}</td>
+        <td style="text-align:right">${fmtB(p.tip_amount)}</td>
+        <td style="text-align:right;color:#c92a2a">${fmtB(p.deductions||0)}</td>
+        <td style="text-align:right;font-weight:700;color:#c92a2a">${fmtB(p.total_payable)}</td>
+        <td><button class="btn btn-success btn-xs" onclick="openPOPayModal('${p.name}')">Pay &amp; Print</button></td>
+      </tr>`).join("")||noRows(11,"No unpaid commissions.")}
+      </tbody></table></div>
+    </div>
+    ${paid.length?`<div class="card">
+      <div class="ch"><div class="ct">Paid Commission History</div></div>
+      <div class="tw"><table><thead><tr>
+        <th>PO #</th><th>Date</th><th>Service</th><th>Comm (฿)</th><th>Tip (฿)</th><th>Ded (฿)</th><th>Net Paid (฿)</th><th>Payment Ref</th>
+      </tr></thead><tbody>
+      ${paid.map(p=>`<tr class="tr-ok">
+        <td>${p.name}</td><td>${p.po_date}</td><td>${p.service_name}</td>
+        <td style="text-align:right">${fmtB(p.commission_amount)}</td>
+        <td style="text-align:right">${fmtB(p.tip_amount)}</td>
+        <td style="text-align:right;color:#c92a2a">${fmtB(p.deductions||0)}</td>
+        <td style="text-align:right;font-weight:700;color:#2b8a3e">${fmtB(p.total_payable)}</td>
+        <td style="font-size:11px">${p.payment_ref||"—"}</td>
+      </tr>`).join("")}
+      </tbody></table></div></div>`:""}`;
+}
+function payAllPOs(oid){
+  if(!confirm("Pay all unpaid commissions with default Cash method?"))return;
+  API.po.list({officer:oid,paid:false}).forEach(p=>API.po.pay(p.name,"Cash",0));
+  renderOfficerPortal();renderPos();
+}
+
+// ── Members ───────────────────────────────────────────────────────────────────
+const TC={Gold:"yellow",Silver:"gray",Platinum:"purple"};
+function renderMembers(){
+  document.getElementById("tb-members").innerHTML=API.member.list().map(m=>`<tr>
+    <td><strong>${m.name}</strong></td><td>${m.member_name}</td>
+    <td style="font-size:11px">${m.email||"—"}</td><td>${m.phone||"—"}</td>
+    <td>${m.member_since}</td><td>${b(m.status,TC[m.status]||"gray")}</td>
+    <td style="text-align:right;font-weight:700">${fmt(m.points_balance)} pts</td>
+    <td><button class="btn btn-warning btn-xs" onclick="openTopup('${m.name}')">Top-Up</button></td>
+  </tr>`).join("")||noRows(8,"No members");
+}
+function submitNewMember(){
+  const name=document.getElementById("nm-name").value.trim();if(!name){alert("Name required");return}
+  const m=API.member.create({member_name:name,email:document.getElementById("nm-email").value,
+    phone:document.getElementById("nm-phone").value,status:document.getElementById("nm-tier").value,
+    points_balance:parseInt(document.getElementById("nm-points").value)||0});
+  closeModal("m-new-member");renderMembers();alert(`✓ Member ${m.name} created.`);
+}
+function openTopup(mn){
+  _topupMember=mn;const m=API.member.get(mn);
+  document.getElementById("topup-info").innerHTML=`<strong>${m.member_name}</strong> — Current balance: <strong>${fmt(m.points_balance)} pts</strong>`;
+  document.getElementById("m-topup").classList.add("open");
+}
+function submitTopup(){
+  const amt=parseInt(document.getElementById("topup-amt").value)||0;if(amt<=0){alert("Enter valid amount");return}
+  const m=API.member.adjustPoints(_topupMember,amt,document.getElementById("topup-reason").value||"Top-up");
+  closeModal("m-topup");renderMembers();alert(`✓ New balance: ${fmt(m.points_balance)} pts`);
+}
+
+// ── Spa Officers (HR) ─────────────────────────────────────────────────────────
+function renderOfficers(){
+  document.getElementById("tb-officers").innerHTML=API.officer.list().map(o=>`<tr>
+    <td><strong>${o.name}</strong></td><td>${o.officer_name}</td>
+    <td style="font-size:11px;color:#8d99a6">${o.employee_id||"—"}</td>
+    <td style="font-size:11px;color:#8d99a6">${o.vendor_id||"—"}</td>
+    <td>${o.gender}</td><td style="font-size:11px">${o.specialty}</td>
+    <td style="text-align:right">${o.experience_years||0} yr</td>
+    <td style="text-align:right">${fmtB(o.sell_rate||0)}</td>
+    <td style="text-align:right">${fmtB(o.cost_rate||0)}</td>
+    <td style="text-align:right">${(o.commission_rate*100).toFixed(0)}%</td>
+    <td>${sb(o.status)}</td>
+    <td><button class="btn btn-secondary btn-xs" onclick="openOfficerModal('${o.name}')">Edit</button></td>
+  </tr>`).join("")||noRows(12,"No officers");
+}
+function openOfficerModal(n){
+  const o=n?API.officer.get(n):null;
+  document.getElementById("m-officer-title").textContent=o?"Edit Officer (HR)":"New Officer (HR)";
+  document.getElementById("oe-id").value=n||"";
+  document.getElementById("oe-name").value=o?.officer_name||"";
+  document.getElementById("oe-gender").value=o?.gender||"Female";
+  document.getElementById("oe-specialty").value=o?.specialty||"";
+  document.getElementById("oe-exp").value=o?.experience_years||1;
+  document.getElementById("oe-sell-rate").value=o?.sell_rate||1200;
+  document.getElementById("oe-cost-rate").value=o?.cost_rate||0;
+  document.getElementById("oe-comm").value=o?Math.round((o.commission_rate||0)*100):30;
+  document.getElementById("oe-status").value=o?.status||"Active";
+  const ids=document.getElementById("oe-ids");
+  if(o&&(o.employee_id||o.vendor_id)){
+    ids.style.display="block";
+    ids.innerHTML=`ERPNext: Employee ID: <strong>${o.employee_id||"—"}</strong> | Supplier ID: <strong>${o.vendor_id||"—"}</strong>`;
+  } else{ids.style.display="none"}
+  document.getElementById("m-officer").classList.add("open");
+}
+function submitOfficer(){
+  const id=document.getElementById("oe-id").value;
+  const data={officer_name:document.getElementById("oe-name").value.trim(),
+    gender:document.getElementById("oe-gender").value,
+    specialty:document.getElementById("oe-specialty").value,
+    experience_years:parseInt(document.getElementById("oe-exp").value)||0,
+    sell_rate:parseFloat(document.getElementById("oe-sell-rate").value)||0,
+    cost_rate:parseFloat(document.getElementById("oe-cost-rate").value)||0,
+    commission_rate:parseFloat(document.getElementById("oe-comm").value)/100,
+    status:document.getElementById("oe-status").value};
+  if(!data.officer_name){alert("Name required");return}
+  if(id)API.officer.update(id,data);else API.officer.create(data);
+  closeModal("m-officer");renderOfficers();
+  alert(`✓ Officer saved. ERPNext: create linked Employee + Supplier records and set Employee.custom_commission_rate = ${document.getElementById("oe-comm").value}%.`);
+}
+
+// ── Items ─────────────────────────────────────────────────────────────────────
+const GC2={"Spa Service":"purple","F&B":"orange","Accommodation":"blue","Housekeeping":"gray","Transport":"teal"};
+function renderItems(){
+  document.getElementById("tb-items").innerHTML=API.item.list().map(i=>`<tr>
+    <td><strong>${i.name}</strong></td><td>${i.item_name}</td>
+    <td>${b(i.item_group,GC2[i.item_group]||"gray")}</td>
+    <td style="text-align:right;font-weight:600">${i.rate?fmtB(i.rate):"—"}</td>
+    <td style="text-align:right">${i.cost_rate?fmtB(i.cost_rate):"—"}</td>
+    <td>${i.commission_applicable?b("✓ Yes","green"):b("No","gray")}</td>
+    <td>${i.sellable?b("Yes","green"):b("No","gray")}</td>
+    <td>${i.uom}</td>
+    <td style="font-size:10px;color:#8d99a6">${i.income_account}</td>
+    <td><button class="btn btn-secondary btn-xs" onclick="openItemModal('${i.name}')">Edit</button></td>
+  </tr>`).join("")||noRows(10,"No items");
+}
+function openItemModal(n){
+  const i=n?API.item.get(n):null;
+  document.getElementById("m-item-title").textContent=i?"Edit Item":"New Item";
+  document.getElementById("ie-id").value=n||"";
+  document.getElementById("ie-code").value=i?.name||"";
+  document.getElementById("ie-code").readOnly=!!i;
+  document.getElementById("ie-name").value=i?.item_name||"";
+  document.getElementById("ie-group").value=i?.item_group||"F&B";
+  document.getElementById("ie-rate").value=i?.rate||0;
+  document.getElementById("ie-cost").value=i?.cost_rate||0;
+  document.getElementById("ie-uom").value=i?.uom||"Nos";
+  document.getElementById("ie-account").value=i?.income_account||"4300";
+  document.getElementById("ie-comm-app").value=i?.commission_applicable??0;
+  document.getElementById("ie-sell").value=i?.sellable??1;
+  document.getElementById("m-item").classList.add("open");
+}
+function submitItem(){
+  const n=document.getElementById("ie-id").value;
+  const code=document.getElementById("ie-code").value.trim().toUpperCase().replace(/\s+/g,"-");
+  if(!code){alert("Item code required");return}
+  const data={item_name:document.getElementById("ie-name").value.trim(),
+    item_group:document.getElementById("ie-group").value,
+    rate:parseFloat(document.getElementById("ie-rate").value)||0,
+    cost_rate:parseFloat(document.getElementById("ie-cost").value)||0,
+    uom:document.getElementById("ie-uom").value,
+    income_account:document.getElementById("ie-account").value,
+    commission_applicable:parseInt(document.getElementById("ie-comm-app").value)||0,
+    sellable:parseInt(document.getElementById("ie-sell").value)};
+  if(!data.item_name){alert("Name required");return}
+  if(n)API.item.update(n,data);
+  else{if(API.item.get(code)){alert("Item code already exists");return}API.item.create({...data,name:code})}
+  closeModal("m-item");renderItems();
+}
+
+// ══════════════════════════════════════════════════════════════════════════
+// █  REPORTS — Dynamic from localStorage, no hardcode
+// ══════════════════════════════════════════════════════════════════════════
+
+function rptDateFilter(dateStr,fromEl,toEl){
+  const from=document.getElementById(fromEl).value;
+  const to=document.getElementById(toEl).value;
+  if(!dateStr)return true;
+  return dateStr>=from&&dateStr<=to;
+}
+
+// ── Income Report ─────────────────────────────────────────────────────────────
+function runIncomeReport(){
+  const from=document.getElementById("ri-from").value;
+  const to=document.getElementById("ri-to").value;
+  const grp=document.getElementById("ri-grp").value;
+  const cat=document.getElementById("ri-cat").value;
+
+  // Pull all invoiced folio lines in date range
+  const lines=ga(DT.LINE).filter(l=>l.invoiced&&l.date>=from&&l.date<=to);
+  const invs=ga(DT.INV);
+  const pays=ga(DT.PAY);
+  const sessions=ga(DT.SPA);
+
+  // Category filter
+  const catMap={"Accommodation":"Accommodation","Spa":"Spa","F&B":"F&B","Other":["Housekeeping","Transport","Other"]};
+  let filteredLines=lines;
+  if(cat){
+    const allowed=Array.isArray(catMap[cat])?catMap[cat]:[catMap[cat]];
+    filteredLines=lines.filter(l=>allowed.includes(l.line_type));
+  }
+
+  // Group lines
+  const byDate={};
+  filteredLines.forEach(l=>{
+    const key=grp==="day"?l.date:grp==="booking"?(ga(DT.FOLIO).find(f=>f.name===l.folio)?.booking||l.folio):"TOTAL";
+    if(!byDate[key])byDate[key]={date:key,accommodation:0,spa:0,tip:0,fnb:0,other:0,gross:0};
+    const lt=l.line_type;const amt=l.amount||0;
+    if(lt==="Accommodation")byDate[key].accommodation+=amt;
+    else if(lt==="Spa"&&l.item==="SPA-TIP")byDate[key].tip+=amt;
+    else if(lt==="Spa")byDate[key].spa+=amt;
+    else if(lt==="F&B")byDate[key].fnb+=amt;
+    else byDate[key].other+=amt;
+    byDate[key].gross+=amt;
+  });
+
+  const rows=Object.values(byDate).sort((a,c)=>a.date.localeCompare(c.date));
+  const cfg=API.cfg.get();
+  const totalGross=rows.reduce((s,r)=>s+r.gross,0);
+  const totalVAT=Math.round(totalGross*cfg.vat_rate);
+  const totalGrandTotal=totalGross+totalVAT;
+  const totalPaid=pays.filter(p=>p.payment_date>=from&&p.payment_date<=to).reduce((s,p)=>s+p.amount,0);
+  const totalOutstanding=invs.filter(i=>i.posting_date>=from&&i.posting_date<=to&&i.payment_status!=="Paid").reduce((s,i)=>s+i.outstanding_amount,0);
+  const sessCount=sessions.filter(s=>s.session_date>=from&&s.session_date<=to).length;
+
+  const label=grp==="day"?"Date":grp==="booking"?"Booking":"Period";
+  document.getElementById("rpt-income-out").innerHTML=`
+    <div class="rpt-section-hdr">Income Report — ${from} to ${to} ${cat?"| Category: "+cat:""}</div>
+    <div style="border:1px solid #e0e0e0;border-top:none;border-radius:0 0 6px 6px;overflow:hidden;margin-bottom:14px">
+      <div class="tw"><table><thead><tr>
+        <th>${label}</th><th style="text-align:right">Accommodation (฿)</th>
+        <th style="text-align:right">Spa Service (฿)</th><th style="text-align:right">Spa Tip (฿)</th>
+        <th style="text-align:right">F&amp;B (฿)</th><th style="text-align:right">Other (฿)</th>
+        <th style="text-align:right">Gross Total (฿)</th><th style="text-align:right">VAT 7% (฿)</th>
+        <th style="text-align:right">Grand Total (฿)</th>
+      </tr></thead><tbody>
+      ${rows.map(r=>`<tr>
+        <td>${r.date}</td>
+        <td style="text-align:right">${r.accommodation?fmtB(r.accommodation):"—"}</td>
+        <td style="text-align:right">${r.spa?fmtB(r.spa):"—"}</td>
+        <td style="text-align:right">${r.tip?fmtB(r.tip):"—"}</td>
+        <td style="text-align:right">${r.fnb?fmtB(r.fnb):"—"}</td>
+        <td style="text-align:right">${r.other?fmtB(r.other):"—"}</td>
+        <td style="text-align:right;font-weight:600">${fmtB(r.gross)}</td>
+        <td style="text-align:right">${fmtB(Math.round(r.gross*cfg.vat_rate))}</td>
+        <td style="text-align:right;font-weight:700">${fmtB(r.gross+Math.round(r.gross*cfg.vat_rate))}</td>
+      </tr>`).join("")||noRows(9,"No invoiced lines in this date range.")}
+      </tbody></table></div>
+    </div>
+    <div class="rpt-total-box">
+      <div class="rpt-total-row"><span>Total Gross Revenue</span><span>${fmtB(totalGross)}</span></div>
+      <div class="rpt-total-row"><span>Total VAT Collected (7%)</span><span>${fmtB(totalVAT)}</span></div>
+      <div class="rpt-total-row"><span>Total Grand Total (incl. VAT)</span><span>${fmtB(totalGrandTotal)}</span></div>
+      <div class="rpt-total-row"><span>Total Cash Received (in period)</span><span style="color:#2b8a3e">${fmtB(totalPaid)}</span></div>
+      <div class="rpt-total-row"><span>Outstanding Receivable</span><span style="color:#c92a2a">${fmtB(totalOutstanding)}</span></div>
+      <div class="rpt-total-row"><span>Spa Sessions (count)</span><span>${sessCount}</span></div>
+    </div>`;
+}
+
+// ── Expense Report ────────────────────────────────────────────────────────────
+function popExpenseOfficer(){
+  const sel=document.getElementById("re-officer");if(sel.options.length>1)return;
+  API.officer.list().forEach(o=>sel.innerHTML+=`<option value="${o.name}">${o.officer_name}</option>`);
+}
+function runExpenseReport(){
+  const from=document.getElementById("re-from").value;
+  const to=document.getElementById("re-to").value;
+  const oid=document.getElementById("re-officer").value;
+  const paidFilter=document.getElementById("re-paid").value;
+
+  let pos=ga(DT.PO).filter(p=>p.po_date>=from&&p.po_date<=to);
+  if(oid)pos=pos.filter(p=>p.officer===oid);
+  if(paidFilter==="unpaid")pos=pos.filter(p=>!p.paid);
+  else if(paidFilter==="paid")pos=pos.filter(p=>p.paid);
+
+  const totalComm=pos.reduce((s,p)=>s+p.commission_amount,0);
+  const totalTip=pos.reduce((s,p)=>s+p.tip_amount,0);
+  const totalDed=pos.reduce((s,p)=>s+(p.deductions||0),0);
+  const totalNet=pos.reduce((s,p)=>s+p.total_payable,0);
+  const unpaidNet=pos.filter(p=>!p.paid).reduce((s,p)=>s+p.total_payable,0);
+  const paidNet=pos.filter(p=>p.paid).reduce((s,p)=>s+p.total_payable,0);
+
+  document.getElementById("rpt-expense-out").innerHTML=`
+    <div class="rpt-section-hdr">Expense / Payout Report — ${from} to ${to}</div>
+    <div style="border:1px solid #e0e0e0;border-top:none;border-radius:0 0 6px 6px;overflow:hidden;margin-bottom:14px">
+      <div class="tw"><table><thead><tr>
+        <th>PO #</th><th>Date</th><th>Officer</th><th>Session</th><th>Service</th>
+        <th style="text-align:right">Svc Amt (฿)</th><th style="text-align:right">Comm%</th>
+        <th style="text-align:right">Comm (฿)</th><th style="text-align:right">Tip (฿)</th>
+        <th style="text-align:right">Ded (฿)</th><th style="text-align:right">Net (฿)</th><th>Status</th>
+      </tr></thead><tbody>
+      ${pos.map(p=>`<tr class="${p.paid?"tr-ok":""}">
+        <td>${p.name}</td><td>${p.po_date}</td><td>${p.vendor_name}</td>
+        <td style="font-size:10px">${p.spa_session}</td><td>${p.service_name}</td>
+        <td style="text-align:right">${fmtB(p.service_amount)}</td>
+        <td style="text-align:right">${(p.commission_rate*100).toFixed(0)}%</td>
+        <td style="text-align:right">${fmtB(p.commission_amount)}</td>
+        <td style="text-align:right">${fmtB(p.tip_amount)}</td>
+        <td style="text-align:right;color:#c92a2a">${fmtB(p.deductions||0)}</td>
+        <td style="text-align:right;font-weight:700">${fmtB(p.total_payable)}</td>
+        <td>${p.paid?b("Paid","green"):b("Unpaid","red")}</td>
+      </tr>`).join("")||noRows(12,"No PO records in this date range.")}
+      </tbody></table></div>
+    </div>
+    <div class="rpt-total-box">
+      <div class="rpt-total-row"><span>Total Commission Earned</span><span>${fmtB(totalComm)}</span></div>
+      <div class="rpt-total-row"><span>Total Tips Passed Through</span><span>${fmtB(totalTip)}</span></div>
+      <div class="rpt-total-row"><span>Total Deductions</span><span style="color:#c92a2a">${fmtB(totalDed)}</span></div>
+      <div class="rpt-total-row"><span>Total Net Payable</span><span>${fmtB(totalNet)}</span></div>
+      <div class="rpt-total-row"><span>Already Paid</span><span style="color:#2b8a3e">${fmtB(paidNet)}</span></div>
+      <div class="rpt-total-row"><span>Outstanding Payable</span><span style="color:#c92a2a;font-weight:700">${fmtB(unpaidNet)}</span></div>
+    </div>`;
+}
+
+// ── Reconciliation Report ─────────────────────────────────────────────────────
+function runReconReport(){
+  const from=document.getElementById("rr-from").value;
+  const to=document.getElementById("rr-to").value;
+  const statusFilter=document.getElementById("rr-status").value;
+
+  const folios=ga(DT.FOLIO).filter(f=>{
+    const inRange=f.checkin_date<=to&&f.checkout_date>=from;
+    const statusOk=!statusFilter||f.status===statusFilter;
+    return inRange&&statusOk;
+  });
+  const allLines=ga(DT.LINE);
+  const allInvs=ga(DT.INV);
+  const allPays=ga(DT.PAY);
+  const allPos=ga(DT.PO);
+  const allSess=ga(DT.SPA);
+
+  // Summary totals
+  let totalFolioAmt=0,totalInvoiced=0,totalPaid=0,totalBalance=0,totalPOPayable=0,totalPOPaid=0;
+  const rows=folios.map(f=>{
+    const lines=allLines.filter(l=>l.folio===f.name);
+    const invs=allInvs.filter(i=>i.folio===f.name);
+    const pays=allPays.filter(p=>p.folio===f.name);
+    const pos=allPos.filter(p=>p.folio===f.name);
+    const sess=allSess.filter(s=>s.folio===f.name);
+    const folioAmt=f.folio_total||0;
+    const invoiced=invs.reduce((s,i)=>s+i.grand_total,0);
+    const paid=pays.reduce((s,p)=>s+p.amount,0);
+    const bal=Math.max(0,invoiced-paid);
+    const poPayable=pos.reduce((s,p)=>s+p.total_payable,0);
+    const poPaid=pos.filter(p=>p.paid).reduce((s,p)=>s+p.total_payable,0);
+    totalFolioAmt+=folioAmt;totalInvoiced+=invoiced;totalPaid+=paid;totalBalance+=bal;
+    totalPOPayable+=poPayable;totalPOPaid+=poPaid;
+    const ok=bal===0&&lines.every(l=>l.invoiced);
+    return{f,lines,invs,pays,pos,sess,folioAmt,invoiced,paid,bal,poPayable,poPaid,ok};
+  });
+
+  const issues=rows.filter(r=>!r.ok||r.pos.some(p=>!p.paid));
+
+  document.getElementById("rpt-recon-out").innerHTML=`
+    <div class="rpt-section-hdr">Reconciliation Report — ${from} to ${to} ${statusFilter?"| Status: "+statusFilter:""}</div>
+    <div style="border:1px solid #e0e0e0;border-top:none;border-radius:0 0 6px 6px;overflow:hidden;margin-bottom:14px">
+      <div class="tw"><table><thead><tr>
+        <th>Folio</th><th>Guest</th><th>Room</th><th>Check-in</th><th>Checkout</th>
+        <th style="text-align:right">Folio Total (฿)</th>
+        <th style="text-align:right">Invoiced (฿)</th>
+        <th style="text-align:right">Paid (฿)</th>
+        <th style="text-align:right">Balance (฿)</th>
+        <th>Lines</th><th>PO Payable (฿)</th><th>PO Paid (฿)</th><th>Status</th>
+      </tr></thead><tbody>
+      ${rows.map(r=>`<tr class="${!r.ok||r.pos.some(p=>!p.paid)?"tr-warn":"tr-ok"}">
+        <td><a onclick="openFolioDetail('${r.f.name}')">${r.f.name}</a></td>
+        <td>${r.f.guest_name}</td><td>${r.f.room}</td>
+        <td>${r.f.checkin_date}</td><td>${r.f.checkout_date}</td>
+        <td style="text-align:right;font-weight:600">${fmtB(r.folioAmt)}</td>
+        <td style="text-align:right">${fmtB(r.invoiced)}</td>
+        <td style="text-align:right;color:#2b8a3e;font-weight:600">${fmtB(r.paid)}</td>
+        <td style="text-align:right;${r.bal>0?"color:#c92a2a":"color:#2b8a3e"};font-weight:700">${fmtB(r.bal)}</td>
+        <td style="text-align:center">${r.lines.length} (${r.lines.filter(l=>l.invoiced).length} invoiced)</td>
+        <td style="text-align:right">${fmtB(r.poPayable)}</td>
+        <td style="text-align:right;color:#2b8a3e">${fmtB(r.poPaid)}</td>
+        <td>${r.ok&&r.pos.every(p=>p.paid)?b("✓ Clear","green"):b("Action Needed","red")}</td>
+      </tr>`).join("")||noRows(13,"No folios in this date range.")}
+      </tbody></table></div>
+    </div>
+    <div class="rpt-total-box">
+      <div class="rpt-total-row"><span>Total Folio Charges</span><span>${fmtB(totalFolioAmt)}</span></div>
+      <div class="rpt-total-row"><span>Total Invoiced (incl. VAT)</span><span>${fmtB(totalInvoiced)}</span></div>
+      <div class="rpt-total-row"><span>Total Received from Guests</span><span style="color:#2b8a3e">${fmtB(totalPaid)}</span></div>
+      <div class="rpt-total-row"><span>Total Guest Balance Outstanding</span><span style="color:#c92a2a">${fmtB(totalBalance)}</span></div>
+      <div class="rpt-total-row"><span>Total Officer Payable (POs)</span><span>${fmtB(totalPOPayable)}</span></div>
+      <div class="rpt-total-row"><span>Total Officer Paid</span><span style="color:#2b8a3e">${fmtB(totalPOPaid)}</span></div>
+      <div class="rpt-total-row"><span>Officer Outstanding Payable</span><span style="color:#c92a2a">${fmtB(totalPOPayable-totalPOPaid)}</span></div>
+    </div>
+    ${issues.length?`<div class="card" style="border-color:#ffa8a8">
+      <div class="ch"><div class="ct" style="color:#c92a2a">⚠ Action Required (${issues.length} items)</div></div>
+      <div class="tw"><table><thead><tr><th>Folio</th><th>Guest</th><th>Issue</th></tr></thead><tbody>
+      ${issues.map(r=>{
+        const issues=[];
+        if(r.bal>0)issues.push(`Guest balance outstanding: ${fmtB(r.bal)}`);
+        if(r.lines.some(l=>!l.invoiced))issues.push("Uninvoiced folio lines");
+        if(r.pos.some(p=>!p.paid))issues.push(`Officer PO unpaid: ${fmtB(r.poPayable-r.poPaid)}`);
+        return `<tr class="tr-warn"><td><a onclick="openFolioDetail('${r.f.name}')">${r.f.name}</a></td><td>${r.f.guest_name}</td><td style="font-size:11px">${issues.join(" | ")}</td></tr>`;
+      }).join("")}
+      </tbody></table></div>
+    </div>`:""}`;
+}
+
+// ── Utility ───────────────────────────────────────────────────────────────────
+function noRows(cols,msg="No data"){return`<tr><td colspan="${cols}" style="text-align:center;color:#8d99a6;padding:14px;font-size:12px">${msg}</td></tr>`}
+
+function confirmReset(){
+  if(!confirm("Reset ALL data to seed state? All transactions will be cleared."))return;
+  dbReset();
+  _cFolio=null;_cInv=null;_coFolio=null;_coSel=new Set();
+  _topupMember=null;_cOfficer=null;_cPO=null;
+  if(_timerInterval){clearInterval(_timerInterval);_timerInterval=null}
+  // clear report output divs
+  ["rpt-income-out","rpt-expense-out","rpt-recon-out"].forEach(id=>{
+    const el=document.getElementById(id);if(el)el.innerHTML="";
+  });
+  nav("dashboard");alert("✓ Data reset to initial seed state.");
+}
+
+// ── Boot ──────────────────────────────────────────────────────────────────────
+window.addEventListener("DOMContentLoaded",()=>{dbInit();nav("dashboard")});
+</script>
+</body>
+</html>
