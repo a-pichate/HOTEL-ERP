@@ -79,6 +79,45 @@ const ui = {
         `).join('');
     }
 };
+// CHECKOUT LOGIC
+ui.openFolioDetail = function(folioId) {
+    const folio = HotelEngine.folios.find(f => f.id === folioId);
+    const content = document.getElementById('modal-content');
+    
+    content.innerHTML = `
+        <h3 class="text-xs font-black text-blue-500 uppercase mb-2">Checkout Wizard</h3>
+        <h2 class="text-2xl font-black text-slate-800 mb-2">${folio.id}</h2>
+        <p class="text-sm text-slate-400 mb-6 italic">Guest: ${folio.guest}</p>
+        
+        <div class="bg-blue-50 p-6 rounded-3xl mb-6">
+            <div class="flex justify-between items-center">
+                <span class="font-bold text-blue-900">Total Balance</span>
+                <span class="text-2xl font-black text-blue-900">฿${folio.balance.toLocaleString()}</span>
+            </div>
+        </div>
 
+        <div class="grid grid-cols-2 gap-3 mb-4">
+            <button onclick="ui.finalizeCheckout('${folio.id}', 'Cash')" class="py-4 border-2 border-slate-200 rounded-2xl font-bold text-xs hover:border-blue-500 hover:bg-blue-50 transition uppercase">Cash / QR</button>
+            <button onclick="ui.finalizeCheckout('${folio.id}', 'Credit Card')" class="py-4 border-2 border-slate-200 rounded-2xl font-bold text-xs hover:border-blue-500 hover:bg-blue-50 transition uppercase">Credit Card</button>
+        </div>
+    `;
+    document.getElementById('detail-modal').classList.add('active');
+};
+
+ui.finalizeCheckout = function(folioId, method) {
+    const folio = HotelEngine.folios.find(f => f.id === folioId);
+    const room = HotelEngine.rooms.find(r => r.id === folio.room);
+
+    // Update States
+    folio.status = 'Paid';
+    room.inv_status = 'Available';
+    room.hk_status = 'Dirty'; // Automation: Room requires cleaning after checkout
+    room.guest = null;
+    room.folio = null;
+
+    this.closeModal();
+    this.notify(`Checkout Complete via ${method}. Room ${room.id} is now DIRTY.`, 'slate');
+    this.render();
+};
 window.onload = () => ui.init();
 
