@@ -188,4 +188,41 @@
             },
 
             renderFolios: function() {
-                const container = document.getElementById
+                const container = document.getElementById('folio-list');
+                container.innerHTML = DB.folios.map(f => `
+                    <tr class="border-b hover:bg-gray-50">
+                        <td class="p-4 font-mono font-bold text-indigo-600">${f.id}</td>
+                        <td class="p-4">${f.guest}</td>
+                        <td class="p-4">Room ${f.room}</td>
+                        <td class="p-4"><span class="bg-blue-100 text-blue-700 px-2 py-1 rounded text-[10px] font-bold">${f.state}</span></td>
+                        <td class="p-4 font-bold">฿${f.balance.toLocaleString()}</td>
+                        <td class="p-4"><button class="text-xs text-gray-400">Checkout</button></td>
+                    </tr>
+                `).join('');
+            },
+
+            updateSelects: function() {
+                const select = document.getElementById('spa-guest-select');
+                select.innerHTML = DB.folios.map(f => `<option value="${f.guest}">${f.guest} (Room ${f.room})</option>`).join('');
+            },
+
+            notify: function(msg, color) {
+                const el = document.getElementById('system-msg');
+                el.innerText = msg;
+                el.className = `text-sm font-bold text-${color}-600`;
+                setTimeout(() => { el.innerText = ''; }, 3000);
+            }
+        };
+
+        // Navigation Controller
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.getElementById('tab-' + tabId).classList.add('active');
+            document.getElementById('view-title').innerText = tabId.toUpperCase() + " Management";
+        }
+
+        // Initialize App
+        ui.renderAll();
+    </script>
+</body>
+</html>
