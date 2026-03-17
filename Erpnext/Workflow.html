@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>March Hotel ERP Workflow Presentation</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .workflow-step { display: none; }
+        .workflow-step.active { display: block; }
+        .sidebar-item.active { background-color: #f3f4f6; color: #1d4ed8; border-right: 4px solid #1d4ed8; }
+        .status-pill { padding: 2px 10px; border-radius: 9999px; font-size: 0.75rem; font-weight: 600; }
+    </style>
+</head>
+<body class="bg-gray-100 font-sans text-gray-900">
+
+    <div class="flex h-screen overflow-hidden">
+        <aside class="w-64 bg-white border-r border-gray-200 flex flex-col">
+            <div class="p-6 border-b border-gray-200">
+                <h1 class="text-xl font-bold text-gray-800">March Hotel ERP</h1>
+                <p class="text-xs text-gray-500 uppercase tracking-widest mt-1">v1.2 Architecture</p>
+            </div>
+            <nav class="flex-1 overflow-y-auto py-4">
+                <button onclick="showStep('res')" id="btn-res" class="sidebar-item w-full text-left px-6 py-3 text-sm font-medium transition-colors hover:bg-gray-50 active">
+                    1. Room Reservation
+                </button>
+                <button onclick="showStep('checkin')" id="btn-checkin" class="sidebar-item w-full text-left px-6 py-3 text-sm font-medium transition-colors hover:bg-gray-50">
+                    2. Check-In & Folio
+                </button>
+                <button onclick="showStep('spa')" id="btn-spa" class="sidebar-item w-full text-left px-6 py-3 text-sm font-medium transition-colors hover:bg-gray-50">
+                    3. Spa Session (MTO)
+                </button>
+                <button onclick="showStep('checkout')" id="btn-checkout" class="sidebar-item w-full text-left px-6 py-3 text-sm font-medium transition-colors hover:bg-gray-50">
+                    4. Checkout Wizard
+                </button>
+                <button onclick="showStep('payout')" id="btn-payout" class="sidebar-item w-full text-left px-6 py-3 text-sm font-medium transition-colors hover:bg-gray-50">
+                    5. Financial Payouts
+                </button>
+            </nav>
+        </aside>
+
+        <main class="flex-1 flex flex-col bg-white">
+            <header class="h-16 border-b border-gray-200 flex items-center justify-between px-8 bg-white z-10">
+                <h2 id="step-title" class="text-lg font-semibold">Room Reservation Workflow</h2>
+                <div class="flex space-x-2">
+                    <span class="status-pill bg-blue-100 text-blue-700">ERPNext Prototype</span>
+                </div>
+            </header>
+
+            <div class="flex-1 overflow-y-auto p-8">
+                
+                <section id="res" class="workflow-step active space-y-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div class="space-y-4">
+                            <h3 class="text-md font-bold text-gray-700 underline">Operational States</h3>
+                            <ul class="space-y-3">
+                                <li class="flex items-start">
+                                    <span class="h-6 w-6 rounded-full bg-gray-200 flex items-center justify-center text-xs mr-3 mt-1">1</span>
+                                    [span_0](start_span)<span><strong>Draft:</strong> Initial guest inquiry[span_0](end_span).</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <span class="h-6 w-6 rounded-full bg-blue-200 flex items-center justify-center text-xs mr-3 mt-1">2</span>
+                                    <span><strong>Confirmed:</strong> Room assigned; [span_1](start_span)[span_2](start_span)<code>inventory_status</code> = Reserved[span_1](end_span)[span_2](end_span).</span>
+                                </li>
+                            </ul>
+                            <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 text-sm mt-4">
+                                [span_3](start_span)<strong>Validation:</strong> Checkout must be after Check-in; no past dates allowed[span_3](end_span).
+                            </div>
+                        </div>
+                        <div class="bg-gray-50 rounded-lg p-6 border border-gray-200">
+                            <h4 class="text-sm font-semibold mb-4 text-gray-500 uppercase">System Logic</h4>
+                            <code class="text-xs block bg-gray-800 text-green-400 p-4 rounded">
+                                if (checkout <= checkin):<br>
+                                &nbsp;&nbsp;throw ValidationError("Invalid Dates")
+                            </code>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="checkin" class="workflow-step space-y-6">
+                    <div class="bg-blue-50 border border-blue-200 p-6 rounded-lg">
+                        <h3 class="text-blue-800 font-bold mb-2">Automated Check-In Actions</h3>
+                        [span_4](start_span)<p class="text-sm text-blue-700">On Check-In confirmation, the system executes three parallel triggers[span_4](end_span):</p>
+                        <div class="grid grid-cols-3 gap-4 mt-4">
+                            <div class="bg-white p-3 rounded shadow-sm text-center text-xs font-bold">Create Hotel Stay</div>
+                            <div class="bg-white p-3 rounded shadow-sm text-center text-xs font-bold">Create Hotel Folio</div>
+                            <div class="bg-white p-3 rounded shadow-sm text-center text-xs font-bold">Set Room Occupied</div>
+                        </div>
+                    </div>
+                    <div class="space-y-4">
+                        [span_5](start_span)<h4 class="font-bold">2-Layer Status Check[span_5](end_span)</h4>
+                        <table class="w-full text-sm border">
+                            <tr class="bg-gray-100">
+                                <th class="p-2 border">Layer</th>
+                                <th class="p-2 border">Required Value</th>
+                            </tr>
+                            <tr>
+                                <td class="p-2 border font-medium">Inventory</td>
+                                <td class="p-2 border text-green-600">Available</td>
+                            </tr>
+                            <tr>
+                                <td class="p-2 border font-medium">Housekeeping</td>
+                                <td class="p-2 border text-green-600">Clean / Inspected</td>
+                            </tr>
+                        </table>
+                    </div>
+                </section>
+
+                <section id="spa" class="workflow-step space-y-6">
+                    <div class="flex items-center justify-between">
+                        [span_6](start_span)<h3 class="text-lg font-bold">Thin Operational Model[span_6](end_span)</h3>
+                        <span class="status-pill bg-purple-100 text-purple-700">MTO Logic</span>
+                    </div>
+                    <div class="border-l-4 border-purple-500 pl-6 space-y-4">
+                        [span_7](start_span)<p class="text-sm italic">"Every session is a session cost handled by a Purchase Order to the Officer."[span_7](end_span)</p>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div class="p-4 bg-gray-50 rounded">
+                                <h5 class="font-bold text-xs uppercase text-gray-500">Scheduled</h5>
+                                [span_8](start_span)<p class="text-xs">Officer availability check[span_8](end_span).</p>
+                            </div>
+                            <div class="p-4 bg-gray-50 rounded">
+                                <h5 class="font-bold text-xs uppercase text-gray-500">Completed</h5>
+                                [span_9](start_span)[span_10](start_span)<p class="text-xs">Triggers MTO Auto-PO[span_9](end_span)[span_10](end_span).</p>
+                            </div>
+                            <div class="p-4 bg-gray-50 rounded">
+                                <h5 class="font-bold text-xs uppercase text-gray-500">Billed</h5>
+                                [span_11](start_span)<p class="text-xs">Added to Guest Folio[span_11](end_span).</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="checkout" class="workflow-step space-y-6">
+                    <div class="bg-gray-800 text-white p-6 rounded-lg shadow-xl">
+                        [span_12](start_span)<h3 class="text-xl font-mono text-yellow-400">hotel.checkout.wizard[span_12](end_span)</h3>
+                        [span_13](start_span)<p class="text-xs mt-2 text-gray-400">TransientModel - Auto-purged after 24 hours[span_13](end_span).</p>
+                        <div class="mt-6 flex flex-col space-y-3">
+                            <div class="flex justify-between border-b border-gray-700 pb-2">
+                                <span>1. Select Lines</span>
+                                <span class="text-xs text-gray-500">Room, Spa, Mini-bar</span>
+                            </div>
+                            <div class="flex justify-between border-b border-gray-700 pb-2">
+                                <span>2. Assign Bucket</span>
+                                [span_14](start_span)<span class="text-xs text-gray-500">Cash, Card, or Member[span_14](end_span)</span>
+                            </div>
+                            <div class="flex justify-between border-b border-gray-700 pb-2">
+                                <span>3. Post Invoices</span>
+                                [span_15](start_span)[span_16](start_span)<span class="text-xs text-gray-500">Auto-locks Folio[span_15](end_span)[span_16](end_span)</span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="payout" class="workflow-step space-y-6">
+                    [span_17](start_span)<h3 class="font-bold text-lg">Financial Reconciliation[span_17](end_span)</h3>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-xs text-left border">
+                            <thead>
+                                <tr class="bg-gray-50 uppercase">
+                                    <th class="p-3 border">Event</th>
+                                    <th class="p-3 border">Debit</th>
+                                    <th class="p-3 border">Credit</th>
+                                    <th class="p-3 border">Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="p-3 border">Guest Invoice Post</td>
+                                    <td class="p-3 border">1100 AR Guest</td>
+                                    <td class="p-3 border">4200 Spa Revenue</td>
+                                    <td class="p-3 border">Full Price</td>
+                                </tr>
+                                <tr>
+                                    <td class="p-3 border">E08 Tip Trigger</td>
+                                    <td class="p-3 border">5002 Tip Expense</td>
+                                    <td class="p-3 border">2001 AP - Officer</td>
+                                    [span_18](start_span)<td class="p-3 border">Actual Tip[span_18](end_span)</td>
+                                </tr>
+                                <tr>
+                                    <td class="p-3 border">Officer Payout</td>
+                                    <td class="p-3 border">2001 AP - Officer</td>
+                                    <td class="p-3 border">1002 Petty Cash</td>
+                                    [span_19](start_span)<td class="p-3 border">Net Earnings[span_19](end_span)</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+            </div>
+            
+            <footer class="h-12 border-t border-gray-200 flex items-center px-8 text-xs text-gray-400">
+                &copy; 2026 March Hotel ERP Architecture Design Document. [span_20](start_span)All rights reserved.[span_20](end_span)
+            </footer>
+        </main>
+    </div>
+
+    <script>
+        function showStep(stepId) {
+            // Hide all steps
+            document.querySelectorAll('.workflow-step').forEach(el => el.classList.remove('active'));
+            // Remove active style from sidebar
+            document.querySelectorAll('.sidebar-item').forEach(el => el.classList.remove('active'));
+            
+            // Show selected step
+            document.getElementById(stepId).classList.add('active');
+            document.getElementById('btn-' + stepId).classList.add('active');
+            
+            // Update Title
+            const titles = {
+                'res': 'Room Reservation Workflow',
+                'checkin': 'Check-In & Folio Automation',
+                'spa': 'Spa Session & Officer Payout (MTO)',
+                'checkout': 'Checkout Wizard & Partial Invoicing',
+                'payout': 'Financial Reconciliation & AP Flow'
+            };
+            document.getElementById('step-title').innerText = titles[stepId];
+        }
+    </script>
+</body>
+</html>
