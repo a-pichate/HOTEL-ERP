@@ -2,276 +2,276 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>March Hotel ERP - Full Function Prototype v1.2</title>
+    <title>March Hotel ERP - Full Function Logic Prototype</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        :root { --erp-blue: #1d4ed8; --erp-dark: #111827; }
+        :root { --erp-blue: #1d4ed8; --erp-bg: #f8fafc; }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
-        .sidebar-item.active { background: #374151; border-left: 4px solid #60a5fa; }
-        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 50; }
+        .sidebar-item.active { background: #1e293b; border-left: 4px solid #60a5fa; color: white; }
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 50; align-items: center; justify-content: center; }
         .modal.active { display: flex; }
         .status-pill { padding: 2px 8px; border-radius: 999px; font-size: 10px; font-weight: bold; text-transform: uppercase; }
+        .btn-action { background: #f1f5f9; color: #475569; padding: 6px 12px; border-radius: 6px; font-size: 11px; font-weight: 700; transition: all 0.2s; }
+        .btn-action:hover { background: #e2e8f0; }
+        .btn-primary { background: var(--erp-blue); color: white; padding: 10px 20px; border-radius: 8px; font-weight: 600; }
     </style>
 </head>
 <body class="bg-slate-50 h-screen flex overflow-hidden font-sans text-slate-900">
 
-    <aside class="w-64 bg-slate-900 text-white flex flex-col shadow-xl">
+    <aside class="w-64 bg-slate-900 text-slate-300 flex flex-col shadow-2xl">
         <div class="p-6 border-b border-slate-800">
-            <h1 class="text-xl font-black tracking-tighter text-blue-400">MARCH HOTEL</h1>
-            <p class="text-[10px] text-slate-500 font-bold uppercase tracking-widest">ERPNext Framework Mock</p>
+            <h1 class="text-xl font-black text-white tracking-tight italic">MARCH <span class="text-blue-500 font-normal">ERP</span></h1>
         </div>
         <nav class="flex-1 py-4 overflow-y-auto">
-            <div class="px-6 py-2 text-[10px] font-bold text-slate-500 uppercase">Operations</div>
-            <button onclick="switchTab('dashboard')" class="sidebar-item w-full text-left px-6 py-3 text-sm active">Room Dashboard</button>
-            <button onclick="switchTab('spa')" class="sidebar-item w-full text-left px-6 py-3 text-sm">Spa & MTO Sessions</button>
+            <div class="px-6 py-2 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Front Desk</div>
+            <button onclick="ui.switchTab('rooms')" id="nav-rooms" class="sidebar-item w-full text-left px-6 py-3 text-sm active">Room Grid</button>
+            <button onclick="ui.switchTab('folios')" id="nav-folios" class="sidebar-item w-full text-left px-6 py-3 text-sm">Guest Folios (SO)</button>
             
-            <div class="px-6 py-2 mt-4 text-[10px] font-bold text-slate-500 uppercase">Financials</div>
-            <button onclick="switchTab('folios')" class="sidebar-item w-full text-left px-6 py-3 text-sm">Guest Folios (SO)</button>
-            <button onclick="switchTab('membership')" class="sidebar-item w-full text-left px-6 py-3 text-sm">Membership Cards</button>
+            <div class="px-6 py-2 mt-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Services</div>
+            <button onclick="ui.switchTab('spa')" id="nav-spa" class="sidebar-item w-full text-left px-6 py-3 text-sm">Spa & Officer MTO</button>
             
-            <div class="px-6 py-2 mt-4 text-[10px] font-bold text-slate-500 uppercase">System</div>
-            <button onclick="backend.runNightlyAudit()" class="w-full text-left px-6 py-3 text-sm text-yellow-400 hover:bg-slate-800 italic">▶ Run Nightly Audit</button>
+            <div class="px-6 py-2 mt-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Back Office</div>
+            <button onclick="ui.switchTab('housekeeping')" id="nav-housekeeping" class="sidebar-item w-full text-left px-6 py-3 text-sm">Housekeeping Tasks</button>
+            <button onclick="ui.switchTab('payouts')" id="nav-payouts" class="sidebar-item w-full text-left px-6 py-3 text-sm">Officer Payout Ledger</button>
+            
+            <div class="mt-auto p-6 space-y-2">
+                <button onclick="engine.runNightlyAudit()" class="w-full text-[10px] font-black text-yellow-500 border border-yellow-500/20 p-2 rounded hover:bg-yellow-500/10">▶ NIGHTLY AUDIT</button>
+            </div>
         </nav>
     </aside>
 
     <main class="flex-1 flex flex-col overflow-hidden">
-        <header class="h-16 bg-white border-b flex items-center justify-between px-8 shadow-sm">
-            <h2 id="view-title" class="text-lg font-bold text-slate-700">Room Dashboard</h2>
-            <div id="toast" class="px-4 py-2 rounded-lg text-sm font-bold opacity-0 transition-opacity"></div>
+        <header class="h-16 bg-white border-b flex items-center justify-between px-8 z-10">
+            <h2 id="view-title" class="text-lg font-bold text-slate-800 uppercase tracking-tight">Room Grid</h2>
+            <div id="toast" class="px-4 py-2 rounded text-sm font-bold transition-all duration-500 opacity-0 translate-y-2"></div>
         </header>
 
-        <div class="flex-1 overflow-y-auto p-8">
+        <div class="flex-1 overflow-y-auto p-8 bg-slate-50">
             
-            <section id="tab-dashboard" class="tab-content active">
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-6" id="room-grid"></div>
+            <section id="tab-rooms" class="tab-content active">
+                <div class="grid grid-cols-1 md:grid-cols-3 xl:grid-cols-4 gap-6" id="room-grid"></div>
+            </section>
+
+            <section id="tab-folios" class="tab-content">
+                <div class="bg-white rounded-xl border shadow-sm overflow-hidden">
+                    <table class="w-full text-sm text-left">
+                        <thead class="bg-slate-50 border-b text-[10px] font-black text-slate-400 uppercase">
+                            <tr><th class="p-4">Folio ID</th><th>Guest</th><th>Room</th><th>Balance</th><th>Status</th><th>Actions</th></tr>
+                        </thead>
+                        <tbody id="folio-table"></tbody>
+                    </table>
+                </div>
             </section>
 
             <section id="tab-spa" class="tab-content">
-                <div class="max-w-4xl grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div class="col-span-1 bg-white p-6 rounded-xl shadow-sm border">
-                        <h3 class="font-bold mb-4">Book Spa Session</h3>
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <div class="bg-white p-6 rounded-2xl border shadow-sm">
+                        <h3 class="font-bold mb-4">Complete Spa Session</h3>
                         <div class="space-y-4">
-                            <div><label class="text-[10px] font-bold text-slate-400">GUEST</label><select id="spa-guest" class="w-full border p-2 rounded mt-1"></select></div>
-                            <div><label class="text-[10px] font-bold text-slate-400">OFFICER (VENDOR)</label><select id="spa-officer" class="w-full border p-2 rounded mt-1">
-                                <option value="Sarah (A)">Sarah (Grade A - ฿1,200)</option>
-                                <option value="Wichai (B)">Wichai (Grade B - ฿800)</option>
+                            <div><label class="text-[10px] font-bold text-slate-400">GUEST</label><select id="spa-guest" class="w-full border p-2 rounded mt-1 text-sm"></select></div>
+                            <div><label class="text-[10px] font-bold text-slate-400">OFFICER</label><select id="spa-officer" class="w-full border p-2 rounded mt-1 text-sm">
+                                <option value="Somsak (A)">Somsak (Grade A - ฿1,200/hr)</option>
+                                <option value="Wipa (B)">Wipa (Grade B - ฿800/hr)</option>
                             </select></div>
-                            <button onclick="backend.completeSpa()" class="w-full bg-blue-600 text-white font-bold py-2 rounded hover:bg-blue-700">Complete & Create PO</button>
+                            <button onclick="engine.createSpaSession()" class="btn-primary w-full text-sm">Post Session & MTO PO</button>
                         </div>
                     </div>
-                    <div class="col-span-2 bg-white p-6 rounded-xl shadow-sm border">
-                        <h3 class="font-bold mb-4">Purchase Orders (MTO Liabilities)</h3>
-                        <table class="w-full text-xs text-left">
-                            <thead><tr class="border-b"><th>PO ID</th><th>Vendor</th><th>Ref Session</th><th>Cost</th></tr></thead>
-                            <tbody id="po-list"></tbody>
+                    <div class="lg:col-span-2 bg-white rounded-2xl border shadow-sm overflow-hidden">
+                        <table class="w-full text-sm text-left">
+                            <thead class="bg-slate-50 border-b text-[10px] font-black uppercase"><tr><th class="p-4">Ref</th><th>Officer</th><th>Folio</th><th>PO Generated</th></tr></thead>
+                            <tbody id="spa-list"></tbody>
                         </table>
                     </div>
                 </div>
             </section>
 
-            <section id="tab-folios" class="tab-content">
-                <div class="bg-white rounded-xl shadow-sm border overflow-hidden">
-                    <table class="w-full text-sm text-left">
-                        <thead class="bg-slate-50 border-b font-bold text-slate-500 uppercase text-[10px]">
-                            <tr><th class="p-4">ID</th><th>Guest</th><th>Room</th><th>Balance</th><th>Status</th><th>Actions</th></tr>
-                        </thead>
-                        <tbody id="folio-table-body"></tbody>
-                    </table>
+            <section id="tab-housekeeping" class="tab-content">
+                <div class="bg-white rounded-xl border shadow-sm p-6">
+                    <h3 class="font-bold mb-6 text-slate-700">Service Task List</h3>
+                    <div id="hk-list" class="space-y-4"></div>
                 </div>
             </section>
 
-            <section id="tab-membership" class="tab-content">
-                <div class="max-w-md bg-white p-6 rounded-xl shadow-sm border">
-                    <h3 class="font-bold mb-4 text-blue-600">Cash Card Top-up</h3>
-                    <input type="number" id="topup-amount" placeholder="Amount ฿" class="w-full border p-2 rounded mb-4">
-                    <button onclick="backend.topUp(5000)" class="w-full bg-slate-800 text-white py-2 rounded font-bold">Add ฿5,000 to Test Card</button>
-                    <div class="mt-6 pt-6 border-t">
-                        <p class="text-sm font-bold text-slate-500">Member Balance: <span class="text-green-600" id="member-balance">฿0</span></p>
-                    </div>
+            <section id="tab-payouts" class="tab-content">
+                <div class="bg-white rounded-xl border shadow-sm p-6">
+                    <h3 class="font-bold mb-6">Vendor (Officer) Payout Summary</h3>
+                    <div id="payout-ledger" class="space-y-3"></div>
                 </div>
             </section>
-
         </div>
     </main>
 
-    <div id="checkout-modal" class="modal items-center justify-center p-4">
-        <div class="bg-white rounded-2xl shadow-2xl max-w-lg w-full p-8">
-            <h2 class="text-2xl font-black mb-2">Checkout Wizard</h2>
-            <p class="text-slate-400 text-sm mb-6">Select payment bucket for Folio <span id="modal-folio-id" class="text-blue-600 font-bold"></span></p>
-            <div class="space-y-4">
-                <div class="p-4 bg-slate-50 rounded-lg flex justify-between items-center">
-                    <span class="font-bold">Total Due:</span>
-                    <span class="text-xl font-black text-slate-800" id="modal-amount"></span>
-                </div>
-                <div class="grid grid-cols-2 gap-4">
-                    <button onclick="backend.finalizeCheckout('Cash')" class="p-4 border rounded-xl hover:bg-blue-50 font-bold">Cash/Transfer</button>
-                    <button onclick="backend.finalizeCheckout('Member')" class="p-4 border rounded-xl hover:bg-green-50 font-bold">Member Card</button>
-                </div>
-                <button onclick="document.getElementById('checkout-modal').classList.remove('active')" class="w-full text-slate-400 text-sm font-bold py-2">Cancel</button>
-            </div>
+    <div id="checkout-modal" class="modal"><div class="bg-white rounded-3xl p-10 max-w-md w-full shadow-2xl">
+        <h2 class="text-2xl font-black mb-2 italic">Checkout Wizard</h2>
+        <p class="text-slate-400 text-sm mb-6">Folio settlement for <span id="modal-folio-id" class="text-blue-600 font-bold"></span></p>
+        <div class="bg-blue-50 p-6 rounded-2xl mb-6 flex justify-between items-center"><span class="font-bold text-blue-900">Final Balance:</span><span id="modal-amount" class="text-2xl font-black text-blue-900"></span></div>
+        <div class="space-y-3">
+            <button onclick="engine.finalizeCheckout('Cash')" class="w-full py-4 border-2 rounded-2xl font-black hover:border-blue-600 hover:bg-blue-50 transition">CASH / QR TRANSFER</button>
+            <button onclick="engine.finalizeCheckout('Credit Card')" class="w-full py-4 border-2 rounded-2xl font-black hover:border-blue-600 hover:bg-blue-50 transition">CREDIT CARD</button>
         </div>
-    </div>
+    </div></div>
 
     <script>
-        // DATA STORE (Virtual DB)
-        const STATE = {
+        const DB = {
             rooms: [
-                { id: '101', type: 'Suite', inv: 'Available', hk: 'Clean', rate: 4500 },
-                { id: '102', type: 'Deluxe', inv: 'Occupied', hk: 'Clean', rate: 2500, guest: 'John Smith', folio: 'SO-1001' },
-                { id: '103', type: 'Standard', inv: 'Available', hk: 'Dirty', rate: 1500 },
-                { id: '104', type: 'Standard', inv: 'Available', hk: 'Clean', rate: 1500 }
+                { id: '101', type: 'Deluxe Suite', inv: 'Occupied', hk: 'Clean', rate: 4500, guest: 'Alex Mercer', folio: 'SO-1001' },
+                { id: '102', type: 'Deluxe Suite', inv: 'Available', hk: 'Dirty', rate: 4500 },
+                { id: '103', type: 'Standard Room', inv: 'Available', hk: 'Clean', rate: 2200 },
+                { id: '104', type: 'Standard Room', inv: 'Available', hk: 'Clean', rate: 2200 }
             ],
             folios: [
-                { id: 'SO-1001', guest: 'John Smith', room: '102', balance: 2500, active: true }
+                { id: 'SO-1001', guest: 'Alex Mercer', room: '101', balance: 4500, active: true }
             ],
-            pos: [],
-            memberBalance: 12000,
-            currentCheckout: null
+            pos: [], // Purchase Orders for Officers
+            spa_sessions: []
         };
 
-        // CONTROLLERS (Backend Logic)
-        const backend = {
-            notify(msg, type='blue') {
-                const t = document.getElementById('toast');
-                t.innerText = msg;
-                t.className = `px-4 py-2 rounded-lg text-sm font-bold opacity-100 bg-${type}-100 text-${type}-700`;
-                setTimeout(() => t.classList.replace('opacity-100', 'opacity-0'), 3000);
-            },
-
+        const engine = {
+            // Check-in (Must pass Housekeeping Gate)
             checkIn(roomId) {
-                const room = STATE.rooms.find(r => r.id === roomId);
-                if(room.hk !== 'Clean') return this.notify("Room is not Clean!", "red");
+                const room = DB.rooms.find(r => r.id === roomId);
+                if (room.hk !== 'Clean') return ui.notify("HOUSEKEEPING: Room must be CLEAN for occupancy.", "bg-red-600");
                 
-                const fId = 'SO-' + (1000 + STATE.folios.length + 1);
+                const fId = 'SO-' + (1000 + DB.folios.length + 1);
                 room.inv = 'Occupied';
-                room.guest = 'New Guest';
+                room.guest = "Walk-in Guest";
                 room.folio = fId;
-                
-                STATE.folios.push({ id: fId, guest: room.guest, room: roomId, balance: room.rate, active: true });
-                this.notify("Check-in Successful");
-                ui.refresh();
+                DB.folios.push({ id: fId, guest: room.guest, room: roomId, balance: room.rate, active: true });
+                ui.notify(`Guest checked into Room ${roomId}. Folio ${fId} created.`, "bg-green-600");
+                ui.render();
             },
 
-            completeSpa() {
-                const guest = document.getElementById('spa-guest').value;
+            // Spa Session (MTO Procurement Trigger)
+            createSpaSession() {
+                const guestName = document.getElementById('spa-guest').value;
                 const officer = document.getElementById('spa-officer').value;
-                const folio = STATE.folios.find(f => f.guest === guest);
+                const folio = DB.folios.find(f => f.guest === guestName);
+                if (!folio) return;
+
+                // 1. Revenue: Charge Guest
+                folio.balance += 1500;
                 
-                // 1. Charge Guest (Revenue)
-                folio.balance += 1200;
-                
-                // 2. Create MTO PO (Liability)
-                const poId = 'PO-' + (5000 + STATE.pos.length + 1);
-                STATE.pos.push({ id: poId, vendor: officer, ref: folio.id, amount: 600 });
-                
-                this.notify("Spa Session & MTO PO Created", "green");
-                ui.refresh();
+                // 2. MTO: Automated Purchase Order for Officer Liability
+                const poId = 'PO-' + (5000 + DB.pos.length + 1);
+                DB.pos.push({ id: poId, vendor: officer, amount: 750, ref: folio.id });
+                DB.spa_sessions.push({ officer: officer, folio: folio.id, po: poId });
+
+                ui.notify(`MTO Automation: Service posted to ${folio.id} & ${poId} created for Officer.`, "bg-blue-600");
+                ui.render();
             },
 
+            // Housekeeping: Reset Room State
+            cleanRoom(roomId) {
+                const room = DB.rooms.find(r => r.id === roomId);
+                room.hk = 'Clean';
+                ui.notify(`Room ${roomId} has been inspected and cleared.`, "bg-teal-600");
+                ui.render();
+            },
+
+            // Nightly Audit: Automated Room Charges
             runNightlyAudit() {
-                STATE.folios.filter(f => f.active).forEach(f => {
-                    const room = STATE.rooms.find(r => r.id === f.room);
+                DB.folios.filter(f => f.active).forEach(f => {
+                    const room = DB.rooms.find(r => r.id === f.room);
                     f.balance += room.rate;
                 });
-                this.notify("Nightly Room Rates Posted", "yellow");
-                ui.refresh();
+                ui.notify("NIGHTLY AUDIT COMPLETE: Daily room rates applied to all folios.", "bg-yellow-600 text-black");
+                ui.render();
             },
 
-            openCheckout(folioId) {
-                const f = STATE.folios.find(f => f.id === folioId);
-                STATE.currentCheckout = f;
+            openCheckout(fId) {
+                const f = DB.folios.find(f => f.id === fId);
+                this.activeFolio = f;
                 document.getElementById('modal-folio-id').innerText = f.id;
                 document.getElementById('modal-amount').innerText = '฿' + f.balance.toLocaleString();
                 document.getElementById('checkout-modal').classList.add('active');
             },
 
             finalizeCheckout(method) {
-                const f = STATE.currentCheckout;
-                if(method === 'Member' && STATE.memberBalance < f.balance) {
-                    return this.notify("Insufficient Member Balance", "red");
-                }
-                
-                if(method === 'Member') STATE.memberBalance -= f.balance;
+                const f = this.activeFolio;
+                const room = DB.rooms.find(r => r.id === f.room);
                 
                 f.active = false;
-                const room = STATE.rooms.find(r => r.id === f.room);
                 room.inv = 'Available';
-                room.hk = 'Dirty'; // Trigger Housekeeping
+                room.hk = 'Dirty'; // Flow logic: Occupied -> Available/Dirty
                 room.guest = null;
-
+                room.folio = null;
+                
                 document.getElementById('checkout-modal').classList.remove('active');
-                this.notify(`Folio Closed via ${method}. Room 102 set to DIRTY`, "green");
-                ui.refresh();
+                ui.notify(`Checkout Done (${method}). Room ${room.id} is now DIRTY for cleaning.`, "bg-slate-900");
+                ui.render();
             }
         };
 
-        // FRONTEND VIEW ENGINE
         const ui = {
-            refresh() {
-                this.drawRooms();
-                this.drawFolios();
-                this.drawSpa();
-                this.drawMembership();
+            switchTab(id) {
+                document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.sidebar-item').forEach(b => b.classList.remove('active'));
+                document.getElementById('tab-' + id).classList.add('active');
+                document.getElementById('nav-' + id).classList.add('active');
+                document.getElementById('view-title').innerText = id === 'rooms' ? 'Room Grid' : id.replace('_', ' ');
             },
 
-            drawRooms() {
-                const grid = document.getElementById('room-grid');
-                grid.innerHTML = STATE.rooms.map(r => `
-                    <div class="bg-white p-5 rounded-2xl shadow-sm border-b-4 ${r.hk === 'Clean' ? 'border-green-500' : 'border-red-500'}">
-                        <div class="flex justify-between items-start mb-4">
-                            <span class="text-2xl font-black">${r.id}</span>
-                            <span class="status-pill ${r.hk === 'Clean' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}">${r.hk}</span>
+            notify(msg, cls) {
+                const t = document.getElementById('toast');
+                t.innerText = msg;
+                t.className = `px-4 py-2 rounded-lg text-white text-xs font-black shadow-lg translate-y-0 opacity-100 ${cls}`;
+                setTimeout(() => t.classList.add('opacity-0', 'translate-y-2'), 4000);
+            },
+
+            render() {
+                // Render Room Dashboard
+                document.getElementById('room-grid').innerHTML = DB.rooms.map(r => `
+                    <div class="bg-white rounded-3xl border shadow-sm p-6 border-b-8 ${r.hk === 'Clean' ? 'border-green-500' : 'border-rose-500'}">
+                        <div class="flex justify-between items-start mb-6">
+                            <span class="text-2xl font-black text-slate-800">${r.id}</span>
+                            <span class="status-pill ${r.hk === 'Clean' ? 'bg-green-100 text-green-700' : 'bg-rose-100 text-rose-700'}">${r.hk}</span>
                         </div>
-                        <div class="text-xs font-bold text-slate-400 uppercase mb-4">${r.type} @ ฿${r.rate}</div>
+                        <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">${r.type} • ฿${r.rate}</p>
                         ${r.inv === 'Occupied' ? 
-                            `<div class="bg-blue-50 p-2 rounded text-blue-700 text-xs font-bold">👤 ${r.guest}</div>` : 
-                            `<button onclick="backend.checkIn('${r.id}')" class="w-full py-2 bg-slate-100 text-slate-600 rounded-lg text-xs font-bold hover:bg-blue-600 hover:text-white transition">CHECK IN</button>`
+                            `<div class="bg-blue-600 p-4 rounded-2xl text-white shadow-inner"><p class="text-[10px] font-bold opacity-70">CURRENT GUEST</p><p class="font-bold text-sm">${r.guest}</p></div>` : 
+                            `<button onclick="engine.checkIn('${r.id}')" class="w-full py-3 bg-slate-900 text-white rounded-2xl font-black text-[10px] uppercase hover:scale-[1.02] transition">CHECK IN</button>`
                         }
                     </div>
                 `).join('');
-            },
 
-            drawFolios() {
-                const table = document.getElementById('folio-table-body');
-                table.innerHTML = STATE.folios.map(f => `
-                    <tr class="border-b ${!f.active ? 'opacity-50 italic' : ''}">
-                        <td class="p-4 font-bold text-blue-600">${f.id}</td>
-                        <td class="p-4 font-medium">${f.guest}</td>
-                        <td class="p-4">Room ${f.room}</td>
-                        <td class="p-4 font-black">฿${f.balance.toLocaleString()}</td>
-                        <td class="p-4"><span class="status-pill ${f.active ? 'bg-blue-100 text-blue-700' : 'bg-slate-100 text-slate-500'}">${f.active ? 'Open' : 'Paid'}</span></td>
-                        <td class="p-4">
-                            ${f.active ? `<button onclick="backend.openCheckout('${f.id}')" class="text-xs bg-slate-900 text-white px-3 py-1 rounded-full font-bold">Checkout</button>` : '—'}
-                        </td>
+                // Render Folios
+                document.getElementById('folio-table').innerHTML = DB.folios.map(f => `
+                    <tr class="border-b ${!f.active ? 'opacity-30' : ''}">
+                        <td class="p-4 font-black text-blue-600">${f.id}</td>
+                        <td class="p-4 font-bold text-slate-700">${f.guest}</td>
+                        <td class="p-4 font-medium">Room ${f.room}</td>
+                        <td class="p-4 font-black text-lg">฿${f.balance.toLocaleString()}</td>
+                        <td class="p-4"><span class="status-pill bg-blue-100 text-blue-700">${f.active ? 'Active' : 'Closed'}</span></td>
+                        <td class="p-4">${f.active ? `<button onclick="engine.openCheckout('${f.id}')" class="btn-action">CHECKOUT</button>` : '—'}</td>
                     </tr>
                 `).join('');
-            },
 
-            drawSpa() {
-                const select = document.getElementById('spa-guest');
-                select.innerHTML = STATE.folios.filter(f => f.active).map(f => `<option value="${f.guest}">${f.guest} (Room ${f.room})</option>`).join('');
-                
-                const poList = document.getElementById('po-list');
-                poList.innerHTML = STATE.pos.map(p => `
-                    <tr class="border-b"><td class="py-2 font-mono">${p.id}</td><td>${p.vendor}</td><td>${p.ref}</td><td class="font-bold">฿${p.amount}</td></tr>
+                // Render Spa Controls
+                document.getElementById('spa-guest').innerHTML = DB.folios.filter(f => f.active).map(f => `<option value="${f.guest}">${f.guest} (${f.room})</option>`).join('');
+                document.getElementById('spa-list').innerHTML = DB.spa_sessions.map(s => `
+                    <tr class="border-b"><td class="p-4 font-bold">SPA-TX</td><td class="p-4">${s.officer}</td><td class="p-4 font-black">${s.folio}</td><td class="p-4"><span class="text-blue-600 font-mono text-xs">${s.po}</span></td></tr>
                 `).join('');
-            },
 
-            drawMembership() {
-                document.getElementById('member-balance').innerText = '฿' + STATE.memberBalance.toLocaleString();
+                // Render Housekeeping
+                document.getElementById('hk-list').innerHTML = DB.rooms.filter(r => r.hk === 'Dirty').map(r => `
+                    <div class="flex justify-between items-center p-4 bg-rose-50 rounded-2xl border border-rose-100">
+                        <div class="flex items-center space-x-4"><span class="text-xl font-black text-rose-700">${r.id}</span><span class="text-xs font-bold text-rose-400">REQUIRES CLEANING</span></div>
+                        <button onclick="engine.cleanRoom('${r.id}')" class="bg-rose-600 text-white px-4 py-2 rounded-xl text-[10px] font-black">MARK AS CLEAN</button>
+                    </div>
+                `).join('');
+
+                // Render Payouts
+                document.getElementById('payout-ledger').innerHTML = DB.pos.map(p => `
+                    <div class="flex justify-between items-center p-4 bg-white border rounded-2xl">
+                        <div><p class="text-[10px] font-bold text-slate-400">OFFICER: ${p.vendor}</p><p class="text-xs font-bold font-mono text-blue-600">${p.id} (Ref: ${p.ref})</p></div>
+                        <div class="text-xl font-black text-slate-800">฿${p.amount.toLocaleString()}</div>
+                    </div>
+                `).join('');
             }
         };
 
-        function switchTab(id) {
-            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-            document.querySelectorAll('.sidebar-item').forEach(b => b.classList.remove('active'));
-            document.getElementById('tab-' + id).classList.add('active');
-            event.target.classList.add('active');
-            document.getElementById('view-title').innerText = id.charAt(0).toUpperCase() + id.slice(1) + " Management";
-        }
-
-        ui.refresh();
+        ui.render();
     </script>
 </body>
 </html>
