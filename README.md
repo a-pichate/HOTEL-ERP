@@ -1,1 +1,1 @@
-Hotel EPR
+Hotel ERP demo
