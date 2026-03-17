@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>March Hotel ERP - Prototype v1.2</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .sidebar-item:hover { background-color: #374151; }
+        .sidebar-item.active { background-color: #1e293b; border-left: 4px solid #60a5fa; color: white; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .room-card { transition: transform 0.2s; cursor: pointer; }
+        .room-card:hover { transform: translateY(-4px); }
+    </style>
+</head>
+<body class="bg-slate-100 h-screen flex overflow-hidden font-sans">
+
+    <aside class="w-64 bg-slate-900 text-slate-300 flex flex-col shadow-xl z-20">
+        <div class="p-6 border-b border-slate-800">
+            <h1 class="text-xl font-black text-white tracking-tighter">MARCH <span class="text-blue-400">ERP</span></h1>
+        </div>
+        <nav class="flex-1 py-4">
+            <button onclick="ui.switchTab('rooms')" class="sidebar-item w-full text-left px-6 py-3 text-sm active" id="nav-rooms">
+                <i class="fas fa-bed mr-3"></i> Room Grid
+            </button>
+            <button onclick="ui.switchTab('spa')" class="sidebar-item w-full text-left px-6 py-3 text-sm" id="nav-spa">
+                <i class="fas fa-spa mr-3"></i> Spa & MTO
+            </button>
+            <button onclick="ui.switchTab('folios')" class="sidebar-item w-full text-left px-6 py-3 text-sm" id="nav-folios">
+                <i class="fas fa-file-invoice-dollar mr-3"></i> Guest Folios
+            </button>
+            <div class="mt-8 px-6 text-[10px] font-bold text-slate-500 uppercase">System</div>
+            <button onclick="HotelEngine.runNightlyAudit(); ui.render(); ui.notify('Nightly Audit Applied', 'blue')" class="w-full text-left px-6 py-3 text-xs text-yellow-500 hover:text-yellow-400">
+                <i class="fas fa-moon mr-3"></i> Run Nightly Audit
+            </button>
+        </nav>
+    </aside>
+
+    <main class="flex-1 flex flex-col overflow-hidden">
+        <header class="h-16 bg-white border-b flex items-center justify-between px-8 shadow-sm">
+            <h2 id="view-title" class="text-lg font-bold text-slate-700">Room Grid</h2>
+            <div id="toast" class="fixed top-4 right-4 px-6 py-3 rounded-xl shadow-2xl text-white font-bold transition-all duration-500 opacity-0 translate-y-[-20px] z-50"></div>
+        </header>
+
+        <div class="flex-1 overflow-y-auto p-8">
+            <section id="tab-rooms" class="tab-content active">
+                <div id="room-container" class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6"></div>
+            </section>
+
+            <section id="tab-spa" class="tab-content">
+                <div class="max-w-4xl bg-white rounded-2xl shadow-sm border p-8">
+                    <h3 class="text-xl font-bold mb-6">New Spa Session</h3>
+                    <div class="grid grid-cols-2 gap-6 mb-8">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-400 uppercase mb-2">Select Guest</label>
+                            <select id="spa-guest-select" class="w-full border-2 p-3 rounded-xl focus:border-blue-500 outline-none"></select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-400 uppercase mb-2">Assign Officer</label>
+                            <select id="spa-officer-select" class="w-full border-2 p-3 rounded-xl focus:border-blue-500 outline-none"></select>
+                        </div>
+                    </div>
+                    <button onclick="ui.handleSpaBooking()" class="bg-blue-600 text-white w-full py-4 rounded-2xl font-black text-sm uppercase tracking-widest hover:bg-blue-700 transition">Complete Session & Trigger MTO PO</button>
+                </div>
+            </section>
+
+            <section id="tab-folios" class="tab-content">
+                <div class="bg-white rounded-2xl shadow-sm border overflow-hidden">
+                    <table class="w-full text-left">
+                        <thead class="bg-slate-50 border-b text-[10px] font-black text-slate-400 uppercase">
+                            <tr><th class="p-4">Folio ID</th><th>Guest</th><th>Room</th><th>Balance</th><th>Status</th><th>Actions</th></tr>
+                        </thead>
+                        <tbody id="folio-list"></tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <script src="./js/hotel_engine.js"></script>
+    <script src="./js/spa_mto_engine.js"></script>
+    <script>
+        // UI CONTROLLER (Frontend Layer)
+        const ui = {
+            async init() {
+                // Mocking Officer Data in LocalStorage for demo
+                const officers = [
+                    { "id": "OFF-01", "name": "Somsak", "grade": "A", "cost_rate": 1200 },
+                    { "id": "OFF-02", "name": "Wipa", "grade": "B", "cost_rate": 800 }
+                ];
+                localStorage.setItem('officers', JSON.stringify(officers));
+
+                await HotelEngine.init();
+                this.render();
+            },
+
+            switchTab(tabId) {
+                document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
+                document.getElementById('tab-' + tabId).classList.add('active');
+                document.getElementById('nav-' + tabId).classList.add('active');
+                document.getElementById('view-title').innerText = tabId.toUpperCase();
+            },
+
+            notify(msg, color) {
+                const t = document.getElementById('toast');
+                t.innerText = msg;
+                t.className = `fixed top-4 right-4 px-6 py-3 rounded-xl shadow-2xl text-white font-bold transition-all duration-500 opacity-100 bg-${color}-600 z-50`;
+                setTimeout(() => t.classList.replace('opacity-100', 'opacity-0'), 3000);
+            },
+
+            handleCheckIn(roomId) {
+                try {
+                    const guest = prompt("Enter Guest Name:");
+                    if (!guest) return;
+                    HotelEngine.checkIn(roomId, guest);
+                    this.notify(`Check-in Successful for Room ${roomId}`, 'green');
+                    this.render();
+                } catch (e) {
+                    this.notify(e.message, 'red');
+                }
+            },
+
+            handleSpaBooking() {
+                const guestFolioId = document.getElementById('spa-guest-select').value;
+                const officerId = document.getElementById('spa-officer-select').value;
+                const result = SpaMTO.createSession(guestFolioId, officerId);
+                this.notify(`MTO Success: PO Created for Officer`, 'blue');
+                this.render();
+                this.switchTab('folios');
+            },
+
+            render() {
+                // Render Rooms
+                const roomGrid = document.getElementById('room-container');
+                roomGrid.innerHTML = HotelEngine.rooms.map(r => `
+                    <div class="room-card bg-white p-6 rounded-3xl border shadow-sm border-b-8 ${r.hk_status === 'Clean' ? 'border-green-500' : 'border-rose-500'}">
+                        <div class="flex justify-between items-start mb-4">
+                            <span class="text-2xl font-black text-slate-800">${r.id}</span>
+                            <span class="text-[10px] font-black uppercase px-2 py-1 rounded bg-slate-100 ${r.hk_status === 'Clean' ? 'text-green-600' : 'text-rose-600'}">${r.hk_status}</span>
+                        </div>
+                        <p class="text-[10px] font-bold text-slate-400 uppercase mb-6">${r.type} • ฿${r.rate}/night</p>
+                        ${r.inv_status === 'Occupied' ? 
+                            `<div class="bg-blue-50 p-3 rounded-xl text-blue-700 text-xs font-bold">👤 ${r.guest}</div>` :
+                            `<button onclick="ui.handleCheckIn('${r.id}')" class="w-full py-3 bg-slate-900 text-white rounded-xl font-black text-[10px] uppercase">Check In</button>`
+                        }
+                    </div>
+                `).join('');
+
+                // Render Folios
+                document.getElementById('folio-list').innerHTML = HotelEngine.folios.map(f => `
+                    <tr class="border-b">
+                        <td class="p-4 font-black text-blue-600">${f.id}</td>
+                        <td class="p-4 font-bold text-slate-700">${f.guest}</td>
+                        <td class="p-4">Room ${f.room}</td>
+                        <td class="p-4 font-black text-lg">฿${f.balance.toLocaleString()}</td>
+                        <td class="p-4"><span class="px-2 py-1 bg-blue-100 text-blue-700 rounded text-[10px] font-black uppercase">${f.status}</span></td>
+                        <td class="p-4"><button class="text-xs font-bold text-slate-400">Checkout</button></td>
+                    </tr>
+                `).join('');
+
+                // Update Spa Selects
+                document.getElementById('spa-guest-select').innerHTML = HotelEngine.folios.map(f => `<option value="${f.id}">${f.guest} (${f.id})</option>`).join('');
+                document.getElementById('spa-officer-select').innerHTML = JSON.parse(localStorage.getItem('officers')).map(o => `<option value="${o.id}">${o.name} (Grade ${o.grade})</option>`).join('');
+            }
+        };
+
+        window.onload = () => ui.init();
+    </script>
+</body>
+</html>
