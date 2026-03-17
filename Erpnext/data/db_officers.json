@@ -1,0 +1,4 @@
+[
+  { "id": "OFF-01", "name": "Somsak", "grade": "A", "cost_rate": 1200, "specialty": "Thai Massage" },
+  { "id": "OFF-02", "name": "Wipa", "grade": "B", "cost_rate": 800, "specialty": "Oil Massage" }
+]
