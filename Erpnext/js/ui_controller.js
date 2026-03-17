@@ -81,4 +81,4 @@ const ui = {
 };
 
 window.onload = () => ui.init();
-w
+
