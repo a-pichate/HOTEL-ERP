@@ -7,34 +7,82 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        .sidebar-item:hover { background-color: #374151; }
+        /* Sidebar Transitions */
+        #sidebar { transition: all 0.3s ease-in-out; width: 16rem; }
+        #sidebar.collapsed { width: 4.5rem; }
+        #sidebar.collapsed .nav-text, #sidebar.collapsed .logo-text { display: none; }
+        #sidebar.collapsed .nav-item { justify-content: center; padding-left: 0; padding-right: 0; }
+        
         .sidebar-item.active { background-color: #1e293b; border-left: 4px solid #60a5fa; color: white; }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
-        .room-card { transition: transform 0.2s; cursor: pointer; }
-        .room-card:hover { transform: translateY(-4px); }
-    /* Modal Overlay */
-#detail-modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 100; align-items: center; justify-content: center; transition: opacity 0.3s; }
-#detail-modal.active { display: flex; }
 
-/* Responsive Grid adjustment */
-#room-container { 
-    display: grid; 
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); 
-    gap: 1.5rem; 
-}
+        /* Modal Styles */
+        #detail-modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 100; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.2s; }
+        #detail-modal.active { display: flex; opacity: 1; }
         
+        /* Clickable Cards */
+        .clickable-card { cursor: pointer; transition: transform 0.1s; }
+        .clickable-card:active { transform: scale(0.98); }
     </style>
-    
 </head>
 <body class="bg-slate-100 h-screen flex overflow-hidden font-sans">
 
-    <aside class="w-64 bg-slate-900 text-slate-300 flex flex-col shadow-xl z-20">
-        <div class="p-6 border-b border-slate-800">
-            <h1 class="text-xl font-black text-white tracking-tighter">MARCH <span class="text-blue-400">ERP</span></h1>
+    <aside id="sidebar" class="bg-slate-900 text-slate-300 flex flex-col shadow-xl z-20 overflow-hidden">
+        <div class="p-6 border-b border-slate-800 flex items-center justify-between">
+            <h1 class="text-xl font-black text-white logo-text">MARCH <span class="text-blue-400">ERP</span></h1>
+            <button onclick="ui.toggleSidebar()" class="text-slate-400 hover:text-white"><i class="fas fa-bars"></i></button>
         </div>
         <nav class="flex-1 py-4">
-            <button onclick="ui.switchTab('rooms')" class="sidebar-item w-full text-left px-6 py-3 text-sm active" id="nav-rooms">
+            <button onclick="ui.switchTab('rooms')" class="sidebar-item w-full text-left px-6 py-4 text-sm active nav-item" id="nav-rooms">
+                <i class="fas fa-bed w-6"></i> <span class="nav-text ml-2">Room Grid</span>
+            </button>
+            <button onclick="ui.switchTab('spa')" class="sidebar-item w-full text-left px-6 py-4 text-sm nav-item" id="nav-spa">
+                <i class="fas fa-spa w-6"></i> <span class="nav-text ml-2">Spa & MTO</span>
+            </button>
+            <button onclick="ui.switchTab('folios')" class="sidebar-item w-full text-left px-6 py-4 text-sm nav-item" id="nav-folios">
+                <i class="fas fa-file-invoice-dollar w-6"></i> <span class="nav-text ml-2">Guest Folios</span>
+            </button>
+        </nav>
+    </aside>
+
+    <main class="flex-1 flex flex-col overflow-hidden">
+        <header class="h-16 bg-white border-b flex items-center justify-between px-8 shadow-sm">
+            <h2 id="view-title" class="text-lg font-bold text-slate-700 uppercase">Room Grid</h2>
+            <div id="toast" class="fixed top-4 right-4 px-6 py-3 rounded-xl shadow-2xl text-white font-bold transition-all duration-300 opacity-0 z-50"></div>
+        </header>
+
+        <div class="flex-1 overflow-y-auto p-4 md:p-8 bg-slate-50">
+            <section id="tab-rooms" class="tab-content active">
+                <div id="room-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"></div>
+            </section>
+            <section id="tab-spa" class="tab-content">
+                <div id="spa-container"></div> </section>
+            <section id="tab-folios" class="tab-content">
+                <div class="bg-white rounded-2xl shadow-sm border overflow-hidden">
+                    <table class="w-full text-left text-sm">
+                        <thead class="bg-slate-50 border-b text-[10px] font-black text-slate-400 uppercase">
+                            <tr><th class="p-4">Folio ID</th><th class="p-4">Guest</th><th class="p-4">Room</th><th class="p-4">Balance</th><th class="p-4">Status</th></tr>
+                        </thead>
+                        <tbody id="folio-list"></tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <div id="detail-modal" onclick="if(event.target==this) ui.closeModal()">
+        <div class="bg-white rounded-3xl w-full max-w-lg p-8 shadow-2xl relative mx-4">
+            <button onclick="ui.closeModal()" class="absolute top-4 right-4 text-slate-300 hover:text-slate-600"><i class="fas fa-times-circle text-2xl"></i></button>
+            <div id="modal-content"></div>
+        </div>
+    </div>
+
+    <script src="./js/hotel_engine.js"></script>
+    <script src="./js/spa_mto_engine.js"></script>
+    <script src="./js/ui_controller.js"></script>
+</body>
+</html>            <button onclick="ui.switchTab('rooms')" class="sidebar-item w-full text-left px-6 py-3 text-sm active" id="nav-rooms">
                 <i class="fas fa-bed mr-3"></i> Room Grid
             </button>
             <button onclick="ui.switchTab('spa')" class="sidebar-item w-full text-left px-6 py-3 text-sm" id="nav-spa">
