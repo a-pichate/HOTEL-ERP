@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+w<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -58,7 +58,7 @@
 
         <div class="flex-1 overflow-y-auto p-4 md:p-8 bg-slate-50">
             <section id="tab-rooms" class="tab-content active">
- w               <div id="room-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"></div>
+                <div id="room-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"></div>
             </section>
             <section id="tab-spa" class="tab-content">
     <div class="max-w-xl mx-auto bg-white rounded-3xl shadow-sm border p-10 mt-10">
@@ -90,6 +90,21 @@
                     </table>
                 </div>
             </section>
+            <section id="tab-payouts" class="tab-content">
+    <div class="bg-white rounded-3xl shadow-sm border overflow-hidden">
+        <div class="p-6 border-b bg-slate-50">
+            <h3 class="font-black text-slate-800">Procurement & Analytic Ledger</h3>
+            <p class="text-xs text-slate-400">Automatic PO Generation for Spa Services</p>
+        </div>
+        <table class="w-full text-left">
+            <thead class="bg-slate-50 border-b text-[10px] font-black text-slate-400 uppercase">
+                <tr><th class="p-4">PO ID</th><th class="p-4">Vendor (Officer)</th><th class="p-4">Analytic Tag</th><th class="p-4">Cost</th><th class="p-4">Status</th></tr>
+            </thead>
+            <tbody id="po-list"></tbody>
+        </table>
+    </div>
+            </section>
+            
         </div>
     </main>
 
