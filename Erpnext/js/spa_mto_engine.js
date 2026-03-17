@@ -1,22 +1,28 @@
-/**
- * SPA MTO ENGINE
- * Logic: Completing a session triggers a Purchase Order (Liability)
+/** * SPA MTO ENGINE - v3.1.0 
+ * Tracking ID: 20260318-MTO-01
+ * Layer: Procurement Automation
  */
 const SpaMTO = {
     createSession(folioId, officerId) {
         const folio = HotelEngine.folios.find(f => f.id === folioId);
-        const officer = JSON.parse(localStorage.getItem('officers')).find(o => o.id === officerId);
+        const officers = JSON.parse(localStorage.getItem('officers') || '[]');
+        const officer = officers.find(o => o.id === officerId);
 
-        // 1. Revenue Side: Charge Guest
-        folio.balance += 1500; 
+        if (!folio || !officer) throw new Error("Invalid Selection");
 
-        // 2. MTO Side: Generate PO for Officer (The "Buy" Rule)
-        const poId = `PO-${5000 + HotelEngine.pos.length + 1}`;
+        // 1. Revenue Side: Charge Guest Folio
+        const spaServiceRate = 1500; 
+        folio.balance += spaServiceRate; 
+
+        // 2. MTO Side: Generate Purchase Order for Officer
+        const poId = `PO-${Date.now().toString().slice(-4)}`;
         HotelEngine.pos.push({
             id: poId,
             vendor: officer.name,
+            officer_id: officer.id,
             amount: officer.cost_rate,
             ref: folioId,
+            status: 'Draft',
             date: new Date().toISOString()
         });
 
