@@ -13,8 +13,7 @@
         .tab-content.active { display: block; }
         .room-card { transition: transform 0.2s; cursor: pointer; }
         .room-card:hover { transform: translateY(-4px); }
-    </style>
-/* Modal Overlay */
+    /* Modal Overlay */
 #detail-modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 100; align-items: center; justify-content: center; transition: opacity 0.3s; }
 #detail-modal.active { display: flex; }
 
@@ -24,6 +23,8 @@
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); 
     gap: 1.5rem; 
 }
+        
+    </style>
     
 </head>
 <body class="bg-slate-100 h-screen flex overflow-hidden font-sans">
