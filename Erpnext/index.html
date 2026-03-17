@@ -14,6 +14,17 @@
         .room-card { transition: transform 0.2s; cursor: pointer; }
         .room-card:hover { transform: translateY(-4px); }
     </style>
+/* Modal Overlay */
+#detail-modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 100; align-items: center; justify-content: center; transition: opacity 0.3s; }
+#detail-modal.active { display: flex; }
+
+/* Responsive Grid adjustment */
+#room-container { 
+    display: grid; 
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); 
+    gap: 1.5rem; 
+}
+    
 </head>
 <body class="bg-slate-100 h-screen flex overflow-hidden font-sans">
 
@@ -169,5 +180,19 @@
 
         window.onload = () => ui.init();
     </script>
+    <div id="detail-modal">
+    <div class="bg-white rounded-3xl w-full max-w-lg p-8 shadow-2xl relative mx-4">
+        <button onclick="ui.closeModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600">
+            <i class="fas fa-times-circle text-2xl"></i>
+        </button>
+        <div id="modal-body-content">
+            </div>
+        <div class="mt-8 flex gap-3">
+            <button onclick="ui.closeModal()" class="flex-1 py-3 bg-slate-100 text-slate-600 rounded-xl font-bold uppercase text-xs">Close</button>
+            <button id="modal-action-btn" class="flex-1 py-3 bg-blue-600 text-white rounded-xl font-bold uppercase text-xs">Print Receipt</button>
+        </div>
+    </div>
+    </div>
+    
 </body>
 </html>
