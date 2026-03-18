@@ -1,158 +1,98 @@
-/** * MARCH ERP TRANSACTIONAL BACKEND - v4.0
- * Handles Multi-Module Operations (Rooms, Spa MTO, Membership)
- */
-const Transaction = {
-    // 1. DATA STORE (Central State)
-    state: {
-        rooms: [
-            { id: "101", type: "Suite", rate: 5000, inv: "Available", hk: "Clean", maint: "OK", guest: null, folio: null },
-            { id: "102", type: "Standard", rate: 2500, inv: "Occupied", hk: "Clean", maint: "OK", guest: "A. Mercer", folio: "FOL-1001" },
-            { id: "103", type: "Standard", rate: 2500, inv: "Available", hk: "Dirty", maint: "OK", guest: null, folio: null }
-        ],
-        folios: [
-            { id: "FOL-1001", guest: "A. Mercer", balance: 2500, status: "Open", memberId: "MEM-99" }
-        ],
-        payouts: [],
-        members: [
-            { id: "MEM-99", name: "A. Mercer", balance: 15000, tier: "Gold" },
-            { id: "MEM-10", name: "Guest User", balance: 0, tier: "Basic" }
-        ],
-        officers: [
-            { id: "OFF-1", name: "Somsak", rate: 1000 },
-            { id: "OFF-2", name: "Wipa", rate: 1200 }
-        ]
-    },
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MARCH ERP | Enterprise Edition</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
+        body { font-family: 'Inter', sans-serif; background: #f1f5f9; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .sidebar-item.active { background: #0f172a; color: white; border-left: 4px solid #3b82f6; }
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 50; align-items: center; justify-content: center; backdrop-filter: blur(4px); }
+        .modal.active { display: flex; }
+    </style>
+</head>
+<body class="flex h-screen overflow-hidden">
 
-    // 2. INITIALIZATION
-    init() {
-        console.log("Transactional Engine Online");
-        this.render();
-    },
+    <aside class="w-72 bg-slate-900 text-slate-400 flex flex-col shadow-2xl">
+        <div class="p-8 text-white border-b border-slate-800">
+            <h1 class="text-xl font-black tracking-tighter italic">MARCH <span class="text-blue-500 text-xs not-italic uppercase">Enterprise</span></h1>
+        </div>
+        <nav class="flex-1 px-4 py-6 space-y-2">
+            <button onclick="Transaction.switchTab('rooms')" id="nav-rooms" class="sidebar-item w-full flex items-center p-4 rounded-xl active">
+                <i class="fas fa-th-large w-6"></i><span class="font-bold ml-2">Front Desk</span>
+            </button>
+            <button onclick="Transaction.switchTab('spa')" id="nav-spa" class="sidebar-item w-full flex items-center p-4 rounded-xl">
+                <i class="fas fa-spa w-6"></i><span class="font-bold ml-2">Spa Services (MTO)</span>
+            </button>
+            <button onclick="Transaction.switchTab('payouts')" id="nav-payouts" class="sidebar-item w-full flex items-center p-4 rounded-xl">
+                <i class="fas fa-exchange-alt w-6"></i><span class="font-bold ml-2">Procurement/Payouts</span>
+            </button>
+            <button onclick="Transaction.switchTab('membership')" id="nav-membership" class="sidebar-item w-full flex items-center p-4 rounded-xl">
+                <i class="fas fa-wallet w-6"></i><span class="font-bold ml-2">Member Ledger</span>
+            </button>
+        </nav>
+    </aside>
 
-    // 3. TAB NAVIGATION
-    switchTab(tabId) {
-        document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-        document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
-        
-        document.getElementById('tab-' + tabId).classList.add('active');
-        document.getElementById('nav-' + tabId).classList.add('active');
-        document.getElementById('view-title').innerText = tabId.toUpperCase();
-        this.render();
-    },
+    <main class="flex-1 flex flex-col">
+        <header class="h-20 bg-white border-b flex items-center justify-between px-10">
+            <h2 id="view-title" class="text-2xl font-black text-slate-800 uppercase tracking-tight">Front Desk</h2>
+            <div id="header-stats" class="flex space-y-0 space-x-6 text-[10px] font-black uppercase text-slate-400">
+                <span>Revenue: <b id="stat-rev" class="text-slate-900">฿0</b></span>
+                <span>Payouts: <b id="stat-pay" class="text-rose-600">฿0</b></span>
+            </div>
+        </header>
 
-    // 4. TRANSACTIONAL LOGIC: ROOMS
-    openRoom(id) {
-        const r = this.state.rooms.find(x => x.id === id);
-        let html = `<h2 class="text-4xl font-black mb-10">Room ${r.id}</h2>`;
-        
-        if (r.inv === "Occupied") {
-            html += `<div class="bg-blue-600 p-8 rounded-[30px] text-white">
-                        <p class="text-[10px] font-black uppercase opacity-60">In-House Guest</p>
-                        <p class="text-2xl font-black mb-6">${r.guest}</p>
-                        <button onclick="Transaction.processCheckout('${r.id}')" class="bg-white text-blue-600 px-8 py-3 rounded-xl font-black uppercase text-xs">Settle & Checkout</button>
-                     </div>`;
-        } else {
-            html += `<div class="space-y-4">
-                        <input id="in-name" class="w-full p-5 bg-slate-50 border rounded-2xl font-bold" placeholder="Guest Name">
-                        <button onclick="Transaction.processCheckin('${r.id}')" class="w-full py-5 bg-slate-900 text-white rounded-2xl font-black uppercase text-xs">Register Guest</button>
-                     </div>`;
-        }
-        this.showModal(html);
-    },
+        <section id="tab-rooms" class="tab-content active p-10 overflow-y-auto">
+            <div id="room-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"></div>
+        </section>
 
-    processCheckin(roomId) {
-        const name = document.getElementById('in-name').value;
-        if(!name) return;
-        const r = this.state.rooms.find(x => x.id === roomId);
-        const fId = "FOL-" + Math.floor(Math.random()*9000);
-        
-        r.inv = "Occupied"; r.guest = name; r.folio = fId;
-        this.state.folios.push({ id: fId, guest: name, balance: r.rate, status: "Open" });
-        
-        this.closeModal(); this.render(); this.notify("Guest Checked In", "bg-emerald-600");
-    },
-
-    // 5. TRANSACTIONAL LOGIC: SPA MTO
-    processSpaMTO() {
-        const fId = document.getElementById('select-folio').value;
-        const oId = document.getElementById('select-officer').value;
-        if(!fId || !oId) return;
-
-        const folio = this.state.folios.find(f => f.id === fId);
-        const officer = this.state.officers.find(o => o.id === oId);
-
-        // 1. Post to Revenue (Folio)
-        folio.balance += 2000;
-        // 2. Post to Procurement (Payout)
-        this.state.payouts.push({
-            id: "PO-" + Date.now().toString().slice(-4),
-            vendor: officer.name,
-            analytic: "SPA-DIV",
-            amount: officer.rate,
-            status: "Approved"
-        });
-
-        this.notify("Spa Service & Payout Processed", "bg-blue-600");
-        this.switchTab('payouts');
-    },
-
-    // 6. UI HELPERS
-    showModal(content) {
-        document.getElementById('modal-content').innerHTML = content;
-        document.getElementById('modal').classList.add('active');
-    },
-    closeModal() { document.getElementById('modal').classList.remove('active'); },
-    notify(msg, color) {
-        const t = document.getElementById('toast');
-        t.innerText = msg; t.className = `fixed bottom-10 right-10 px-8 py-4 rounded-2xl text-white font-black shadow-2xl opacity-100 transition-all ${color}`;
-        setTimeout(() => t.classList.add('opacity-0'), 3000);
-    },
-
-    // 7. MASTER RENDERER
-    render() {
-        // Room Grid
-        const grid = document.getElementById('room-grid');
-        if(grid) {
-            grid.innerHTML = this.state.rooms.map(r => `
-                <div onclick="Transaction.openRoom('${r.id}')" class="bg-white p-8 rounded-[40px] shadow-sm border-b-8 cursor-pointer ${r.inv==='Occupied'?'border-blue-500':'border-emerald-500'}">
-                    <span class="text-3xl font-black">${r.id}</span>
-                    <p class="text-[10px] font-black text-slate-400 uppercase mt-2">${r.type}</p>
-                    <p class="mt-6 font-bold text-xs ${r.guest?'text-blue-600':'text-slate-200'}">${r.guest || 'VACANT'}</p>
-                </div>`).join('');
-        }
-
-        // Payout Table
-        const pt = document.getElementById('payout-table-body');
-        if(pt) {
-            pt.innerHTML = this.state.payouts.map(p => `
-                <tr class="border-b font-bold text-sm">
-                    <td class="p-6">${p.id}</td><td class="p-6">${p.vendor}</td><td class="p-6 text-blue-500">${p.analytic}</td>
-                    <td class="p-6 text-rose-600">฿${p.amount}</td><td class="p-6"><span class="bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full text-[10px]">PAID</span></td>
-                </tr>`).join('');
-        }
-
-        // Dropdowns
-        const sf = document.getElementById('select-folio');
-        const so = document.getElementById('select-officer');
-        if(sf && so) {
-            sf.innerHTML = this.state.folios.filter(f => f.status==='Open').map(f => `<option value="${f.id}">${f.guest} (${f.id})</option>`).join('');
-            so.innerHTML = this.state.officers.map(o => `<option value="${o.id}">${o.name}</option>`).join('');
-        }
-
-        // Membership Grid
-        const mg = document.getElementById('member-grid');
-        if(mg) {
-            mg.innerHTML = this.state.members.map(m => `
-                <div class="bg-slate-900 p-8 rounded-[40px] text-white shadow-xl">
-                    <span class="text-[10px] font-black uppercase text-blue-400">${m.tier} Member</span>
-                    <h4 class="text-2xl font-black mt-2">${m.name}</h4>
-                    <div class="mt-8 pt-8 border-t border-slate-800 flex justify-between items-center">
-                        <span class="text-xs text-slate-500">Balance</span>
-                        <span class="text-2xl font-black">฿${m.balance.toLocaleString()}</span>
+        <section id="tab-spa" class="tab-content p-10">
+            <div class="max-w-2xl mx-auto bg-white p-10 rounded-[40px] border shadow-sm">
+                <h3 class="text-2xl font-black mb-6">Service Payout Mapping</h3>
+                <div class="space-y-6">
+                    <div>
+                        <label class="text-[10px] font-black uppercase text-slate-400">Select Guest Folio</label>
+                        <select id="select-folio" class="w-full mt-2 p-4 bg-slate-50 border rounded-2xl font-bold"></select>
                     </div>
-                </div>`).join('');
-        }
-    }
-};
+                    <div>
+                        <label class="text-[10px] font-black uppercase text-slate-400">Assign Therapist (Officer)</label>
+                        <select id="select-officer" class="w-full mt-2 p-4 bg-slate-50 border rounded-2xl font-bold"></select>
+                    </div>
+                    <button onclick="Transaction.processSpaMTO()" class="w-full py-5 bg-blue-600 text-white rounded-2xl font-black uppercase tracking-widest shadow-xl hover:bg-blue-700 transition-all">Post Transaction</button>
+                </div>
+            </div>
+        </section>
 
-window.onload = () => Transaction.init();
+        <section id="tab-payouts" class="tab-content p-10">
+            <div class="bg-white rounded-[40px] border shadow-sm overflow-hidden">
+                <table class="w-full text-left border-collapse">
+                    <thead class="bg-slate-50 border-b text-[10px] font-black uppercase text-slate-400">
+                        <tr><th class="p-6">Reference</th><th class="p-6">Vendor</th><th class="p-6">Analytic</th><th class="p-6">Payout</th><th class="p-6">Status</th></tr>
+                    </thead>
+                    <tbody id="payout-table-body"></tbody>
+                </table>
+            </div>
+        </section>
+
+        <section id="tab-membership" class="tab-content p-10">
+            <div id="member-grid" class="grid grid-cols-1 md:grid-cols-3 gap-6"></div>
+        </section>
+    </main>
+
+    <div id="modal" class="modal">
+        <div class="bg-white w-full max-w-lg p-12 rounded-[50px] shadow-2xl relative">
+            <button onclick="Transaction.closeModal()" class="absolute top-8 right-8 text-slate-300 hover:text-slate-900"><i class="fas fa-times text-xl"></i></button>
+            <div id="modal-content"></div>
+        </div>
+    </div>
+
+    <div id="toast" class="fixed bottom-10 right-10 px-8 py-4 rounded-2xl text-white font-black shadow-2xl opacity-0 transition-all pointer-events-none"></div>
+
+    <script src="js/transaction_controller.js"></script>
+</body>
+</html>
