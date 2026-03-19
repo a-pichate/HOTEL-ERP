@@ -2689,7 +2689,7 @@
 </div><!-- ── Payout Request Modal — F03 / F07 / F08  (READ-ONLY net — no inline deduction editing) ── -->
 <div id="modal-payout-request" class="modal-overlay" style="display:none;" onclick="if(event.target===this)closeModal('modal-payout-request')">
   <div class="modal" style="width:520px;">
-    <div class="modal-header"><div class="modal-title">💵 Request Payout</div><button class="modal-close" onclick="closeModal('modal-payout-request')">✕</button></div>
+    <div class="modal-header"><div class="modal-title">💵 รายการค้างชำระ</div><button class="modal-close" onclick="closeModal('modal-payout-request')">✕</button></div>
     <div class="modal-body">
       <div class="form-group" style="margin-bottom:14px;">
         <label class="form-label">เจ้าหน้าที่</label>
@@ -2710,19 +2710,19 @@
         <!-- Read-only AP balance breakdown -->
         <div style="border:1px solid var(--gray-200);border-radius:var(--radius);overflow:hidden;margin-bottom:14px;">
           <div style="background:var(--gray-50);padding:8px 14px;font-size:11px;font-weight:700;color:var(--gray-600);text-transform:uppercase;letter-spacing:0.5px;border-bottom:1px solid var(--gray-200);">
-            AP Ledger Balance — Read-Only (sourced from account.move.line)
+            <!--AP Ledger Balance — Read-Only (sourced from account.move.line)-->
           </div>
           <div style="padding:12px 14px;font-size:13px;display:flex;flex-direction:column;gap:8px;">
             <div style="display:flex;justify-content:space-between;">
-              <span style="color:var(--gray-600);">Service Earnings (vendor bill lines)</span>
+              <span style="color:var(--gray-600);">รายการค้างจ่าย</span>
               <strong id="po-earnings">—</strong>
             </div>
             <div style="display:flex;justify-content:space-between;">
-              <span style="color:var(--gray-600);">Tips — F07 (SPA-TIP vendor bill lines, posted by E08 server action)</span>
+              <span style="color:var(--gray-600);">Tip</span>
               <strong id="po-tips" style="color:var(--success);">—</strong>
             </div>
             <div style="display:flex;justify-content:space-between;padding-top:6px;border-top:1px dashed var(--gray-200);">
-              <span style="color:var(--gray-600);">Approved Deductions (credit notes — Section I)
+              <span style="color:var(--gray-600);">รายการหัก
                 <button onclick="showModal('modal-deduction-log')" style="margin-left:6px;background:none;border:none;color:var(--odoo-purple);font-size:11px;cursor:pointer;text-decoration:underline;">view detail →</button>
               </span>
               <strong id="po-deductions" style="color:var(--danger);">—</strong>
@@ -2731,7 +2731,7 @@
           <div style="background:var(--primary-light);padding:10px 14px;border-top:2px solid #B2DFDB;display:flex;justify-content:space-between;align-items:center;">
             <div>
               <div style="font-size:11px;font-weight:700;color:var(--gray-600);text-transform:uppercase;letter-spacing:0.5px;">Net Payable (เงินสด Out)</div>
-              <div style="font-size:11px;color:var(--gray-500);margin-top:1px;">Computed from AP ledger · not editable here</div>
+              <div style="font-size:11px;color:var(--gray-500);margin-top:1px>&nbsp</div>
             </div>
             <div style="font-size:22px;font-weight:800;color:var(--primary);" id="po-net">—</div>
           </div>
@@ -2747,7 +2747,7 @@
     </div>
     <div class="modal-footer">
       <button class="btn btn-secondary" onclick="closeModal('modal-payout-request')">ยกเลิก</button>
-      <button class="btn btn-primary" id="payout-confirm-btn" disabled onclick="confirmPayout()">💵 Confirm Payout</button>
+      <button class="btn btn-primary" id="payout-confirm-btn" disabled onclick="confirmPayout()">💵 ยืนยันการจ่ายเงิน</button>
     </div>
   </div>
 </div>
@@ -2755,7 +2755,7 @@
 <!-- ── Payout Detail Modal — F01/F02/F07 — READ-ONLY net display ── -->
 <div id="modal-payout-detail" class="modal-overlay" style="display:none;" onclick="if(event.target===this)closeModal('modal-payout-detail')">
   <div class="modal modal-lg" style="width:600px;">
-    <div class="modal-header"><div class="modal-title" id="pd-title">💵 Payout Detail</div><button class="modal-close" onclick="closeModal('modal-payout-detail')">✕</button></div>
+    <div class="modal-header"><div class="modal-title" id="pd-title">💵 รายละเอียด</div><button class="modal-close" onclick="closeModal('modal-payout-detail')">✕</button></div>
     <div class="modal-body">
 
       <!-- Read-only AP breakdown -->
