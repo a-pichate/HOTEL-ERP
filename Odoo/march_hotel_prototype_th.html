@@ -2564,7 +2564,7 @@
      ════════════════════════════════════════════════════════════ -->
 </div><!-- closes page-spa-officers -->
 <div id="page-payout" class="page">
-  <div class="breadcrumb-bar"><span>Accounting</span><span class="bc-sep">›</span><span>Vendor Payments</span><span class="bc-sep">›</span><span>จ่ายเงินเจ้าหน้าที่ประจำวัน</span>
+  <div class="breadcrumb-bar"><span>บัญชี</span><span class="bc-sep">›</span><span>รายการเจ้าหนี้</span><span class="bc-sep">›</span><span>บันทึกจ่ายพนักงานสปา</span>
     <div style="margin-left:auto;display:flex;gap:8px;">
       <select class="form-control" id="payout-officer-filter" onchange="filterPayoutOfficer()" style="width:220px;height:32px;font-size:13px;">
         <option value="all">— เจ้าหน้าที่ทั้งหมด —</option>
@@ -2573,14 +2573,14 @@
         <option value="Mali Suwat">Mali Suwat</option>
         <option value="Dao Siriwan">Dao Siriwan</option>
       </select>
-      <button class="btn btn-primary" onclick="showModal('modal-payout-request')">💵 สร้างบิลประจำวัน</button>
+      <button class="btn btn-primary" onclick="showModal('modal-payout-request')">💵 สร้างรายการ</button>
     </div>
   </div>
 
   <!-- Stats -->
   <div style="padding:16px 20px 0;">
     <div class="stats-row" style="grid-template-columns:repeat(4,1fr);">
-      <div class="stat-card"><div class="stat-value" style="color:var(--primary);">฿4,575</div><div class="stat-label">เซสชันวันนี้</div></div>
+      <div class="stat-card"><div class="stat-value" style="color:var(--primary);">฿4,575</div><div class="stat-label">รายการวันนี้</div></div>
       <div class="stat-card"><div class="stat-value" style="color:var(--warning);">฿2,100</div><div class="stat-label">ค้างจากวันก่อน</div></div>
       <div class="stat-card"><div class="stat-value" style="color:var(--danger);">-฿1,020</div><div class="stat-label">รอหักเงิน</div></div>
       <div class="stat-card"><div class="stat-value" style="color:var(--success);">฿600</div><div class="stat-label">ชำระแล้ววันนี้</div></div>
@@ -2592,12 +2592,12 @@
 
     <!-- Outstanding from prior days -->
     <div class="section-title" style="margin-bottom:4px;">⏳ บิลค้างชำระ — วันก่อนหน้า</div>
-    <div style="font-size:11px;color:var(--gray-500);margin-bottom:10px;">ใบแจ้งหนี้ผู้ให้บริการที่โพสต์แล้วแต่ยังไม่ชำระ</div>
+    <div style="font-size:11px;color:var(--gray-500);margin-bottom:10px;">ใบแจ้งหนี้พนักงานสปาที่โพสต์แล้วแต่ยังไม่ชำระ</div>
     <div class="table-wrap">
     <table class="data-table">
       <thead><tr>
         <th>เลขที่บิล</th><th>เจ้าหน้าที่</th><th>ระดับ</th><th>วันที่</th>
-        <th>เซสชัน</th><th>บริการ</th><th>ทิป</th><th>หักเงิน</th><th>ยอดสุทธิที่จ่าย</th><th>สถานะ</th><th>ดำเนินการ</th>
+        <th>รายการ</th><th>บริการ</th><th>ทิป</th><th>หักเงิน</th><th>ยอดสุทธิที่จ่าย</th><th>สถานะ</th><th>ดำเนินการ</th>
       </tr></thead>
       <tbody id="outstanding-bills-tbody">
         <!-- populated by renderOutstandingBills() -->
@@ -2606,12 +2606,12 @@
     </div>
 
     <!-- Today's sessions ready for billing -->
-    <div class="section-title" style="margin:20px 0 4px;">📋 เซสชันวันนี้ — พร้อมออกบิล (10 Mar)</div>
+    <div class="section-title" style="margin:20px 0 4px;">📋 รายการวันนี้ — พร้อมออกบิล (10 Mar)</div>
     <div style="font-size:11px;color:var(--gray-500);margin-bottom:10px;">รายการ PO ที่ยังไม่ได้ออกใบแจ้งหนี้ · เจ้าหน้าที่ยืนยันเสร็จสิ้น</div>
     <div class="table-wrap">
     <table class="data-table">
       <thead><tr>
-        <th>เจ้าหน้าที่</th><th>ระดับ</th><th>เซสชันวันนี้</th>
+        <th>เจ้าหน้าที่</th><th>ระดับ</th><th>รายการวันนี้</th>
         <th>บริการ (SPA-THAI/AROMA)</th><th>ทิปสปา</th>
         <th>รอหักเงิน</th><th>สุทธิวันนี้</th><th>ดำเนินการ</th>
       </tr></thead>
@@ -2657,7 +2657,7 @@
     <div class="table-wrap">
     <table class="data-table">
       <thead><tr>
-        <th>เลขที่บิล</th><th>เจ้าหน้าที่</th><th>เซสชัน</th>
+        <th>เลขที่บิล</th><th>เจ้าหน้าที่</th><th>รายการ</th>
         <th>บริการ</th><th>ทิป</th><th>หักเงิน</th>
         <th>ยอดสุทธิที่จ่าย</th><th>ชำระเงิน</th><th>เวลา</th><th>แคชเชียร์</th>
       </tr></thead>
