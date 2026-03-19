@@ -300,7 +300,7 @@
   <div class="sidebar-item" data-page="transfer" onclick="showPage('transfer')"><span class="sidebar-icon">🔄</span> โอนย้ายห้องพัก</div>
   
   <div class="sidebar-section">💆 สปา</div>
-  <div class="sidebar-item" data-page="spa" onclick="showPage('spa')"><span class="sidebar-icon">📋</span> คำสั่งสปา<span class="sidebar-badge">2</span></div>
+  <div class="sidebar-item" data-page="spa" onclick="showPage('spa')"><span class="sidebar-icon">📋</span>จัดการบริการสปา<span class="sidebar-badge">2</span></div>
   <div class="sidebar-item" data-page="spa-officers" onclick="showPage('spa-officers')"><span class="sidebar-icon">👤</span> เจ้าหน้าที่ / ผู้ให้บริการ</div>
 
   <div class="sidebar-section">💰 บัญชี</div>
@@ -818,7 +818,7 @@
   <div class="breadcrumb-bar"><span>สมาชิก › บันทึกธุรกรรม</span></div>
   <div style="padding:20px 24px;">
     <div class="page-header">
-      <div><div class="page-title">Member Transaction Log</div><div class="page-subtitle">ทั้งหมด top-ups and redemptions — MemberTransaction subledger</div></div>
+      <div><div class="page-title">ประวัติการทำรายการ</div><div class="page-subtitle">ทั้งหมด top-ups and redemptions — MemberTransaction subledger</div></div>
       <div style="margin-left:auto;display:flex;gap:8px;">
         <button class="btn btn-secondary">📥 Export Excel</button>
       </div>
@@ -1259,11 +1259,11 @@
   <div class="breadcrumb-bar"><a onclick="showPage('rooms')">แดชบอร์ดห้องพัก</a><span class="breadcrumb-sep">›</span><span>Room 101 — Suite</span></div>
   <div style="padding:20px 24px;">
     <div class="flow-bar">
-      <div class="flow-step done" onclick="showPage('rooms')"><div class="sn"><span>✓</span></div> 1. Select Room</div>
+      <div class="flow-step done" onclick="showPage('rooms')"><div class="sn"><span>✓</span></div> 1. เลือกห้อง</div>
       <div class="flow-arrow">›</div>
-      <div class="flow-step active"><div class="sn"><span>2</span></div> 2. Room Detail</div>
+      <div class="flow-step active"><div class="sn"><span>2</span></div> 2. รายละเอียด</div>
       <div class="flow-arrow">›</div>
-      <div class="flow-step"><div class="sn"><span>3</span></div> 3. Create Booking</div>
+      <div class="flow-step"><div class="sn"><span>3</span></div> 3. สร้างการจอง</div>
       <div class="flow-arrow">›</div>
       <div class="flow-step"><div class="sn"><span>4</span></div> 4. Folio</div>
       <div class="flow-arrow">›</div>
@@ -1320,11 +1320,11 @@
   <div class="breadcrumb-bar"><a onclick="showPage('rooms')">แดชบอร์ดห้องพัก</a><span class="breadcrumb-sep">›</span><a onclick="showPage('room-detail')">Room 101</a><span class="breadcrumb-sep">›</span><span>จองใหม่</span></div>
   <div style="padding:20px 24px;">
     <div class="flow-bar">
-      <div class="flow-step done" onclick="showPage('rooms')"><div class="sn"><span>✓</span></div> 1. Select Room</div>
+      <div class="flow-step done" onclick="showPage('rooms')"><div class="sn"><span>✓</span></div> 1. เลือกห้อง</div>
       <div class="flow-arrow">›</div>
-      <div class="flow-step done" onclick="showPage('room-detail')"><div class="sn"><span>✓</span></div> 2. Room Detail</div>
+      <div class="flow-step done" onclick="showPage('room-detail')"><div class="sn"><span>✓</span></div> 2. รายละเอียด</div>
       <div class="flow-arrow">›</div>
-      <div class="flow-step active"><div class="sn"><span>3</span></div> 3. Create Booking</div>
+      <div class="flow-step active"><div class="sn"><span>3</span></div> 3. สร้างการจอง</div>
       <div class="flow-arrow">›</div>
       <div class="flow-step"><div class="sn"><span>4</span></div> 4. Folio</div>
       <div class="flow-arrow">›</div>
@@ -1338,19 +1338,19 @@
           <span class="badge badge-pending" style="margin-left:auto;">Draft</span>
         </div>
         <div class="detail-body">
-          <div class="section-divider"><h3>Guest Information</h3></div>
+          <div class="section-divider"><h3>รายละเอียด</h3></div>
           <div class="form-grid">
             <div class="form-group full">
-              <label class="form-label">Guest Name <span class="req">*</span></label>
+              <label class="form-label">ชื่อผู้จอง <span class="req">*</span></label>
               <input class="form-control" type="text" placeholder="Search existing guest or type new name...">
               <span class="form-hint">Search existing guests or type to create new contact</span>
             </div>
-            <div class="form-group"><label class="form-label">Number of Guests <span class="req">*</span></label>
+            <div class="form-group"><label class="form-label">จำนวนผู้ใช้บริการ <span class="req">*</span></label>
               <select class="form-control"><option>1</option><option selected>2</option><option>3</option><option>4</option></select></div>
             <div class="form-group"><label class="form-label">ID / Passport</label><input class="form-control" type="text" placeholder="Optional"></div>
             <div class="form-group"><label class="form-label">โทรศัพท์</label><input class="form-control" type="text" placeholder="Optional"></div>
           </div>
-          <div class="section-divider"><h3>Stay Details</h3></div>
+          <div class="section-divider"><h3>รายละเอียดการจอง</h3></div>
           <div class="form-grid">
             <div class="form-group"><label class="form-label">Check-in Date <span class="req">*</span></label><input class="form-control" type="date" id="bk-checkin" value="2026-03-11" oninput="calcBookingEstimate()"></div>
             <div class="form-group"><label class="form-label">Check-in Time</label><input class="form-control" type="time" value="14:00"></div>
@@ -1404,10 +1404,10 @@
   <div class="breadcrumb-bar"><span>🏨 โรงแรม › การจอง</span></div>
   <div style="padding:20px 24px;">
     <div class="page-header">
-      <div><div class="page-title">การจอง</div><div class="page-subtitle">ทั้งหมด active and recent bookings</div></div>
+      <div><div class="page-title">การจอง</div><div class="page-subtitle">&nbsp</div></div>
       <div style="margin-left:auto;display:flex;gap:8px;">
         <button class="btn btn-secondary">📥 ส่งออก</button>
-        <button class="btn btn-primary" onclick="showPage('booking-form')">➕ New Booking</button>
+        <button class="btn btn-primary" onclick="showPage('booking-form')">➕ เริ่มจอง</button>
       </div>
     </div>
     <div class="filters-bar">
@@ -1488,14 +1488,14 @@
       </table>
     </div>
 
-    <!-- Architecture annotation -->
+    <!-- Architecture annotation 
     <div style="margin-top:14px;padding:10px 16px;background:#F3E8EF;border-radius:var(--radius);border-left:3px solid var(--odoo-purple);font-size:11px;color:var(--gray-600);">
       <strong style="color:var(--odoo-purple);">Odoo Config:</strong>
       ir.ui.menu → Hotel Operations &gt; โฟลิโอแขก · domain: [('x_is_hotel_folio','=',True),('state','in',['sale','done'])] ·
       <strong>Amber rows:</strong> decoration_warning where x_checkout = today ·
       <strong>Invoice status:</strong> sale.order.invoice_status (native computed field) ·
       <strong>Checkout shortcut:</strong> available only on rows due today (0.5 days custom)
-    </div>
+    </div>-->
   </div>
 </div>
 
