@@ -1220,7 +1220,7 @@
       <div><div class="page-title">แดชบอร์ดห้องพัก</div><div class="page-subtitle">Click any room row to view details · Available rooms can be booked directly</div></div>
       <div style="margin-left:auto;display:flex;gap:8px;">
         <button class="btn btn-secondary">📥 Import</button>
-        <button class="btn btn-primary" onclick="showPage('booking-form')">➕ New Booking</button>
+        <button class="btn btn-primary" onclick="showPage('booking-form')">➕ เริ่มจอง</button>
       </div>
     </div>
     <div class="stats-row">
@@ -2187,7 +2187,7 @@
 <div id="page-spa" class="page">
   <div class="breadcrumb-bar"><span>Hotel</span><span class="bc-sep">›</span><span>Spa</span><span class="bc-sep">›</span><span>คำสั่งสปา</span>
     <div style="margin-left:auto;display:flex;gap:8px;">
-      <button class="btn btn-primary" onclick="renderOfficerOptions();renderBookingSelect();setGuestType('hotel');showModal('modal-new-session')">＋ New Spa Order</button>
+      <button class="btn btn-primary" onclick="renderOfficerOptions();renderBookingSelect();setGuestType('hotel');showModal('modal-new-session')">＋ เพิ่มรายการสปา</button>
     </div>
   </div>
 
@@ -2198,14 +2198,14 @@
       <div class="stat-card"><div class="stat-value" style="color:var(--success);">3</div><div class="stat-label">Officers Available</div></div>
       <div class="stat-card"><div class="stat-value" style="color:var(--warning);">2</div><div class="stat-label">Sessions Active</div></div>
       <div class="stat-card"><div class="stat-value" style="color:var(--primary);">4</div><div class="stat-label">Spa Rooms</div></div>
-      <div class="stat-card"><div class="stat-value">7</div><div class="stat-label">เซสชันวันนี้</div></div>
+      <div class="stat-card"><div class="stat-value">7</div><div class="stat-label">รายการวันนี้</div></div>
     </div>
   </div>
 
   <!-- Active sessions table — C11 multiple sessions, C06 duration, C07 extension, C08 charge, C12 timer -->
   <div style="padding:16px 20px;">
     <div class="section-header" style="margin-bottom:10px;">
-      <div class="section-title">Active คำสั่งสปา — Purchase Orders</div>
+      <div class="section-title">รายการที่ยังไม่จบ</div>
       <div style="display:flex;gap:8px;align-items:center;">
         <span style="font-size:12px;color:var(--gray-500);">Auto-refresh every 60s</span>
       </div>
@@ -2224,7 +2224,7 @@
     </div>
 
     <!-- Today's completed sessions — C11 multiple sessions per booking -->
-    <div class="section-title" style="margin:20px 0 10px;">Completed Today — PO Receipts Confirmed</div>
+    <div class="section-title" style="margin:20px"> รายการที่เสร็จสิ้น</div>
     <div class="table-wrap">
     <table class="data-table">
       <thead><tr>
@@ -2244,7 +2244,7 @@
 <div id="modal-new-session" class="modal-overlay" style="display:none;" onclick="if(event.target===this)closeModal('modal-new-session')">
   <div class="modal" style="width:620px;max-width:95vw;">
     <div class="modal-header">
-      <div class="modal-title">💆 New Spa Order — Purchase Order</div>
+      <div class="modal-title">💆 เพิ่มรายการ</div>
       <button class="modal-close" onclick="closeModal('modal-new-session')">✕</button>
     </div>
     <div class="modal-body" style="padding:0;">
