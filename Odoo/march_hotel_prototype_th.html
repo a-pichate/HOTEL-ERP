@@ -978,11 +978,11 @@
       <button class="btn btn-secondary btn-sm">📅 Date range</button>
     </div>
 
-    <!-- Info note -->
+    <!-- Info note
     <div style="padding:8px 14px;background:#EDE7F6;border-radius:var(--radius);border-left:3px solid var(--odoo-purple);font-size:12px;color:var(--gray-700);margin-bottom:14px;">
       <strong style="color:var(--odoo-purple);">Route B — Register Payment:</strong> Use this list to register payment on any posted invoice at any time. 
       Route A (cashier at checkout) pre-fills payment method from bucket selection. Both routes use the same Odoo standard payment wizard.
-    </div>
+    </div>-->
 
     <!-- Invoice list table -->
     <div class="table-wrap">
@@ -1006,14 +1006,14 @@
       </table>
     </div>
 
-    <!-- Architecture note -->
+    <!-- Architecture note 
     <div style="margin-top:14px;padding:10px 16px;background:#F3E8EF;border-radius:var(--radius);border-left:3px solid var(--odoo-purple);font-size:11px;color:var(--gray-600);">
       <strong style="color:var(--odoo-purple);">Odoo Config:</strong>
       ir.ui.menu → Accounting &gt; ใบแจ้งหนี้ · model: account.move · domain: [('move_type','=','out_invoice'),('x_is_hotel_invoice','=',True)] ·
       <strong>payment_state:</strong> not_paid / partial / paid / reversed — native computed field ·
       <strong>Register Payment:</strong> action_register_payment() — pre-fills amount_residual · 
       <strong>Reset to Draft:</strong> button_draft() — accountant role only · E08 re-fires on re-post if SPA-TIP > ฿0
-    </div>
+    </div>-->
   </div>
 </div>
 
