@@ -100,7 +100,18 @@
   .badge-active{background:var(--success-light);color:#155724;} .badge-active::before{background:var(--success);}
   .badge-inactive{background:var(--gray-100);color:var(--gray-600);} .badge-inactive::before{background:var(--gray-400);}
   .badge-pending{background:var(--warning-light);color:#856404;} .badge-pending::before{background:var(--warning);}
-  .badge-confirmed{background:var(--success-light);color:#155724;} .badge-confirmed::before{background:var(--success);}
+  .badge-confirmed{background:#DBEAFE;color:#1E40AF;} .badge-confirmed::before{background:#3B82F6;}
+  .badge-checkin{background:#D1FAE5;color:#065F46;font-weight:700;} .badge-checkin::before{background:#10B981;}
+  .badge-checkout{background:#FEF3C7;color:#92400E;font-weight:700;} .badge-checkout::before{background:#F59E0B;}
+  .badge-available{background:#D1FAE5;color:#065F46;font-weight:700;} .badge-available::before{background:#10B981;}
+  .badge-occupied{background:#FEE2E2;color:#991B1B;font-weight:700;} .badge-occupied::before{background:#EF4444;}
+  .badge-maintenance{background:#FEF3C7;color:#92400E;} .badge-maintenance::before{background:#F59E0B;}
+  tr.room-available td{background:#F0FDF4;}
+  tr.room-available:hover td{background:#DCFCE7!important;}
+  tr.room-occupied td{background:#FFF5F5;}
+  tr.room-occupied:hover td{background:#FEE2E2!important;}
+  tr.room-maintenance td{background:#FFFBEB;}
+  tr.room-maintenance:hover td{background:#FEF3C7!important;}
   .badge-topup{background:#E3F2FD;color:#0D47A1;} .badge-topup::before{background:#1976D2;}
   .badge-redeem{background:#F3E5F5;color:#4A148C;} .badge-redeem::before{background:#7B1FA2;}
   .badge-refund{background:var(--warning-light);color:#856404;} .badge-refund::before{background:var(--warning);}
@@ -264,6 +275,9 @@
     .folio-layout{grid-template-columns:1fr!important;}
     .transfer-layout{grid-template-columns:1fr!important;}
     .booking-layout{grid-template-columns:1fr!important;}
+    .revenue-grid{grid-template-columns:1fr!important;}
+    .table-wrap{overflow-x:auto!important;}
+    .table-wrap table{min-width:600px!important;}
   }
 
 
@@ -905,7 +919,7 @@
       <div class="stat-card orange"><div class="stat-number">฿8,200</div><div class="stat-label">รายได้บริการอื่นๆ</div></div>
     </div>
 
-    <div style="display:grid;grid-template-columns:3fr 1fr;gap:20px;">
+    <div style="display:grid;grid-template-columns:3fr 1fr;gap:20px;flex-wrap:wrap;" class="revenue-grid">
       <div class="detail-panel">
         <div class="detail-header"><div class="detail-title">Revenue Breakdown — March 2026</div></div>
         <div class="detail-body" style="padding:0;">
@@ -4251,7 +4265,7 @@ function renderRoomsDashboard(){
     const folioBtn = booking
       ? `<button class="btn btn-secondary btn-sm" onclick="event.stopPropagation();openFolio(${booking.folio_id})">🧾 โฟลิโอ</button>`
       : '';
-    return `<tr data-floor="${r.floor}" data-status="${r.state}" onclick="openRoomDetail(${r.id})" style="cursor:pointer;">
+    return `<tr data-floor="${r.floor}" data-status="${r.state}" class="room-${r.state}" onclick="openRoomDetail(${r.id})" style="cursor:pointer;">
       <td>${r.floor}</td>
       <td><strong>${r.number}</strong></td>
       <td>${stateMap[r.state]||r.state}</td>
@@ -4275,9 +4289,9 @@ function renderBookingsList(){
     const room    = db.room.find(r=>r.id===b.room_id);
     const nights  = Math.max(1, Math.round((new Date(b.check_out)-new Date(b.check_in))/86400000));
     const stateMap = {
-      checked_in:  '<span class="badge badge-confirmed">เช็คอินแล้ว</span>',
-      checked_out: '<span class="badge badge-confirmed" style="background:#e0f2f1;color:#00695c;">เช็คเอาท์แล้ว</span>',
-      confirmed:   '<span class="badge badge-active">ยืนยันแล้ว</span>',
+      checked_in:  '<span class="badge badge-checkin">✅ เช็คอินแล้ว</span>',
+      checked_out: '<span class="badge badge-checkout">🏁 เช็คเอาท์แล้ว</span>',
+      confirmed:   '<span class="badge badge-active">🟡 ยืนยันแล้ว</span>',
       cancelled:   '<span class="badge badge-warning">ยกเลิกแล้ว</span>',
     };
     const totalAmt = (room?.rate_per_night||0)*nights;
@@ -4324,7 +4338,7 @@ function renderFolioList(){
     const isDue   = !isDone && f.check_out <= today;
 
     const stateBadge = isDone
-      ? '<span class="badge badge-confirmed" style="font-size:10px;background:#e0f2f1;color:#00695c;">✅ เช็คเอาท์แล้ว</span>'
+      ? '<span class="badge badge-checkout" style="font-size:10px;">🏁 เช็คเอาท์แล้ว</span>'
       : isDue
         ? '<span class="badge badge-warning" style="font-size:10px;">⏰ Due Today</span>'
         : '<span class="badge badge-active" style="font-size:10px;">🟢 ใช้งาน</span>';
@@ -4855,7 +4869,15 @@ function confirmPayoutFromDetail(){ confirmPayoutFromDetailDB(); }
 function openModal(id){const el=document.getElementById(id);if(!el)return;el.classList.add('open');el.style.display='flex';}
 function showModal(id){openModal(id);}
 function closeModal(id){const el=document.getElementById(id);if(!el)return;el.classList.remove('open');el.style.display='none';}
-function setChip(el){el.closest('[style*="flex"],div').querySelectorAll('.filter-chip').forEach(c=>c.classList.remove('active'));el.classList.add('active');}
+function setChip(el){
+  // Walk up to find the immediate parent that contains filter-chip siblings
+  let parent = el.parentElement;
+  while(parent && !parent.querySelector(':scope > .filter-chip')) {
+    parent = parent.parentElement;
+  }
+  if(parent) parent.querySelectorAll(':scope > .filter-chip').forEach(c=>c.classList.remove('active'));
+  el.classList.add('active');
+}
 function showToast(msg,type=''){
   const t=document.getElementById('toast');
   t.textContent=(type==='success'?'✅ ':type==='error'?'❌ ':'⚠️ ')+msg;
