@@ -3112,20 +3112,20 @@
 </div>
 
 <div id="page-services-master" class="page">
-  <div class="breadcrumb-bar"><span>🏨 โรงแรม › Services</span></div>
+  <div class="breadcrumb-bar"><span>🏨 โรงแรม › บริการ/สินค้า</span></div>
   <div style="padding:20px 24px;">
     <div class="page-header">
-      <div><div class="page-title">Service Master</div><div class="page-subtitle">Configurable list of ancillary services — added as invoice lines at checkout. No developer needed.</div></div>
+      <div><div class="page-title">บริการ/สินค้า</div><div class="page-subtitle">จัดการสินค้าและบริการ.</div></div>
       <div style="margin-left:auto;display:flex;gap:8px;">
-        <button class="btn btn-primary" onclick="openModal('modal-new-service')">➕ Add Service</button>
+        <button class="btn btn-primary" onclick="openModal('modal-new-service')">➕ เพิ่มรายการ</button>
       </div>
     </div>
     <div class="filters-bar">
-      <div class="filter-chip active" onclick="filterServiceMaster('all',this)">ทั้งหมด Services</div>
-      <div class="filter-chip" onclick="filterServiceMaster('service',this)">🧹 Housekeeping</div>
+      <div class="filter-chip active" onclick="filterServiceMaster('all',this)">รายการทั้งหมด </div>
+      <div class="filter-chip" onclick="filterServiceMaster('service',this)">🧹 ทำความสะอาด</div>
       <div class="filter-chip" onclick="filterServiceMaster('fnb',this)">🍽️ F&B</div>
       <div class="filter-chip" onclick="filterServiceMaster('spa_service',this)">💆 สปา</div>
-      <div class="filter-chip" onclick="filterServiceMaster('internal',this)">🏨 Internal</div>
+      <div class="filter-chip" onclick="filterServiceMaster('internal',this)">🏨 สำหรับเบิก/ขายภายใน</div>
     </div>
     <div class="table-wrap">
       <table>
@@ -3143,11 +3143,11 @@
   </div>
 </div>
 <div id="page-salesperson" class="page">
-  <div class="breadcrumb-bar"><span>Configuration</span><span class="bc-sep">›</span><span>Salespersons &amp; Agents</span></div>
+  <div class="breadcrumb-bar"><span>การตั้งค่า</span><span class="bc-sep">›</span><span>พนักงานขาย &amp; เอเจนซี่</span></div>
   <div style="padding:20px 24px;">
     <div class="page-header">
-      <div><div class="page-title">Salespersons &amp; Agents</div><div class="page-subtitle">Internal staff (payroll commission) and external agents (vendor bill + payment terms)</div></div>
-      <button class="btn btn-primary" onclick="showModal('modal-new-salesperson')">➕ Add Salesperson</button>
+      <div><div class="page-title">พนักงานขาย &amp; เอเจนซี่</div><div class="page-subtitle">พนักงานขายของโรงแรมหรือเอเจนซี่จากภายนอก</div></div>
+      <button class="btn btn-primary" onclick="showModal('modal-new-salesperson')">➕ เพิ่มพนักงานขาย</button>
     </div>
 
     <div class="stats-row" style="margin-bottom:20px;">
@@ -3196,10 +3196,10 @@
     </div>
 
     <!-- Officer breakdown -->
-    <div class="section-header"><div class="section-title">Officer Earnings Breakdown</div></div>
+    <div class="section-header"><div class="section-title">รายละเอียด</div></div>
     <div class="table-wrap" style="margin-bottom:24px;">
       <table>
-        <thead><tr><th>เจ้าหน้าที่</th><th>ระดับ</th><th>เซสชัน</th><th style="text-align:right;">Earnings (AP)</th><th style="text-align:right;">ทิป</th><th style="text-align:right;">หักเงิน</th><th style="text-align:right;">ยอดสุทธิที่จ่าย</th><th>สถานะ AP</th></tr></thead>
+        <thead><tr><th>เจ้าหน้าที่</th><th>ระดับ</th><th>รายการ</th><th style="text-align:right;">Earnings (AP)</th><th style="text-align:right;">ทิป</th><th style="text-align:right;">หักเงิน</th><th style="text-align:right;">ยอดสุทธิที่จ่าย</th><th>สถานะ AP</th></tr></thead>
         <tbody id="cr-officer-tbody"><!-- DB rendered --></tbody>
       </table>
     </div>
@@ -3208,7 +3208,7 @@
     <div class="section-header"><div class="section-title">Session Margin Summary</div></div>
     <div class="table-wrap" style="margin-bottom:24px;">
       <table>
-        <thead><tr><th>เซสชัน</th><th>เจ้าหน้าที่</th><th>บริการ</th><th style="text-align:right;">ระยะเวลา</th><th style="text-align:right;">ราคาขาย</th><th style="text-align:right;">Officer Cost</th><th style="text-align:right;">กำไรรวม</th><th style="text-align:right;">% กำไร</th></tr></thead>
+        <thead><tr><th>รายการ</th><th>เจ้าหน้าที่</th><th>บริการ</th><th style="text-align:right;">ระยะเวลา</th><th style="text-align:right;">ราคาขาย</th><th style="text-align:right;">Officer Cost</th><th style="text-align:right;">กำไรรวม</th><th style="text-align:right;">% กำไร</th></tr></thead>
         <tbody id="cr-session-tbody"><!-- DB rendered --></tbody>
       </table>
     </div>
@@ -3246,7 +3246,7 @@
           <input class="form-control" type="email" placeholder="optional">
         </div>
         <div class="form-group">
-          <label class="form-label">Registration Date</label>
+          <label class="form-label">วันที่ลงทะเบียน</label>
           <input class="form-control" type="date" value="2026-03-05">
         </div>
         <div class="form-group full">
@@ -3313,10 +3313,10 @@
         <div class="form-group full"><label class="form-label"> ชื่อรายการ<span class="req">*</span></label><input class="form-control" id="svc-name" type="text" placeholder="e.g. Bicycle Rental"></div>
         <div class="form-group"><label class="form-label">ประเภท <span class="req">*</span></label>
           <select class="form-control" id="svc-categ">
-            <option value="service">Housekeeping / Service</option>
-            <option value="fnb">F&B / Restaurant</option>
-            <option value="spa_service">Spa Service</option>
-            <option value="internal">Internal Use</option>
+            <option value="service">บริการต่าง</option>
+            <option value="fnb">F&B / อาหารและเครื่องดื่ม</option>
+            <option value="spa_service">บริการสปา</option>
+            <option value="internal">เบิก/ขายภายในโรงแรม</option>
           </select></div>
         <div class="form-group"><label class="form-label">ประเภท</label>
           <select class="form-control" id="svc-type" onchange="togglePrice(this.value)"><option value="paid">Chargeable</option><option value="free">Free (฿0)</option></select></div>
