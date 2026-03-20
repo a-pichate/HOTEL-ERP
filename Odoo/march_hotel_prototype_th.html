@@ -3307,11 +3307,11 @@
 <!-- ADD SERVICE MODAL -->
 <div class="modal-overlay" id="modal-new-service">
   <div class="modal">
-    <div class="modal-header"><div class="modal-title">➕ Add New Service / Item</div><div class="modal-close" onclick="closeModal('modal-new-service')">✕</div></div>
+    <div class="modal-header"><div class="modal-title">➕ เพิ่มสินค้า/บริการ</div><div class="modal-close" onclick="closeModal('modal-new-service')">✕</div></div>
     <div class="modal-body">
       <div class="form-grid-2">
-        <div class="form-group full"><label class="form-label">Service Name <span class="req">*</span></label><input class="form-control" id="svc-name" type="text" placeholder="e.g. Bicycle Rental"></div>
-        <div class="form-group"><label class="form-label">Category <span class="req">*</span></label>
+        <div class="form-group full"><label class="form-label"> ชื่อรายการ<span class="req">*</span></label><input class="form-control" id="svc-name" type="text" placeholder="e.g. Bicycle Rental"></div>
+        <div class="form-group"><label class="form-label">ประเภท <span class="req">*</span></label>
           <select class="form-control" id="svc-categ">
             <option value="service">Housekeeping / Service</option>
             <option value="fnb">F&B / Restaurant</option>
@@ -3320,8 +3320,8 @@
           </select></div>
         <div class="form-group"><label class="form-label">ประเภท</label>
           <select class="form-control" id="svc-type" onchange="togglePrice(this.value)"><option value="paid">Chargeable</option><option value="free">Free (฿0)</option></select></div>
-        <div class="form-group" id="price-field"><label class="form-label">Unit Price (฿)</label><input class="form-control" id="svc-price" type="number" placeholder="0.00" min="0"></div>
-        <div class="form-group"><label class="form-label">Unit of Measure</label><input class="form-control" id="svc-uom" type="text" placeholder="e.g. unit, night, hour" value="unit"></div>
+        <div class="form-group" id="price-field"><label class="form-label">ราคาต่อหน่วย (฿)</label><input class="form-control" id="svc-price" type="number" placeholder="0.00" min="0"></div>
+        <div class="form-group"><label class="form-label">หน่วย</label><input class="form-control" id="svc-uom" type="text" placeholder="e.g. unit, night, hour" value="unit"></div>
         <div class="form-group"><label class="form-label">บัญชีรายได้</label>
           <select class="form-control" id="svc-account">
             <option value="4500">4500 — Service Revenue</option>
@@ -3333,7 +3333,7 @@
     </div>
     <div class="modal-footer">
       <button class="btn btn-secondary" onclick="closeModal('modal-new-service')">ยกเลิก</button>
-      <button class="btn btn-primary" onclick="dbAddService()">✅ Add to Master List</button>
+      <button class="btn btn-primary" onclick="dbAddService()">✅ เพิ่มรายการ</button>
     </div>
   </div>
 </div>
@@ -3341,10 +3341,10 @@
 <!-- ADD CHARGE MODAL (folio) -->
 <div class="modal-overlay" id="modal-add-charge">
   <div class="modal">
-    <div class="modal-header"><div class="modal-title">➕ Add Charge to Folio</div><div class="modal-close" onclick="closeModal('modal-add-charge')">✕</div></div>
+    <div class="modal-header"><div class="modal-title">➕ เพิ่มรายการในโฟลิโอ</div><div class="modal-close" onclick="closeModal('modal-add-charge')">✕</div></div>
     <div class="modal-body">
       <div class="form-grid-2">
-        <div class="form-group full"><label class="form-label">Service <span class="req">*</span></label>
+        <div class="form-group full"><label class="form-label">บริการ <span class="req">*</span></label>
           <select class="form-control" id="chrg-service" onchange="fillServicePrice(this.value)">
             <option value="">— Select from service master —</option>
             <optgroup label="🧹 Housekeeping">
