@@ -5837,16 +5837,16 @@ function isUpdatePaymentOptions(){
   } else if(isOfficer){
     // Model C: spa officer has both payroll and payout channels
     pmSel.innerHTML=`
-      <option value="payout_deduct">💼 Payout Deduct \u2014 negative line on next vendor bill (officer only)</option>
-      <option value="payroll">📅 Payroll Deduct \u2014 deducted at monthly payroll run</option>
-      <option value="cash">💵 เงินสด \u2014 pay immediately</option>
-      <option value="card">💳 Card \u2014 pay immediately</option>`;
+      <option value="payout_deduct">💼 หักจากค่าจ้าง </option>
+      <option value="payroll">📅 หักจากเงินเดือน</option>
+      <option value="cash">💵 เงินสด </option>
+      <option value="card">💳 Card </option>`;
   } else {
     // Employee only (salesperson, front desk etc.) \u2014 payroll or cash
     pmSel.innerHTML=`
-      <option value="payroll">📅 Payroll Deduct \u2014 deducted at monthly payroll run</option>
-      <option value="cash">💵 เงินสด \u2014 pay immediately</option>
-      <option value="card">💳 Card \u2014 pay immediately</option>`;
+      <option value="payroll">📅 หักจากเงินเดือน</option>
+      <option value="cash">💵 เงินสด </option>
+      <option value="card">💳 Card </option>`;
   }
   isShowPaymentNote();
 }
@@ -5856,14 +5856,14 @@ function isUpdatePricelist(){
   const noteDiv=document.getElementById('is-pricelist-note');
   const pmSel=document.getElementById('is-payment-method');
   const notes={
-    benefit:'<strong>฿0 \u2014 hotel pays.</strong> DR 6100 Staff Benefit Expense / CR Inventory (physical goods) or CR 4xxx Revenue (service). No payment method needed.',
-    chargeback:'<strong>Cost price \u2014 employee pays.</strong> Select payment method below. Deduction or cash/card.',
-    discount:'<strong>50% of normal price \u2014 partial benefit.</strong> Employee pays discounted amount via selected payment method.',
+    benefit:'<strong>฿0 ไม่คิดราคา</strong> ',
+    chargeback:'<strong> คิดราคาขาย พนักงานชำระค่าสินค้า</strong> ',
+    discount:'<strong>50% ลดราคา</strong> ',
   };
   noteDiv.innerHTML=notes[plSel.value]||'';
   // If benefit \u2014 force payment method to benefit/none
   if(plSel.value==='benefit'){
-    pmSel.innerHTML='<option value="benefit">🎁 Benefit \u2014 No Payment Required (฿0)</option>';
+    pmSel.innerHTML='<option value="benefit">🎁 ไม่คิดราคา (฿0)</option>';
     document.getElementById('is-payment-note').style.display='none';
   } else {
     isUpdatePaymentOptions();
