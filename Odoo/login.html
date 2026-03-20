@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>มาร์ช โฮเทล — เข้าสู่ระบบ</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --purple:       #714B67;
+    --purple-dark:  #4A2D45;
+    --purple-mid:   #9B6B8A;
+    --purple-light: #F3E8EF;
+    --gold:         #C9982A;
+    --gold-light:   #FFF8E1;
+    --teal:         #017E84;
+    --gray:         #5F6368;
+    --gray-light:   #F1F3F4;
+    --gray-300:     #DADCE0;
+    --gray-600:     #80868B;
+    --white:        #FFFFFF;
+    --danger:       #DC3545;
+    --font:         'Noto Sans', sans-serif;
+  }
+
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: var(--font);
+    background: var(--purple-dark);
+    min-height: 100vh;
+    display: flex;
+    overflow: hidden;
+    position: relative;
+  }
+
+  /* ── Decorative background blobs ── */
+  .bg-blob {
+    position: fixed;
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 0;
+  }
+  .bg-blob-1 {
+    width: 520px; height: 520px;
+    background: radial-gradient(circle, rgba(113,75,103,0.55) 0%, transparent 70%);
+    top: -180px; right: -100px;
+  }
+  .bg-blob-2 {
+    width: 380px; height: 380px;
+    background: radial-gradient(circle, rgba(155,107,138,0.35) 0%, transparent 70%);
+    bottom: -120px; left: -80px;
+  }
+  .bg-blob-3 {
+    width: 200px; height: 200px;
+    background: radial-gradient(circle, rgba(201,152,42,0.12) 0%, transparent 70%);
+    top: 55%; left: 55%;
+  }
+
+  /* ── Layout ── */
+  .page {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    width: 100%;
+    min-height: 100vh;
+  }
+
+  /* Left panel — branding */
+  .brand-panel {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 60px 64px;
+    position: relative;
+  }
+
+  .brand-logo {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 48px;
+  }
+  .brand-logo .dot {
+    width: 48px; height: 48px;
+    background: var(--gold);
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px; font-weight: 900; color: var(--purple-dark);
+    flex-shrink: 0;
+    box-shadow: 0 4px 16px rgba(201,152,42,0.35);
+  }
+  .brand-logo .brand-name {
+    font-size: 20px; font-weight: 700;
+    color: var(--white);
+    letter-spacing: 0.3px;
+  }
+  .brand-logo .brand-sub {
+    font-size: 11px; color: rgba(255,255,255,0.5);
+    margin-top: 2px; font-weight: 400;
+  }
+
+  .brand-headline {
+    font-size: 42px;
+    font-weight: 700;
+    color: var(--white);
+    line-height: 1.2;
+    margin-bottom: 18px;
+  }
+  .brand-headline span {
+    color: var(--gold);
+  }
+  .brand-desc {
+    font-size: 15px;
+    color: rgba(255,255,255,0.55);
+    line-height: 1.7;
+    max-width: 380px;
+    margin-bottom: 48px;
+  }
+
+  /* Feature pills */
+  .features {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .feature-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .feature-icon {
+    width: 34px; height: 34px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px;
+    flex-shrink: 0;
+  }
+  .feature-text {
+    font-size: 13px;
+    color: rgba(255,255,255,0.7);
+  }
+  .feature-text strong {
+    color: rgba(255,255,255,0.92);
+    font-weight: 600;
+  }
+
+  /* Right panel — form */
+  .form-panel {
+    width: 440px;
+    min-height: 100vh;
+    background: var(--white);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 48px 44px;
+    position: relative;
+    box-shadow: -8px 0 48px rgba(0,0,0,0.25);
+  }
+
+  .form-header {
+    margin-bottom: 36px;
+  }
+  .form-header h2 {
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--purple-dark);
+    margin-bottom: 6px;
+  }
+  .form-header p {
+    font-size: 14px;
+    color: var(--gray-600);
+  }
+
+  /* Role selector */
+  .role-tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 28px;
+    background: var(--gray-light);
+    border-radius: 10px;
+    padding: 5px;
+  }
+  .role-tab {
+    flex: 1;
+    padding: 8px 10px;
+    border-radius: 7px;
+    border: none;
+    background: transparent;
+    font-family: var(--font);
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--gray-600);
+    cursor: pointer;
+    transition: all 0.18s;
+    text-align: center;
+  }
+  .role-tab.active {
+    background: var(--white);
+    color: var(--purple);
+    font-weight: 700;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+  }
+
+  /* Form fields */
+  .form-group {
+    margin-bottom: 20px;
+  }
+  .form-label {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--gray);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 7px;
+  }
+  .input-wrap {
+    position: relative;
+  }
+  .input-wrap .input-icon {
+    position: absolute;
+    left: 13px; top: 50%;
+    transform: translateY(-50%);
+    font-size: 15px;
+    opacity: 0.45;
+    pointer-events: none;
+    user-select: none;
+  }
+  .form-control {
+    width: 100%;
+    padding: 11px 14px 11px 38px;
+    border: 1.5px solid var(--gray-300);
+    border-radius: 8px;
+    font-size: 14px;
+    font-family: var(--font);
+    color: #202124;
+    background: var(--white);
+    transition: border-color 0.15s, box-shadow 0.15s;
+    outline: none;
+  }
+  .form-control:focus {
+    border-color: var(--purple);
+    box-shadow: 0 0 0 3px var(--purple-light);
+  }
+  .form-control.error {
+    border-color: var(--danger);
+    box-shadow: 0 0 0 3px rgba(220,53,69,0.12);
+  }
+
+  /* Password toggle */
+  .pw-toggle {
+    position: absolute;
+    right: 12px; top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 15px;
+    opacity: 0.45;
+    padding: 4px;
+    transition: opacity 0.15s;
+  }
+  .pw-toggle:hover { opacity: 0.8; }
+
+  /* Error message */
+  .error-msg {
+    display: none;
+    background: #FFF0F0;
+    border: 1px solid #F5C6CB;
+    border-radius: 7px;
+    padding: 10px 14px;
+    font-size: 13px;
+    color: #842029;
+    margin-bottom: 18px;
+    align-items: center;
+    gap: 8px;
+  }
+  .error-msg.show { display: flex; }
+
+  /* Submit button */
+  .btn-login {
+    width: 100%;
+    padding: 13px;
+    background: var(--purple);
+    color: var(--white);
+    border: none;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    font-family: var(--font);
+    cursor: pointer;
+    transition: background 0.18s, transform 0.12s, box-shadow 0.18s;
+    box-shadow: 0 4px 14px rgba(113,75,103,0.35);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 4px;
+  }
+  .btn-login:hover {
+    background: var(--purple-dark);
+    box-shadow: 0 6px 20px rgba(113,75,103,0.45);
+  }
+  .btn-login:active {
+    transform: scale(0.98);
+  }
+  .btn-login:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  /* Spinner */
+  .spinner {
+    display: none;
+    width: 18px; height: 18px;
+    border: 2.5px solid rgba(255,255,255,0.35);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+  }
+  .spinner.show { display: block; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* Demo accounts */
+  .demo-accounts {
+    margin-top: 28px;
+    padding-top: 22px;
+    border-top: 1px solid var(--gray-300);
+  }
+  .demo-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--gray-600);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 10px;
+  }
+  .demo-list {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+  }
+  .demo-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--gray-light);
+    border-radius: 7px;
+    padding: 8px 12px;
+    cursor: pointer;
+    transition: background 0.15s;
+    border: 1px solid transparent;
+  }
+  .demo-item:hover {
+    background: var(--purple-light);
+    border-color: var(--purple-mid);
+  }
+  .demo-item-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .demo-avatar {
+    width: 30px; height: 30px;
+    border-radius: 50%;
+    background: var(--purple);
+    color: white;
+    font-size: 11px;
+    font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .demo-info .demo-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: #202124;
+  }
+  .demo-info .demo-role {
+    font-size: 11px;
+    color: var(--gray-600);
+  }
+  .demo-use {
+    font-size: 11px;
+    color: var(--purple);
+    font-weight: 600;
+    opacity: 0;
+    transition: opacity 0.15s;
+  }
+  .demo-item:hover .demo-use { opacity: 1; }
+
+  /* Footer */
+  .form-footer {
+    margin-top: 24px;
+    text-align: center;
+    font-size: 11px;
+    color: var(--gray-600);
+  }
+
+  /* Success overlay */
+  .success-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: var(--purple-dark);
+    z-index: 999;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 20px;
+  }
+  .success-overlay.show { display: flex; }
+  .success-icon {
+    font-size: 64px;
+    animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
+  .success-text {
+    font-size: 22px;
+    font-weight: 700;
+    color: white;
+    animation: fadeUp 0.5s ease 0.15s both;
+  }
+  .success-sub {
+    font-size: 14px;
+    color: rgba(255,255,255,0.55);
+    animation: fadeUp 0.5s ease 0.25s both;
+  }
+  .redirect-bar {
+    width: 200px; height: 3px;
+    background: rgba(255,255,255,0.15);
+    border-radius: 2px;
+    margin-top: 8px;
+    overflow: hidden;
+    animation: fadeUp 0.5s ease 0.3s both;
+  }
+  .redirect-bar-fill {
+    height: 100%;
+    background: var(--gold);
+    border-radius: 2px;
+    width: 0;
+    animation: fillBar 1.6s ease 0.5s forwards;
+  }
+  @keyframes popIn {
+    from { transform: scale(0.3); opacity: 0; }
+    to   { transform: scale(1);   opacity: 1; }
+  }
+  @keyframes fadeUp {
+    from { transform: translateY(12px); opacity: 0; }
+    to   { transform: translateY(0);    opacity: 1; }
+  }
+  @keyframes fillBar {
+    from { width: 0; }
+    to   { width: 100%; }
+  }
+
+  /* Responsive */
+  @media (max-width: 780px) {
+    .brand-panel { display: none; }
+    .form-panel  { width: 100%; box-shadow: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Background blobs -->
+<div class="bg-blob bg-blob-1"></div>
+<div class="bg-blob bg-blob-2"></div>
+<div class="bg-blob bg-blob-3"></div>
+
+<!-- Success overlay -->
+<div class="success-overlay" id="success-overlay">
+  <div class="success-icon">✅</div>
+  <div class="success-text" id="success-name">ยินดีต้อนรับ</div>
+  <div class="success-sub">กำลังเข้าสู่ระบบ...</div>
+  <div class="redirect-bar"><div class="redirect-bar-fill"></div></div>
+</div>
+
+<div class="page">
+
+  <!-- ── Left brand panel ── -->
+  <div class="brand-panel">
+    <div class="brand-logo">
+      <div class="dot">M</div>
+      <div>
+        <div class="brand-name">มาร์ช โฮเทล</div>
+        <div class="brand-sub">Hotel Management System</div>
+      </div>
+    </div>
+
+    <div class="brand-headline">
+      ระบบบริหารโรงแรม<br>
+      <span>ครบวงจร</span><br>
+      ในระบบเดียว
+    </div>
+    <div class="brand-desc">
+      จัดการทุกงานในโรงแรมได้จากหน้าจอเดียว ตั้งแต่การจอง เช็คอิน เช็คเอาท์ ระบบสปา บัญชี ไปจนถึงรายงานผู้บริหาร
+    </div>
+
+    <div class="features">
+      <div class="feature-item">
+        <div class="feature-icon">🛏️</div>
+        <div class="feature-text"><strong>Hotel Operations</strong> — ห้องพัก จอง สปา สมาชิก</div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">💰</div>
+        <div class="feature-text"><strong>บัญชีครบวงจร</strong> — Invoice, Journal, รายงาน P&L</div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">👥</div>
+        <div class="feature-text"><strong>HR & Payroll</strong> — พนักงาน เงินเดือน เวลาทำงาน</div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">🛒</div>
+        <div class="feature-text"><strong>จัดซื้อ-จัดจ้าง</strong> — PO, Vendor Bill, อนุมัติงบ</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Right form panel ── -->
+  <div class="form-panel">
+
+    <div class="form-header">
+      <h2>เข้าสู่ระบบ</h2>
+      <p>กรอกชื่อผู้ใช้และรหัสผ่านเพื่อเข้าใช้งาน</p>
+    </div>
+
+    <!-- Role tabs -->
+    <div class="role-tabs">
+      <button class="role-tab active" onclick="setRole('frontdesk',this)">🏨 แผนกต้อนรับ</button>
+      <button class="role-tab" onclick="setRole('spa',this)">💆 สปา</button>
+      <button class="role-tab" onclick="setRole('manager',this)">📊 ผู้จัดการ</button>
+    </div>
+
+    <!-- Error message -->
+    <div class="error-msg" id="error-msg">
+      <span>⚠️</span>
+      <span id="error-text">ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง</span>
+    </div>
+
+    <!-- Form -->
+    <form id="login-form" onsubmit="handleLogin(event)" autocomplete="off">
+
+      <div class="form-group">
+        <label class="form-label" for="username">ชื่อผู้ใช้</label>
+        <div class="input-wrap">
+          <span class="input-icon">👤</span>
+          <input
+            class="form-control"
+            type="text"
+            id="username"
+            placeholder="กรอกชื่อผู้ใช้..."
+            autocomplete="username"
+            oninput="clearError()"
+          >
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="password">รหัสผ่าน</label>
+        <div class="input-wrap">
+          <span class="input-icon">🔒</span>
+          <input
+            class="form-control"
+            type="password"
+            id="password"
+            placeholder="กรอกรหัสผ่าน..."
+            autocomplete="current-password"
+            oninput="clearError()"
+            onkeydown="if(event.key==='Enter')handleLogin(event)"
+          >
+          <button type="button" class="pw-toggle" id="pw-toggle" onclick="togglePw()" title="แสดง/ซ่อนรหัสผ่าน">👁</button>
+        </div>
+      </div>
+
+      <button type="submit" class="btn-login" id="btn-login">
+        <span id="btn-text">เข้าสู่ระบบ</span>
+        <div class="spinner" id="spinner"></div>
+      </button>
+
+    </form>
+
+    <!-- Demo accounts -->
+    <div class="demo-accounts">
+      <div class="demo-label">บัญชีทดสอบ — คลิกเพื่อเติมอัตโนมัติ</div>
+      <div class="demo-list" id="demo-list"></div>
+    </div>
+
+    <div class="form-footer">
+      มาร์ช โฮเทล · ระบบต้นแบบ v22 · © 2569
+    </div>
+
+  </div>
+</div>
+
+<script>
+// ── User database ────────────────────────────────────────────────
+const USERS = [
+  { username: 'alex.m',    password: 'hotel123', name: 'Alex Maher',        role: 'frontdesk', avatar: 'AM', display: 'แผนกต้อนรับ / Front Desk' },
+  { username: 'ploy.s',   password: 'spa123',   name: 'Ploy Siriwan',      role: 'spa',       avatar: 'PS', display: 'เจ้าหน้าที่สปา' },
+  { username: 'napa.p',   password: 'spa123',   name: 'Napa Prachaya',     role: 'spa',       avatar: 'NP', display: 'เจ้าหน้าที่สปา' },
+  { username: 'manager',  password: 'mgr2026',  name: 'ผู้จัดการโรงแรม',  role: 'manager',   avatar: 'MG', display: 'ผู้จัดการ / Admin' },
+];
+
+// Demo accounts per role
+const DEMO_BY_ROLE = {
+  frontdesk: ['alex.m'],
+  spa:       ['ploy.s', 'napa.p'],
+  manager:   ['manager'],
+};
+
+let currentRole = 'frontdesk';
+
+// ── Role tabs ────────────────────────────────────────────────────
+function setRole(role, el) {
+  currentRole = role;
+  document.querySelectorAll('.role-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  clearError();
+  renderDemoList();
+  // Pre-fill first demo account for this role
+  const first = USERS.find(u => u.role === role);
+  if (first) {
+    document.getElementById('username').value = first.username;
+    document.getElementById('password').value = first.password;
+  }
+}
+
+// ── Demo list ────────────────────────────────────────────────────
+function renderDemoList() {
+  const container = document.getElementById('demo-list');
+  const names = DEMO_BY_ROLE[currentRole] || [];
+  container.innerHTML = names.map(uname => {
+    const u = USERS.find(x => x.username === uname);
+    if (!u) return '';
+    return `
+      <div class="demo-item" onclick="fillDemo('${u.username}','${u.password}')">
+        <div class="demo-item-left">
+          <div class="demo-avatar">${u.avatar}</div>
+          <div class="demo-info">
+            <div class="demo-name">${u.name}</div>
+            <div class="demo-role">${u.display} · ${u.username}</div>
+          </div>
+        </div>
+        <span class="demo-use">ใช้บัญชีนี้ →</span>
+      </div>`;
+  }).join('');
+}
+
+function fillDemo(username, password) {
+  document.getElementById('username').value = username;
+  document.getElementById('password').value = password;
+  clearError();
+  document.getElementById('username').focus();
+}
+
+// ── Login handler ────────────────────────────────────────────────
+function handleLogin(e) {
+  if (e) e.preventDefault();
+
+  const username = document.getElementById('username').value.trim();
+  const password = document.getElementById('password').value;
+
+  // Validate empty
+  if (!username || !password) {
+    showError('กรุณากรอกชื่อผู้ใช้และรหัสผ่าน');
+    return;
+  }
+
+  // Find user
+  const user = USERS.find(u =>
+    u.username.toLowerCase() === username.toLowerCase() && u.password === password
+  );
+
+  if (!user) {
+    showError('ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง กรุณาลองใหม่อีกครั้ง');
+    document.getElementById('username').classList.add('error');
+    document.getElementById('password').classList.add('error');
+    // Shake animation
+    document.getElementById('login-form').style.animation = 'none';
+    requestAnimationFrame(() => {
+      document.getElementById('login-form').style.animation = 'shake 0.4s ease';
+    });
+    return;
+  }
+
+  // Loading state
+  setLoading(true);
+
+  // Simulate auth delay
+  setTimeout(() => {
+    // Store session
+    sessionStorage.setItem('march_hotel_user', JSON.stringify({
+      username: user.username,
+      name: user.name,
+      role: user.role,
+      avatar: user.avatar,
+      loginTime: new Date().toISOString(),
+    }));
+
+    // Show success overlay
+    document.getElementById('success-name').textContent = 'ยินดีต้อนรับ, ' + user.name;
+    document.getElementById('success-overlay').classList.add('show');
+
+    // Redirect after animation
+    setTimeout(() => {
+      window.location.href = 'march_hotel_prototype_th_fixed.html';
+    }, 2100);
+
+  }, 900);
+}
+
+// ── Helpers ──────────────────────────────────────────────────────
+function showError(msg) {
+  document.getElementById('error-text').textContent = msg;
+  document.getElementById('error-msg').classList.add('show');
+}
+
+function clearError() {
+  document.getElementById('error-msg').classList.remove('show');
+  document.getElementById('username').classList.remove('error');
+  document.getElementById('password').classList.remove('error');
+}
+
+function setLoading(on) {
+  const btn = document.getElementById('btn-login');
+  const text = document.getElementById('btn-text');
+  const spinner = document.getElementById('spinner');
+  btn.disabled = on;
+  text.textContent = on ? 'กำลังเข้าสู่ระบบ...' : 'เข้าสู่ระบบ';
+  spinner.classList.toggle('show', on);
+}
+
+function togglePw() {
+  const pw = document.getElementById('password');
+  const btn = document.getElementById('pw-toggle');
+  if (pw.type === 'password') {
+    pw.type = 'text';
+    btn.textContent = '🙈';
+  } else {
+    pw.type = 'password';
+    btn.textContent = '👁';
+  }
+}
+
+// Shake keyframe
+const style = document.createElement('style');
+style.textContent = `
+  @keyframes shake {
+    0%,100%{transform:translateX(0)}
+    20%{transform:translateX(-8px)}
+    40%{transform:translateX(8px)}
+    60%{transform:translateX(-6px)}
+    80%{transform:translateX(6px)}
+  }
+`;
+document.head.appendChild(style);
+
+// ── Init ─────────────────────────────────────────────────────────
+renderDemoList();
+// Pre-fill first demo
+const firstUser = USERS.find(u => u.role === 'frontdesk');
+if (firstUser) {
+  document.getElementById('username').value = firstUser.username;
+  document.getElementById('password').value = firstUser.password;
+}
+// Enter key on username
+document.getElementById('username').addEventListener('keydown', e => {
+  if (e.key === 'Enter') document.getElementById('password').focus();
+});
+</script>
+</body>
+</html>
