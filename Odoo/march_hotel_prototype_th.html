@@ -706,8 +706,8 @@
                 <label class="form-label">ประเภท</label>
                 <select class="form-control" onchange="toggleSalespersonField(this.value)">
                   <option value="">— None —</option>
-                  <option value="internal" selected>Internal Staff</option>
-                  <option value="external">External Agent</option>
+                  <option value="internal" selected>พนักงานขายโรงแรม</option>
+                  <option value="external">เอเจนซี่ภายนอก</option>
                 </select>
               </div>
               <div class="form-group" id="salesperson-field">
@@ -836,18 +836,18 @@
     </div>
 
     <div class="stats-row">
-      <div class="stat-card blue"><div class="stat-number">156</div><div class="stat-label">Total รายการธุรกรรม</div></div>
-      <div class="stat-card green"><div class="stat-number">฿286,000</div><div class="stat-label">Total เติมเงินs</div></div>
+      <div class="stat-card blue"><div class="stat-number">156</div><div class="stat-label"> รายการสมาชิกทั้งหมด</div></div>
+      <div class="stat-card green"><div class="stat-number">฿286,000</div><div class="stat-label">เติมเงินทั้งหมด</div></div>
       <div class="stat-card purple"><div class="stat-number">฿101,500</div><div class="stat-label">ใช้แต้มรวม</div></div>
       <div class="stat-card orange"><div class="stat-number">฿184,500</div><div class="stat-label">Net Balance (ทั้งหมด สมาชิก)</div></div>
     </div>
 
     <div class="filters-bar">
-      <div class="filter-chip active" onclick="setChip(this)">ทั้งหมด Types</div>
+      <div class="filter-chip active" onclick="setChip(this)">ทั้งหมด</div>
       <div class="filter-chip" onclick="setChip(this)">⬆️ เติมเงิน</div>
       <div class="filter-chip" onclick="setChip(this)">💳 Redemption</div>
       <div class="filter-chip" onclick="setChip(this)">↩ Refund</div>
-      <select class="form-control" style="padding:5px 10px;font-size:12px;width:auto;"><option>ทั้งหมด สมาชิก</option><option>Somchai T.</option><option>Nattaya S.</option><option>Pravit C.</option></select>
+      <select class="form-control" style="padding:5px 10px;font-size:12px;width:auto;"><option>สมาชิก</option><option>Somchai T.</option><option>Nattaya S.</option><option>Pravit C.</option></select>
       <div class="search-box" style="margin-left:auto;"><span>🔍</span><input type="text" placeholder="ค้นหาธุรกรรม..."></div>
     </div>
 
@@ -874,7 +874,7 @@
      PAGE: REVENUE REPORT (J01)
 ════════════════════════════════════════════════════════ -->
 <div id="page-revenue-report" class="page">
-  <div class="breadcrumb-bar"><span>Reports › ภาพรวมรายได้</span></div>
+  <div class="breadcrumb-bar"><span>รายงาน › ภาพรวมรายได้</span></div>
   <div style="padding:20px 24px;">
     <div class="page-header">
       <div><div class="page-title">ภาพรวมรายได้</div><div class="page-subtitle">สรุปรายได้แยกตามประเภทและช่วงเวลา</div></div>
@@ -934,15 +934,15 @@
       </div>
 
       <div class="detail-panel">
-        <div class="detail-header"><div class="detail-title">เซสชันสปา</div></div>
+        <div class="detail-header"><div class="detail-title">จำนวนสปา</div></div>
         <div class="detail-body">
           <div style="text-align:center;margin-bottom:16px;">
             <div style="font-size:48px;font-weight:800;color:var(--odoo-purple);">142</div>
-            <div style="font-size:12px;color:var(--gray-500);font-weight:600;text-transform:uppercase;">Total Sessions</div>
+            <div style="font-size:12px;color:var(--gray-500);font-weight:600;text-transform:uppercase;">รายการ</div>
           </div>
           <div class="info-row"><span class="info-label">เสร็จสิ้น</span><span class="info-value" style="color:var(--success);">138</span></div>
           <div class="info-row"><span class="info-label">ยกเลิกแล้ว</span><span class="info-value" style="color:var(--danger);">4</span></div>
-          <div class="info-row"><span class="info-label">รายได้เฉลี่ย / เซสชัน</span><span class="info-value">฿699</span></div>
+          <div class="info-row"><span class="info-label">รายได้เฉลี่ย / รายการ</span><span class="info-value">฿699</span></div>
           <div style="border-top:1px solid var(--gray-200);margin-top:12px;padding-top:12px;">
             <div class="info-row"><span class="info-label">แลกบัตรสมาชิก</span><span class="info-value" style="color:var(--odoo-purple);">฿101,500</span></div>
             <div class="info-row"><span class="info-label">เงินสด / Card Payments</span><span class="info-value">฿330,500</span></div>
@@ -957,7 +957,7 @@
      PAGE: INVOICES LIST (Section 12 — E06 / Accountant view)
 ════════════════════════════════════════════════════════ -->
 <div id="page-invoices-list" class="page">
-  <div class="breadcrumb-bar"><a onclick="showPage('rooms')">🏨 โรงแรม</a><span class="breadcrumb-sep">›</span><span>Accounting › ใบแจ้งหนี้</span></div>
+  <div class="breadcrumb-bar"><a onclick="showPage('rooms')">🏨 โรงแรม</a><span class="breadcrumb-sep">›</span><span>บัญชี › ใบแจ้งหนี้</span></div>
   <div style="padding:20px 24px;">
 
     <!-- Stats -->
@@ -972,7 +972,7 @@
       </div>
       <div class="stat-card green">
         <div class="stat-number" style="font-size:22px;" id="inv-stat-paid">0</div>
-        <div class="stat-label">Paid This Month</div>
+        <div class="stat-label">รายการเดือนนี้</div>
       </div>
     </div>
 
@@ -1006,7 +1006,7 @@
             <th>กำหนดเสร็จ</th>
             <th style="text-align:right;">จำนวนเงิน</th>
             <th style="text-align:right;">ค้างชำระ</th>
-            <th>Payment Status</th>
+            <th>สถานะการจ่ายเงิน</th>
             <th>Journal</th>
             <th style="text-align:center;width:180px;">ดำเนินการ</th>
           </tr>
@@ -1046,16 +1046,16 @@
           <div class="form-hint">Pre-filled: outstanding balance (amount_residual)</div>
         </div>
         <div class="form-group">
-          <label class="form-label">Journal (Payment Method) <span class="req">*</span></label>
+          <label class="form-label">วิธีการชำระเงิน <span class="req">*</span></label>
           <select class="form-control" id="inv-pay-journal">
-            <option value="cash">🏦 เงินสด — Petty เงินสด (DR 1002)</option>
-            <option value="card">💳 Card POS (DR 1003)</option>
-            <option value="bank">🏛️ Bank Transfer (DR 1004)</option>
-            <option value="member">💜 Member Points (DR 2100)</option>
+            <option value="cash">🏦 เงินสด</option>
+            <option value="card">💳 Card </option>
+            <option value="bank">🏛️ โอนธนาคาร </option>
+            <option value="member">💜 บัตรสมาชิก </option>
           </select>
         </div>
         <div class="form-group">
-          <label class="form-label">Payment Date</label>
+          <label class="form-label">วันที่จ่าย</label>
           <input type="date" class="form-control" value="2026-03-10">
         </div>
         <div class="form-group">
@@ -1069,18 +1069,18 @@
         <div style="font-size:11px;font-weight:700;color:var(--gray-600);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;">Journal Entry on Confirm</div>
         <div style="display:grid;grid-template-columns:80px 1fr 1fr;gap:6px;font-size:12px;">
           <span style="font-weight:700;color:var(--success);">DR</span>
-          <span id="inv-pay-dr-acct">1002 Petty เงินสด</span>
+          <span id="inv-pay-dr-acct"> เงินสด</span>
           <span id="inv-pay-dr-amt" style="text-align:right;font-weight:700;">฿14,250</span>
           <span style="font-weight:700;color:var(--danger);">CR</span>
           <span>1100 Accounts Receivable — Guest</span>
           <span id="inv-pay-cr-amt" style="text-align:right;font-weight:700;">฿14,250</span>
         </div>
-        <div style="margin-top:8px;font-size:11px;color:var(--gray-500);">Auto-reconciled against invoice. payment_state → <strong>paid</strong> (or <strong>partial</strong> if amount &lt; outstanding).</div>
+        <div style="margin-top:8px;font-size:11px;color:var(--gray-500);">กระทบยอดใบแจ้งหนี้. สถานะการจ่ายเงิน → <strong>จ่ายแล้ว</strong> (หรือ <strong>จ่ายบางส่วน</strong> ถ้ามียอด &lt ยอดค้างชำระ).</div>
       </div>
     </div>
     <div class="modal-footer">
       <button class="btn btn-secondary" onclick="closeModal('modal-inv-register-payment')">ยกเลิก</button>
-      <button class="btn btn-primary" onclick="confirmInvPayment()">✓ Confirm Payment</button>
+      <button class="btn btn-primary" onclick="confirmInvPayment()">✓ ยืนยันรายการ</button>
     </div>
   </div>
 </div>
