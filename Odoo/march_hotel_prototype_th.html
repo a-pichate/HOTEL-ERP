@@ -1092,10 +1092,10 @@
   <div class="breadcrumb-bar"><span>Reports › กระทบยอดประจำวัน</span></div>
   <div style="padding:20px 24px;">
     <div class="page-header">
-      <div><div class="page-title">กระทบยอดประจำวัน</div><div class="page-subtitle">ตรวจสอบทุกเซสชันและค่าใช้จ่ายว่าออกใบแจ้งหนี้แล้ว</div></div>
+      <div><div class="page-title">กระทบยอดประจำวัน</div><div class="page-subtitle">ตรวจสอบรายการสปาและค่าใช้จ่ายว่าออกใบแจ้งหนี้แล้ว</div></div>
       <div style="margin-left:auto;display:flex;gap:8px;">
         <button class="btn btn-secondary">📥 ส่งออก</button>
-        <button class="btn btn-primary" onclick="runRecon()">🔄 Run Reconciliation</button>
+        <button class="btn btn-primary" onclick="runRecon()">🔄 ทำการกระทบยอด</button>
       </div>
     </div>
 
@@ -1123,14 +1123,14 @@
         <span>รายละเอียด</span><span>ขาย</span><span>ออกใบแจ้งหนี้<span><span>ผลต่าง</span><span>สถานะ</span>
       </div>
       <div class="recon-row">
-        <span>Room nights charged today</span>
+        <span>จำนวนจองและรับชำระแล้ว</span>
         <span style="font-weight:600;">12 nights</span>
         <span style="font-weight:600;">12 nights</span>
         <span style="color:var(--success);font-weight:700;">0</span>
         <span class="badge badge-matched">ตรงกัน</span>
       </div>
       <div class="recon-row">
-        <span>Room revenue amount</span>
+        <span>ยอดเงินจากค่าห้อง</span>
         <span style="font-weight:600;">฿38,400</span>
         <span style="font-weight:600;">฿38,400</span>
         <span style="color:var(--success);font-weight:700;">฿0</span>
@@ -1142,21 +1142,21 @@
     <div class="detail-panel" style="margin-bottom:12px;">
       <div class="detail-header" style="background:var(--danger-light);">
         <span style="font-size:16px;">💆</span>
-        <div class="detail-title">เซสชันสปา</div>
+        <div class="detail-title">รายการสปา</div>
         <span class="badge badge-unmatched" style="margin-left:auto;">⚠️ 1 รายการไม่ตรง</span>
       </div>
       <div class="recon-header">
         <span>รายละเอียด</span><span>ขาย</span><span>ออกใบแจ้งหนี้<span><span>ผลต่าง</span><span>สถานะ</span>
       </div>
       <div class="recon-row">
-        <span>Sessions completed today</span>
-        <span style="font-weight:600;">18 sessions</span>
-        <span style="font-weight:600;">17 sessions</span>
+        <span>จำนวนรายการสปา</span>
+        <span style="font-weight:600;">18 รายการ</span>
+        <span style="font-weight:600;">17 รายการ</span>
         <span style="color:var(--danger);font-weight:700;">-1</span>
         <span class="badge badge-unmatched">ไม่ตรงกัน</span>
       </div>
       <div class="recon-row">
-        <span>Spa revenue amount</span>
+        <span>ยอดขายสปา</span>
         <span style="font-weight:600;">฿14,175</span>
         <span style="font-weight:600;">฿12,600</span>
         <span style="color:var(--danger);font-weight:700;">-฿1,575</span>
@@ -1166,10 +1166,10 @@
       <div class="recon-alert">
         <span style="font-size:18px;">⚠️</span>
         <div style="flex:1;">
-          <div style="font-weight:700;margin-bottom:4px;">Session #SPA-0142 not invoiced</div>
+          <div style="font-weight:700;margin-bottom:4px;">รายการ #SPA-0142 ยังไม่ได้จ่ายพนักงาน</div>
           <div style="font-size:12px;">Officer: Ploy Luangdee · Guest: Somchai T. · Spa Room: SP-2 · Duration: 1.5 hrs · Amount: ฿1,575 · Time: 14:20</div>
         </div>
-        <button class="btn btn-danger btn-sm" onclick="createVendorBillFromRecon()">⚡ Create Vendor Bill</button>
+        <button class="btn btn-danger btn-sm" onclick="createVendorBillFromRecon()">สร้างรายการเพิ่ม</button>
       </div>
     </div>
 
@@ -1215,10 +1215,10 @@
     <div id="recon-overall" style="background:var(--danger-light);border:2px solid var(--danger);border-radius:var(--radius-lg);padding:16px 24px;display:flex;align-items:center;gap:16px;">
       <div style="font-size:32px;">⚠️</div>
       <div style="flex:1;">
-        <div style="font-weight:800;font-size:16px;color:var(--danger);">1 item needs attention</div>
-        <div style="font-size:13px;color:var(--gray-700);margin-top:4px;">Resolve the unmatched spa session above, then rerun the report to confirm all clear.</div>
+        <div style="font-weight:800;font-size:16px;color:var(--danger);">1 รายการไม่ตรงกัน</div>
+        <div style="font-size:13px;color:var(--gray-700);margin-top:4px;">ตรวจสอบรายการข้างบนและแก้ไข แล้วกระทบยอดอีกครั้ง <div>
       </div>
-      <button class="btn btn-primary" onclick="runRecon()">🔄 Rerun After Fix</button>
+      <button class="btn btn-primary" onclick="runRecon()">กระทบยอดอีกครั้ง</button>
     </div>
   </div>
 </div>
