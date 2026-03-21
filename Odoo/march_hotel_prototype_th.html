@@ -4405,9 +4405,9 @@ function renderFolioList(){
 
     const invBadge = {
       nothing_to_invoice:  '<span class="chip" style="background:#e0e0e0;color:#555;font-size:10px;">Nothing</span>',
-      to_invoice:          '<span class="chip chip-orange" style="font-size:10px;">To Invoice</span>',
+      to_invoice:          '<span class="chip chip-orange" style="font-size:10px;">รอใบแจ้งนี้</span>',
       partially_invoiced:  '<span class="chip chip-warning" style="font-size:10px;">🟡 ชำระบางส่วน</span>',
-      fully_invoiced:      '<span class="chip chip-green"  style="font-size:10px;">ออกใบแจ้งหนี้<span>',
+      fully_invoiced:      '<span class="chip chip-green"  style="font-size:10px;">ชำระแล้ว<span>',
     }[f.invoice_status] || '';
 
     const rowBg = isDone ? 'background:#f5f5f5;opacity:0.75;' : isDue ? 'background:#FFFDE7;' : '';
@@ -4688,7 +4688,7 @@ function renderSpaOfficers(){
       </div>
       <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:8px;"><span>ต้นทุน/ชั่วโมง:</span><strong>฿${o.x_cost_rate}/hr</strong></div>
       <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:8px;"><span>ราคาขาย/ชั่วโมง:</span><strong>฿${o.x_sell_rate}/hr</strong></div>
-      <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:10px;"><span>เซสชันวันนี้:</span><strong>${sessionCount}</strong></div>
+      <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:10px;"><span>รายการวันนี้:</span><strong>${sessionCount}</strong></div>
       <div id="status-${o.id}" style="text-align:center;padding:6px;border-radius:var(--radius);${statusStyle}font-weight:700;font-size:12px;">${statusLabel}</div>
       ${btn}
     </div>`;
@@ -4725,7 +4725,7 @@ function renderOutstandingBills(){
     .sort((a,b) => a.invoice_date > b.invoice_date ? 1 : -1);
 
   if(!bills.length){
-    tbody.innerHTML = '<tr><td colspan="12" style="text-align:center;padding:20px;color:var(--gray-400);">ไม่มีบิลค้างชำระ</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="12" style="text-align:center;padding:20px;color:var(--gray-400);">ไม่มียอดค้างจ่าย</td></tr>';
     return;
   }
 
@@ -5923,7 +5923,7 @@ function isUpdatePaymentOptions(){
   // Check current pricelist
   const isBenefit = plSel && plSel.value==='benefit';
   if(isBenefit){
-    pmSel.innerHTML='<option value="benefit">🎁 Benefit \u2014 No Payment (฿0)</option>';
+    pmSel.innerHTML='<option value="benefit">🎁 Benefit \u2014 ไม่คิดราคา (฿0)</option>';
   } else if(isOfficer){
     // Model C: spa officer has both payroll and payout channels
     pmSel.innerHTML=`
@@ -5964,11 +5964,11 @@ function isShowPaymentNote(){
   const pm=document.getElementById('is-payment-method').value;
   const note=document.getElementById('is-payment-note');
   const notes={
-    benefit:`<div style="background:#E8F5E9;border:1px solid #A5D6A7;border-radius:6px;padding:10px 14px;font-size:12px;color:#1B5E20;display:flex;gap:8px;"><span>🎁</span><div><strong>ไม่คิดราคาขาย (฿0):</strong> Hotel absorbs cost. Server action on confirm: DR 6100 Staff Benefit Expense / CR 1300 Inventory (storable goods) or CR 4xxx Revenue (services). No receivable raised. No payment needed.</div></div>`,
-    payout_deduct:`<div style="background:#F3E5F5;border:1px solid #CE93D8;border-radius:6px;padding:10px 14px;font-size:12px;color:#4A148C;display:flex;gap:8px;"><span>💼</span><div><strong>หักจากเงินค่าจ้างรายวัน</strong> Creates <code>spa.payout.deduction</code> record. On next daily vendor bill creation, this amount appears as a negative line reducing net payout. DR 1150 Staff Receivable / CR 4xxx Revenue \u2014 cleared when payout bill is posted.</div></div>`,
-    payroll:`<div style="background:#E3F2FD;border:1px solid #90CAF9;border-radius:6px;padding:10px 14px;font-size:12px;color:#0D47A1;display:flex;gap:8px;"><span>📅</span><div><strong>หักจากเงินเดือน (All employees):</strong> Creates <code>hr.payslip.input</code> deduction record. DR 1150 Staff Receivable / CR 4xxx Revenue \u2014 cleared at monthly payroll run via salary rule. No immediate cash.</div></div>`,
-    cash:`<div style="background:var(--success-light);border:1px solid #C3E6CB;border-radius:6px;padding:10px 14px;font-size:12px;color:#155724;display:flex;gap:8px;"><span>💵</span><div><strong>เงินสด:</strong> Staff pays at point of sale. DR 1002 เงินสด / CR 4xxx Revenue. Immediate settlement.</div></div>`,
-    card:`<div style="background:var(--success-light);border:1px solid #C3E6CB;border-radius:6px;padding:10px 14px;font-size:12px;color:#155724;display:flex;gap:8px;"><span>💳</span><div><strong>Card:</strong> Staff pays by card. DR 1005 Card Clearing / CR 4xxx Revenue. Immediate settlement.</div></div>`,
+    benefit:`<div style="background:#E8F5E9;border:1px solid #A5D6A7;border-radius:6px;padding:10px 14px;font-size:12px;color:#1B5E20;display:flex;gap:8px;"><span>🎁</span><div><strong>ไม่คิดราคาขาย (฿0):</strong> บันทึกเป็นค่าใช้จ่ายของโรงแรม.</div></div>`,
+    payout_deduct:`<div style="background:#F3E5F5;border:1px solid #CE93D8;border-radius:6px;padding:10px 14px;font-size:12px;color:#4A148C;display:flex;gap:8px;"><span>💼</span><div><strong>หักจากเงินค่าจ้างรายวัน</strong>รอตัดจากยอดที่โรงแรมต้องจ่าย</div></div>`,
+    payroll:`<div style="background:#E3F2FD;border:1px solid #90CAF9;border-radius:6px;padding:10px 14px;font-size:12px;color:#0D47A1;display:flex;gap:8px;"><span>📅</span><div><strong>หักจากเงินเดือน (All employees):</strong>เงินเดือนจะถูกหักตามราคาสินค้า.</div></div>`,
+    cash:`<div style="background:var(--success-light);border:1px solid #C3E6CB;border-radius:6px;padding:10px 14px;font-size:12px;color:#155724;display:flex;gap:8px;"><span>💵</span><div><strong>เงินสด:</strong> </div></div>`,
+    card:`<div style="background:var(--success-light);border:1px solid #C3E6CB;border-radius:6px;padding:10px 14px;font-size:12px;color:#155724;display:flex;gap:8px;"><span>💳</span><div><strong>Card:</strong>จ่ายผ่านบัตรเครดิต.</div></div>`,
   };
   note.style.display=pm&&notes[pm]?'block':'none';
   note.innerHTML=notes[pm]||'';
@@ -6934,35 +6934,35 @@ function searchMembers(q){
 <div class="modal-overlay" id="modal-edit-service" onclick="if(event.target===this)closeModal('modal-edit-service')">
   <div class="modal" style="max-width:520px;">
     <div class="modal-header">
-      <div class="modal-title">✏️ Edit Service / Item</div>
+      <div class="modal-title">✏️ แก้ไขรายการ</div>
       <div class="modal-close" onclick="closeModal('modal-edit-service')">✕</div>
     </div>
     <div class="modal-body">
       <div class="form-grid-2">
         <div class="form-group" style="grid-column:span 2;">
-          <label class="form-label">Service Code</label>
+          <label class="form-label">รหัส</label>
           <input class="form-control" id="edit-svc-code" type="text" readonly style="background:var(--gray-100);color:var(--gray-500);">
         </div>
         <div class="form-group" style="grid-column:span 2;">
-          <label class="form-label">Service Name <span class="req">*</span></label>
+          <label class="form-label">ชื่อสินค้า / บริการ <span class="req">*</span></label>
           <input class="form-control" id="edit-svc-name" type="text" placeholder="Service name">
         </div>
         <div class="form-group">
           <label class="form-label">ประเภท</label>
           <select class="form-control" id="edit-svc-categ">
-            <option value="service">Housekeeping / Service</option>
-            <option value="fnb">F&amp;B / Restaurant</option>
-            <option value="spa_service">Spa Service</option>
-            <option value="internal">Internal Use</option>
+            <option value="service">แม่บ้าน / บริการ</option>
+            <option value="fnb">F&amp;B / อาหาร</option>
+            <option value="spa_service">สปา</option>
+            <option value="internal">เบิก / ขายภายใน</option>
             <option value="room">ห้อง</option>
           </select>
         </div>
         <div class="form-group">
-          <label class="form-label">Unit of Measure</label>
+          <label class="form-label">หน่วยนับ</label>
           <input class="form-control" id="edit-svc-uom" type="text" placeholder="unit, night, hour, kg...">
         </div>
         <div class="form-group">
-          <label class="form-label">Sell Price (฿) <span style="font-size:10px;color:var(--gray-500);">0 = Free</span></label>
+          <label class="form-label">ราคาขาย (฿) <span style="font-size:10px;color:var(--gray-500);">0 = Free</span></label>
           <input class="form-control" id="edit-svc-price" type="number" min="0" placeholder="0.00">
         </div>
         <div class="form-group">
